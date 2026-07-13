@@ -10,7 +10,7 @@ const lang = Astro.params.lang as Lang;
 const t = i18n[lang];
 const otherLang = lang === "ko" ? "en" : "ko";
 const title = lang === "ko" ? `이용약관 - ${t.siteName}` : `Terms of Use - ${t.siteName}`;
-const description = lang === "ko" ? "Toolbox 이용약관입니다." : "Terms of use for Toolbox.";
+const description = lang === "ko" ? "Toolbox 도구 사용 시 결과 확인, 책임 범위, 서비스 변경 기준을 안내하는 이용약관입니다." : "Terms of use for Toolbox.";
 ---
 
 <Layout

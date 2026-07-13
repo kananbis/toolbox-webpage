@@ -37,9 +37,17 @@ const description = lang === "ko" ? "Toolbox 문의 안내 페이지입니다." 
         </>
       )
     }
-    <p class="mt-6 rounded-lg border border-line bg-panel p-4">
-      <span class="font-semibold">{lang === "ko" ? "이메일" : "Email"}: </span>
-      <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
-    </p>
+    {
+      contactEmail ? (
+        <p class="mt-6 rounded-lg border border-line bg-panel p-4">
+          <span class="font-semibold">{lang === "ko" ? "이메일" : "Email"}: </span>
+          <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+        </p>
+      ) : (
+        <p class="mt-6 rounded-lg border border-line bg-panel p-4">
+          {lang === "ko" ? "문의 이메일은 운영 환경 설정 후 표시됩니다." : "A contact email will be shown after deployment configuration."}
+        </p>
+      )
+    }
   </article>
 </Layout>

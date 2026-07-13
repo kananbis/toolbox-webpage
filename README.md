@@ -81,8 +81,8 @@ GA_MEASUREMENT_ID=G-XXXXXXXXXX
 
 Current config defaults:
 
-- `PUBLIC_SITE_URL` falls back to `https://example.com`
-- `PUBLIC_CONTACT_EMAIL` falls back to `hello@example.com`
+- `PUBLIC_SITE_URL` falls back to `https://mfwtools.com`
+- `PUBLIC_CONTACT_EMAIL` has no public fallback value and should be set in the deployment environment
 - `GA_MEASUREMENT_ID` is reserved for future analytics setup
 
 Before real deployment, set `PUBLIC_SITE_URL` to the production domain. This value is used for canonical URLs, hreflang links, sitemap, robots.txt, and Open Graph URLs.
