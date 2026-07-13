@@ -14,7 +14,7 @@ Most tools run directly in the browser. The project does not require a backend s
 
 ## Requirements
 
-- Node.js 20
+- Node.js 22.12 or newer
 - npm
 
 The recommended Node version is also defined in `.nvmrc`.
@@ -65,7 +65,7 @@ After pushing the project to GitHub, create a Cloudflare Pages project with thes
 - Build command: `npm run build`
 - Build output directory: `dist`
 - Root directory: project root
-- Node version: `20`
+- Node version: `22.12.0` or newer
 
 Cloudflare Pages should install dependencies and run the build command automatically.
 
