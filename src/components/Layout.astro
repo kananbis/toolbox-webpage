@@ -23,6 +23,7 @@ const alternateItems = [{ lang, href: canonicalPath }, ...alternates].filter(
   (item, index, items) => items.findIndex((candidate) => candidate.lang === item.lang) === index,
 );
 const absoluteUrl = (href: string) => (href.startsWith("http") ? href : `${site}${href}`);
+const gaMeasurementId = import.meta.env.GA_MEASUREMENT_ID;
 ---
 
 <!doctype html>
@@ -38,6 +39,21 @@ const absoluteUrl = (href: string) => (href.startsWith("http") ? href : `${site}
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalUrl} />
+    {
+      gaMeasurementId && (
+        <>
+          <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`} />
+          <script is:inline define:vars={{ gaMeasurementId }}>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+              dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
+            gtag("config", gaMeasurementId);
+          </script>
+        </>
+      )
+    }
   </head>
   <body>
     <Header />
