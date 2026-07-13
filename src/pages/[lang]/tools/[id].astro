@@ -1,0 +1,41 @@
+---
+import Layout from "@/components/Layout.astro";
+import ToolCard from "@/components/ToolCard.astro";
+import ToolLayout from "@/components/ToolLayout.astro";
+import { categorySlugs, getCategoryItems, getToolsByCategory, getTool, languages, i18n, type CategorySlug, type Lang } from "@/i18n/translations";
+
+export function getStaticPaths() {
+  return languages.flatMap((lang) => [
+    ...categorySlugs.map((category) => ({ params: { lang, id: category }, props: { kind: "category", lang, id: category } })),
+    ...Object.keys(i18n[lang].tools).map((slug) => ({ params: { lang, id: slug }, props: { kind: "tool", lang, id: slug } })),
+  ]);
+}
+
+const { kind, id } = Astro.props;
+const lang = Astro.props.lang as Lang;
+const t = i18n[lang];
+const category = kind === "category" ? getCategoryItems(lang).find((item) => item.slug === id) : undefined;
+const tool = kind === "tool" ? getTool(lang, id) : undefined;
+const otherLang = lang === "ko" ? "en" : "ko";
+---
+
+{tool ? (
+  <ToolLayout tool={tool} lang={lang} />
+) : category ? (
+  <Layout
+    title={`${category.name} - ${t.siteName}`}
+    description={category.description}
+    canonical={`/${lang}/tools/${category.slug}`}
+    lang={lang}
+    alternates={[
+      { lang: otherLang, href: `/${otherLang}/tools/${category.slug}` },
+      { lang: "x-default", href: `/ko/tools/${category.slug}` },
+    ]}
+  >
+    <h1 class="text-3xl font-bold tracking-normal md:text-4xl">{category.name}</h1>
+    <p class="mt-4 max-w-3xl text-lg leading-8 text-slate-700">{category.description}</p>
+    <div class="mt-8 grid gap-4 md:grid-cols-3">
+      {getToolsByCategory(lang, category.slug as CategorySlug).map((item) => <ToolCard tool={item} />)}
+    </div>
+  </Layout>
+) : null}

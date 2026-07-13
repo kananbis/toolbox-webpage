@@ -1,0 +1,49 @@
+---
+import Header from "./Header.astro";
+import Footer from "./Footer.astro";
+import { isLang, type Lang } from "@/i18n/translations";
+import { SITE_CONFIG } from "../../site.config.mjs";
+import "@/styles/global.css";
+
+type Props = {
+  title: string;
+  description: string;
+  canonical?: string;
+  lang?: Lang;
+  alternates?: { lang: Lang | "x-default"; href: string }[];
+};
+
+const segments = Astro.url.pathname.split("/").filter(Boolean);
+const inferredLang: Lang = isLang(segments[0]) ? segments[0] : "ko";
+const { title, description, canonical = Astro.url.pathname, lang = inferredLang, alternates = [] } = Astro.props;
+const site = Astro.site?.toString().replace(/\/$/, "") ?? SITE_CONFIG.siteUrl;
+const canonicalUrl = canonical.startsWith("http") ? canonical : `${site}${canonical}`;
+const canonicalPath = canonical.startsWith("http") ? new URL(canonical).pathname : canonical;
+const alternateItems = [{ lang, href: canonicalPath }, ...alternates].filter(
+  (item, index, items) => items.findIndex((candidate) => candidate.lang === item.lang) === index,
+);
+const absoluteUrl = (href: string) => (href.startsWith("http") ? href : `${site}${href}`);
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    {alternateItems.map((item) => <link rel="alternate" hreflang={item.lang} href={absoluteUrl(item.href)} />)}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+  </head>
+  <body>
+    <Header />
+    <main class="mx-auto max-w-6xl px-4 py-8 md:py-12">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

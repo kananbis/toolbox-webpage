@@ -1,0 +1,76 @@
+---
+import Layout from "./Layout.astro";
+import FAQ from "./FAQ.astro";
+import RelatedTools from "./RelatedTools.astro";
+import AdPlaceholder from "./AdPlaceholder.astro";
+import ToolRunner from "./ToolRunner.astro";
+import { getRelatedTools, getToolBasis, i18n, type Lang, type ToolSlug } from "@/i18n/translations";
+
+type Props = {
+  tool: {
+    slug: ToolSlug;
+    name: string;
+    description: string;
+    seoTitle?: string;
+    intro: string;
+    usage: string[];
+    examples: string[];
+    basis?: string;
+    faq: { question: string; answer: string }[];
+    path: string;
+    privacy?: boolean;
+  };
+  lang: Lang;
+};
+
+const { tool, lang } = Astro.props;
+const t = i18n[lang];
+const title = tool.seoTitle ?? `${tool.name} - ${tool.description}`;
+const related = getRelatedTools(lang, tool.slug);
+const otherLang = lang === "ko" ? "en" : "ko";
+const basis = tool.basis ?? getToolBasis(lang, tool.slug) ?? t.common.basisText;
+const formattedBasis = basis.replace(/\. /g, ".\n");
+const isImageTool = ["image-resizer", "image-compressor", "webp-converter", "image-cropper", "image-rotate-flip", "image-format-converter", "image-mosaic", "image-watermark", "remove-image-metadata", "image-color-picker"].includes(tool.slug);
+---
+
+<Layout
+  title={title}
+  description={tool.description}
+  canonical={tool.path}
+  lang={lang}
+  alternates={[
+    { lang: otherLang, href: `/${otherLang}/tools/${tool.slug}` },
+    { lang: "x-default", href: `/ko/tools/${tool.slug}` },
+  ]}
+>
+  <article>
+    <p class="text-sm font-semibold text-brand">{t.common.freeTool}</p>
+    <h1 class="mt-2 text-3xl font-bold tracking-normal md:text-4xl">{tool.name}</h1>
+    <p class="mt-4 max-w-3xl text-lg leading-8 text-slate-700">{tool.intro}</p>
+
+    <section class="mt-8">
+      <ToolRunner slug={tool.slug} lang={lang} />
+      {tool.privacy && <p class="mt-3 text-sm text-slate-600">{isImageTool ? t.common.imagePrivacyNote : t.common.privacyNote}</p>}
+    </section>
+
+    <AdPlaceholder lang={lang} />
+
+    <section class="prose-lite">
+      <h2>{t.common.usage}</h2>
+      <ol class="mt-3 list-decimal space-y-2 pl-6">
+        {tool.usage.map((item) => <li>{item}</li>)}
+      </ol>
+
+      <h2>{t.common.examples}</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6">
+        {tool.examples.map((item) => <li>{item}</li>)}
+      </ul>
+
+      <h2>{t.common.basis}</h2>
+      <p class="whitespace-pre-line">{formattedBasis}</p>
+    </section>
+
+    <FAQ items={tool.faq} />
+    <RelatedTools tools={related} lang={lang} />
+  </article>
+</Layout>

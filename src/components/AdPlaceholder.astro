@@ -1,0 +1,10 @@
+---
+import { i18n, type Lang } from "@/i18n/translations";
+
+type Props = { lang?: Lang };
+const { lang = "ko" } = Astro.props;
+---
+
+<aside class="my-8 rounded-lg border border-dashed border-line bg-panel p-6 text-center text-sm text-slate-500">
+  {i18n[lang].common.ad}
+</aside>

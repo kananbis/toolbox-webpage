@@ -1,0 +1,164 @@
+---
+import { i18n, isLang, type Lang } from "@/i18n/translations";
+
+const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
+const segments = currentPath.split("/").filter(Boolean);
+const lang: Lang = isLang(segments[0]) ? segments[0] : "ko";
+const t = i18n[lang];
+const otherLang: Lang = lang === "ko" ? "en" : "ko";
+const pathWithoutLang = isLang(segments[0]) ? `/${segments.slice(1).join("/")}` : currentPath;
+const switchPath = `/${otherLang}${pathWithoutLang === "/" ? "" : pathWithoutLang}`;
+
+const menuItems = [
+  { href: `/${lang}/tools`, label: t.nav.all },
+  { href: `/${lang}/tools/text`, label: t.nav.text },
+  { href: `/${lang}/tools/calculator`, label: t.nav.calculator },
+  { href: `/${lang}/tools/converter`, label: t.nav.converter },
+  { href: `/${lang}/tools/generator`, label: t.nav.generator },
+  { href: `/${lang}/tools/developer`, label: t.nav.developer },
+  { href: `/${lang}/tools/electronics`, label: t.nav.electronics },
+  { href: `/${lang}/tools/image`, label: t.nav.image },
+];
+
+const isActive = (href: string) => {
+  if (href === `/${lang}/tools`) {
+    return currentPath === `/${lang}/tools`;
+  }
+
+  return currentPath === href;
+};
+---
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href={`/${lang}`}>{t.siteName}</a>
+    <div class="nav-area">
+      <nav class="site-nav" aria-label={lang === "ko" ? "주요 메뉴" : "Main menu"}>
+        {menuItems.map((item) => (
+          <a
+            class:list={["nav-link", { active: isActive(item.href) }]}
+            href={item.href}
+            aria-current={isActive(item.href) ? "page" : undefined}
+          >
+            {item.label}
+          </a>
+        ))}
+        <a class="lang-link" href={switchPath}>{t.nav.languageSwitch}</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    min-height: 64px;
+    border-bottom: 1px solid #d7dee8;
+    background: #ffffff;
+  }
+
+  .header-inner {
+    min-height: 64px;
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .site-logo {
+    flex: 0 0 auto;
+    color: #172033;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .nav-area {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+    transition:
+      background-color 120ms ease,
+      color 120ms ease;
+  }
+
+  .nav-link:hover {
+    background: #f1f5f9;
+    color: #2563eb;
+    text-decoration: none;
+  }
+
+  .nav-link.active {
+    background: #2563eb;
+    color: #ffffff;
+  }
+
+  .nav-link.active:hover {
+    background: #2563eb;
+    color: #ffffff;
+  }
+
+  .lang-link {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    padding: 6px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  .lang-link:hover {
+    background: #f1f5f9;
+    color: #2563eb;
+    text-decoration: none;
+  }
+
+  @media (max-width: 640px) {
+    .header-inner {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding-top: 0.875rem;
+      padding-bottom: 0.875rem;
+    }
+
+    .site-nav {
+      width: 100%;
+      padding-bottom: 0.125rem;
+    }
+
+    .nav-area {
+      width: 100%;
+      align-items: center;
+    }
+  }
+</style>

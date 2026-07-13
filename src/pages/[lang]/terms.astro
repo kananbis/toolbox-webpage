@@ -1,0 +1,53 @@
+---
+import Layout from "@/components/Layout.astro";
+import { i18n, languages, type Lang } from "@/i18n/translations";
+
+export function getStaticPaths() {
+  return languages.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = i18n[lang];
+const otherLang = lang === "ko" ? "en" : "ko";
+const title = lang === "ko" ? `이용약관 - ${t.siteName}` : `Terms of Use - ${t.siteName}`;
+const description = lang === "ko" ? "Toolbox 이용약관입니다." : "Terms of use for Toolbox.";
+---
+
+<Layout
+  title={title}
+  description={description}
+  canonical={`/${lang}/terms`}
+  lang={lang}
+  alternates={[{ lang: otherLang, href: `/${otherLang}/terms` }, { lang: "x-default", href: "/ko/terms" }]}
+>
+  <article class="prose-lite max-w-3xl">
+    <h1 class="text-3xl font-bold">{lang === "ko" ? "이용약관" : "Terms of Use"}</h1>
+    {
+      lang === "ko" ? (
+        <>
+          <p class="mt-4">Toolbox의 도구는 무료 참고용 유틸리티로 제공됩니다.</p>
+          <h2>결과의 성격</h2>
+          <p>계산, 변환, 이미지 처리 결과는 사용자의 입력값과 브라우저 처리 방식에 따라 달라질 수 있습니다. 모든 결과는 참고용이며 정확성이나 특정 목적 적합성을 보장하지 않습니다.</p>
+          <h2>중요한 판단</h2>
+          <p>금융, 건강, 전자 회로 관련 계산 결과는 실제 의사결정이나 전문적인 판단을 대신하지 않습니다. 중요한 용도로 사용할 때는 사용자가 직접 검토하고 필요한 경우 전문가나 공식 기준을 확인해야 합니다.</p>
+          <h2>서비스 변경</h2>
+          <p>Toolbox는 기능, 문구, 페이지 구성을 예고 없이 변경하거나 중단할 수 있습니다.</p>
+          <h2>사용자 책임</h2>
+          <p>사용자는 도구 결과를 직접 확인하고, 해당 결과를 사용하는 데 따른 책임을 부담합니다.</p>
+        </>
+      ) : (
+        <>
+          <p class="mt-4">Toolbox tools are provided as free reference utilities.</p>
+          <h2>Nature of Results</h2>
+          <p>Calculation, conversion, and image processing results may vary depending on user input and browser behavior. Results are for reference only and are not guaranteed to be accurate or fit for a specific purpose.</p>
+          <h2>Important Decisions</h2>
+          <p>Financial, health, and electronics calculation results do not replace professional advice or real-world verification. For important use cases, users should review the results and check official standards or qualified professionals where needed.</p>
+          <h2>Service Changes</h2>
+          <p>Toolbox may change or discontinue features, text, or pages without prior notice.</p>
+          <h2>User Responsibility</h2>
+          <p>Users are responsible for reviewing tool results and for any decisions made based on those results.</p>
+        </>
+      )
+    }
+  </article>
+</Layout>

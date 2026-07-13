@@ -1,0 +1,48 @@
+---
+import Layout from "@/components/Layout.astro";
+import { i18n, languages, type Lang } from "@/i18n/translations";
+
+export function getStaticPaths() {
+  return languages.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = i18n[lang];
+const otherLang = lang === "ko" ? "en" : "ko";
+const title = lang === "ko" ? `소개 - ${t.siteName}` : `About - ${t.siteName}`;
+const description =
+  lang === "ko"
+    ? "Toolbox는 계산기, 변환기, 텍스트 도구, 이미지 도구를 제공하는 무료 온라인 도구 모음입니다."
+    : "Toolbox is a free collection of online tools for text, calculations, conversions, images, developers, and electronics.";
+---
+
+<Layout
+  title={title}
+  description={description}
+  canonical={`/${lang}/about`}
+  lang={lang}
+  alternates={[{ lang: otherLang, href: `/${otherLang}/about` }, { lang: "x-default", href: "/ko/about" }]}
+>
+  <article class="prose-lite max-w-3xl">
+    <h1 class="text-3xl font-bold">{lang === "ko" ? "소개" : "About"}</h1>
+    {
+      lang === "ko" ? (
+        <>
+          <p class="mt-4">Toolbox는 자주 필요한 작업을 빠르게 처리할 수 있도록 만든 무료 온라인 도구 사이트입니다.</p>
+          <p>글자수 세기 같은 텍스트 도구, 퍼센트와 날짜 계산기, 단위 변환기, 이미지 편집 도구, 개발자 도구, 전자 계산기를 제공합니다.</p>
+          <p>대부분의 도구는 입력한 내용이나 선택한 파일을 서버로 보내지 않고 현재 브라우저 안에서 처리합니다.</p>
+          <h2>운영 방향</h2>
+          <p>Toolbox는 설치 없이 사용할 수 있는 가볍고 실용적인 웹 도구를 목표로 합니다. 각 도구는 모바일과 데스크톱에서 모두 쉽게 사용할 수 있도록 단순한 구조로 제공합니다.</p>
+        </>
+      ) : (
+        <>
+          <p class="mt-4">Toolbox is a free online tool site for quick everyday tasks.</p>
+          <p>It provides text tools, calculators, converters, image tools, developer utilities, and electronics calculators.</p>
+          <p>Most tools process your input or selected files directly in your current browser without sending them to a server.</p>
+          <h2>Our Direction</h2>
+          <p>Toolbox focuses on lightweight, practical web tools that work without installation. Each tool is designed to be simple to use on both mobile and desktop devices.</p>
+        </>
+      )
+    }
+  </article>
+</Layout>

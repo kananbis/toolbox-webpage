@@ -1,0 +1,33 @@
+---
+import { i18n, isLang, type Lang } from "@/i18n/translations";
+
+const segments = Astro.url.pathname.split("/").filter(Boolean);
+const lang: Lang = isLang(segments[0]) ? segments[0] : "ko";
+const t = i18n[lang];
+const links =
+  lang === "ko"
+    ? [
+        { href: "/ko/about", label: "소개" },
+        { href: "/ko/contact", label: "문의" },
+        { href: "/ko/privacy", label: "개인정보 처리방침" },
+        { href: "/ko/terms", label: "이용약관" },
+      ]
+    : [
+        { href: "/en/about", label: "About" },
+        { href: "/en/contact", label: "Contact" },
+        { href: "/en/privacy", label: "Privacy" },
+        { href: "/en/terms", label: "Terms" },
+      ];
+---
+
+<footer class="mt-16 border-t border-line bg-panel">
+  <div class="mx-auto grid max-w-6xl gap-6 px-4 py-8 text-sm text-slate-600 md:grid-cols-[1fr_auto]">
+    <div>
+      <p class="font-semibold text-ink">{t.siteName}</p>
+      <p class="mt-2">{t.footer.text}</p>
+    </div>
+    <nav class="flex flex-wrap gap-4">
+      {links.map((link) => <a href={link.href}>{link.label}</a>)}
+    </nav>
+  </div>
+</footer>

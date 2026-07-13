@@ -1,0 +1,2138 @@
+---
+import type { Lang } from "@/i18n/translations";
+
+type Props = { slug: string; lang?: Lang };
+const { slug, lang = "ko" } = Astro.props;
+
+const ui = {
+  ko: {
+    input: "입력",
+    placeholder: "여기에 내용을 입력하세요",
+    run: "실행",
+    calculate: "계산",
+    convert: "변환",
+    generate: "생성",
+    copy: "복사",
+    copyResult: "결과 복사",
+    reset: "초기화",
+    result: "결과가 여기에 표시됩니다.",
+    compact: "압축",
+      decode: "디코딩",
+      encode: "인코딩",
+      toJson: "CSV → JSON",
+      toCsv: "JSON → CSV",
+      modes: {
+      trim: "전체 텍스트 앞뒤 공백 제거",
+      trimLines: "모든 줄 앞뒤 공백 제거",
+      allSpaces: "전체 공백 제거",
+      lineBreaks: "줄바꿈 제거",
+      upper: "대문자",
+      lower: "소문자",
+      title: "단어 첫 글자 대문자",
+      of: "A의 B%",
+      ratio: "A는 B의 몇 %",
+      change: "A에서 B로 증감률",
+      diff: "두 날짜 차이",
+      add: "N일 뒤",
+      sub: "N일 전",
+      supply: "공급가 기준",
+      total: "합계 기준",
+      timestampToDate: "Timestamp → 날짜",
+      dateToTimestamp: "날짜 → Timestamp",
+      m2ToPyeong: "m² → 평",
+      pyeongToM2: "평 → m²",
+      amortized: "원리금균등",
+      equalPrincipal: "원금균등",
+      interestOnly: "만기일시",
+      series: "직렬",
+      parallel: "병렬",
+      lowPass: "저역통과",
+      highPass: "고역통과",
+      dbmToPower: "dBm → mW/W",
+      powerToDbm: "mW/W → dBm",
+      frequencyToWavelength: "주파수 → 파장",
+      wavelengthToFrequency: "파장 → 주파수",
+      capacitive: "커패시터 리액턴스",
+      inductive: "인덕터 리액턴스",
+    },
+    labels: {
+      mode: "계산 모드",
+      a: "A 값",
+      b: "B 값",
+      amount: "금액",
+      price: "정가",
+      discountRate: "할인율(%)",
+      basis: "기준",
+      vatRate: "세율(%)",
+      height: "키(cm)",
+      weight: "몸무게(kg)",
+      startDate: "시작/기준 날짜",
+      endDate: "종료 날짜",
+      targetDate: "목표/기준 날짜",
+      birthDate: "생년월일",
+      unitKind: "변환 종류",
+      value: "값",
+      fromUnit: "입력 단위",
+      toUnit: "결과 단위",
+      length: "길이",
+      min: "최소값",
+      max: "최대값",
+      count: "개수",
+      length: "길이",
+      salePrice: "판매가",
+      cost: "원가",
+      feeRate: "수수료율(%)",
+      area: "면적",
+      principal: "원금",
+      annualRate: "연 이율(%)",
+      years: "기간(년)",
+      months: "기간(개월)",
+      monthlyContribution: "월 추가 납입액",
+      loanAmount: "대출 금액",
+      annualSalary: "연봉",
+      monthlyTaxFree: "월 비과세 금액",
+      deductionRate: "공제율(%)",
+      timestamp: "Timestamp",
+      datetime: "날짜 시간",
+      voltage: "전압(V)",
+      current: "전류(A)",
+      resistance: "저항(Ω)",
+      power: "전력(W)",
+      supplyVoltage: "공급 전압(V)",
+      forwardVoltage: "LED 순방향 전압(V)",
+      ledCurrent: "LED 전류(mA)",
+      vin: "Vin(V)",
+      r1: "R1(Ω)",
+      r2: "R2(Ω)",
+      batteryCapacity: "배터리 용량(mAh)",
+      currentDraw: "소비 전류(mA)",
+      band1: "1번 밴드",
+      band2: "2번 밴드",
+      multiplier: "배수",
+      tolerance: "허용오차",
+      resistanceList: "저항값 목록",
+      resistanceUnit: "저항 단위",
+      filterCircuit: "필터 회로",
+      capacitance: "커패시턴스",
+      capacitanceUnit: "커패시턴스 단위",
+      filterType: "필터 타입",
+      awg: "AWG",
+      inputUnit: "입력 단위",
+      frequency: "주파수",
+      frequencyUnit: "주파수 단위",
+      wavelength: "파장",
+      wavelengthUnit: "파장 단위",
+      inductance: "인덕턴스",
+      inductanceUnit: "인덕턴스 단위",
+      imageFile: "이미지 파일",
+      width: "너비(px)",
+      height: "높이(px)",
+      keepRatio: "비율 유지",
+      quality: "품질",
+      cropX: "X 좌표",
+      cropY: "Y 좌표",
+      cropWidth: "자르기 너비",
+      cropHeight: "자르기 높이",
+      aspectRatio: "자르기 비율",
+      outputFormat: "출력 형식",
+      mosaicSize: "모자이크 강도",
+      selectionX: "선택 X",
+      selectionY: "선택 Y",
+      selectionWidth: "선택 너비",
+      selectionHeight: "선택 높이",
+      overlayText: "텍스트",
+      position: "위치",
+      fontSize: "글자 크기(px)",
+      textColor: "글자 색상",
+      opacity: "투명도",
+      rotation: "회전 각도(도)",
+      originalText: "원본 텍스트",
+      changedText: "비교 텍스트",
+      ignoreWhitespace: "공백 무시",
+      ignoreCase: "대소문자 무시",
+    },
+    checks: {
+      upper: "대문자 포함",
+      lower: "소문자 포함",
+      number: "숫자 포함",
+      symbol: "특수문자 포함",
+      avoid: "헷갈리는 문자 제외",
+    },
+    units: { length: "길이", weight: "무게", temperature: "온도", C: "섭씨(°C)", F: "화씨(°F)", K: "켈빈(K)" },
+  },
+  en: {
+    input: "Input",
+    placeholder: "Enter text here",
+    run: "Run",
+    calculate: "Calculate",
+    convert: "Convert",
+    generate: "Generate",
+    copy: "Copy",
+    copyResult: "Copy Result",
+    reset: "Reset",
+    result: "The result will appear here.",
+    compact: "Minify",
+    decode: "Decode",
+    encode: "Encode",
+    toJson: "CSV → JSON",
+    toCsv: "JSON → CSV",
+    modes: {
+      trim: "Trim whole text",
+      trimLines: "Trim every line",
+      allSpaces: "Remove all spaces",
+      lineBreaks: "Remove line breaks",
+      upper: "Uppercase",
+      lower: "Lowercase",
+      title: "Title Case",
+      of: "What is B% of A?",
+      ratio: "A is what percent of B?",
+      change: "Percent change from A to B",
+      diff: "Difference between dates",
+      add: "N days after",
+      sub: "N days before",
+      supply: "Supply amount",
+      total: "Total amount",
+      timestampToDate: "Timestamp → Date",
+      dateToTimestamp: "Date → Timestamp",
+      m2ToPyeong: "m² → pyeong",
+      pyeongToM2: "pyeong → m²",
+      amortized: "Amortized",
+      equalPrincipal: "Equal principal",
+      interestOnly: "Interest only",
+      series: "Series",
+      parallel: "Parallel",
+      lowPass: "Low-pass",
+      highPass: "High-pass",
+      dbmToPower: "dBm → mW/W",
+      powerToDbm: "mW/W → dBm",
+      frequencyToWavelength: "Frequency → Wavelength",
+      wavelengthToFrequency: "Wavelength → Frequency",
+      capacitive: "Capacitive reactance",
+      inductive: "Inductive reactance",
+    },
+    labels: {
+      mode: "Mode",
+      a: "A value",
+      b: "B value",
+      amount: "Amount",
+      price: "Original price",
+      discountRate: "Discount rate (%)",
+      basis: "Basis",
+      vatRate: "VAT rate (%)",
+      height: "Height (cm)",
+      weight: "Weight (kg)",
+      startDate: "Start/base date",
+      endDate: "End date",
+      targetDate: "Target/base date",
+      birthDate: "Birth date",
+      unitKind: "Conversion type",
+      value: "Value",
+      fromUnit: "From unit",
+      toUnit: "To unit",
+      length: "Length",
+      min: "Minimum",
+      max: "Maximum",
+      count: "Count",
+      length: "Length",
+      salePrice: "Sale price",
+      cost: "Cost",
+      feeRate: "Fee rate (%)",
+      area: "Area",
+      principal: "Principal",
+      annualRate: "Annual rate (%)",
+      years: "Years",
+      months: "Months",
+      monthlyContribution: "Monthly contribution",
+      loanAmount: "Loan amount",
+      annualSalary: "Annual salary",
+      monthlyTaxFree: "Monthly tax-free amount",
+      deductionRate: "Deduction rate (%)",
+      timestamp: "Timestamp",
+      datetime: "Date and time",
+      voltage: "Voltage (V)",
+      current: "Current (A)",
+      resistance: "Resistance (Ω)",
+      power: "Power (W)",
+      supplyVoltage: "Supply voltage (V)",
+      forwardVoltage: "LED forward voltage (V)",
+      ledCurrent: "LED current (mA)",
+      vin: "Vin (V)",
+      r1: "R1 (Ω)",
+      r2: "R2 (Ω)",
+      batteryCapacity: "Battery capacity (mAh)",
+      currentDraw: "Current draw (mA)",
+      band1: "Band 1",
+      band2: "Band 2",
+      multiplier: "Multiplier",
+      tolerance: "Tolerance",
+      resistanceList: "Resistor values",
+      resistanceUnit: "Resistance unit",
+      filterCircuit: "Filter circuit",
+      capacitance: "Capacitance",
+      capacitanceUnit: "Capacitance unit",
+      filterType: "Filter type",
+      awg: "AWG",
+      inputUnit: "Input unit",
+      frequency: "Frequency",
+      frequencyUnit: "Frequency unit",
+      wavelength: "Wavelength",
+      wavelengthUnit: "Wavelength unit",
+      inductance: "Inductance",
+      inductanceUnit: "Inductance unit",
+      imageFile: "Image file",
+      width: "Width (px)",
+      height: "Height (px)",
+      keepRatio: "Keep aspect ratio",
+      quality: "Quality",
+      cropX: "X position",
+      cropY: "Y position",
+      cropWidth: "Crop width",
+      cropHeight: "Crop height",
+      aspectRatio: "Aspect ratio",
+      outputFormat: "Output format",
+      mosaicSize: "Mosaic strength",
+      selectionX: "Selection X",
+      selectionY: "Selection Y",
+      selectionWidth: "Selection width",
+      selectionHeight: "Selection height",
+      overlayText: "Text",
+      position: "Position",
+      fontSize: "Font size (px)",
+      textColor: "Text color",
+      opacity: "Opacity",
+      rotation: "Rotation (deg)",
+      originalText: "Original text",
+      changedText: "Comparison text",
+      ignoreWhitespace: "Ignore whitespace",
+      ignoreCase: "Ignore case",
+    },
+    checks: {
+      upper: "Include uppercase",
+      lower: "Include lowercase",
+      number: "Include numbers",
+      symbol: "Include symbols",
+      avoid: "Avoid confusing characters",
+    },
+    units: { length: "Length", weight: "Weight", temperature: "Temperature", C: "Celsius (°C)", F: "Fahrenheit (°F)", K: "Kelvin (K)" },
+  },
+}[lang];
+---
+
+<div class="tool-panel" data-tool={slug} data-lang={lang}>
+  {["character-counter", "remove-spaces", "case-converter", "json-formatter", "base64-converter", "qr-code-generator", "url-encoder-decoder", "csv-json-converter"].includes(slug) && (
+    <div class="grid gap-4">
+      <label class="font-semibold" for="text-input">{ui.input}</label>
+      <textarea id="text-input" placeholder={ui.placeholder}></textarea>
+      {slug === "remove-spaces" && (
+        <select id="mode">
+          <option value="trim">{ui.modes.trim}</option>
+          <option value="trim-lines">{ui.modes.trimLines}</option>
+          <option value="all">{ui.modes.allSpaces}</option>
+          <option value="line">{ui.modes.lineBreaks}</option>
+        </select>
+      )}
+      {slug === "case-converter" && (
+        <select id="mode">
+          <option value="upper">{ui.modes.upper}</option>
+          <option value="lower">{ui.modes.lower}</option>
+          <option value="title">{ui.modes.title}</option>
+        </select>
+      )}
+      <div class="flex flex-wrap gap-2">
+        <button class="btn-primary" data-action="run">{slug === "url-encoder-decoder" ? ui.encode : slug === "csv-json-converter" ? ui.toJson : ui.run}</button>
+        {slug === "json-formatter" && <button class="btn-secondary" data-action="compact">{ui.compact}</button>}
+        {slug === "base64-converter" && <button class="btn-secondary" data-action="decode">{ui.decode}</button>}
+        {slug === "url-encoder-decoder" && <button class="btn-secondary" data-action="decode">{ui.decode}</button>}
+        {slug === "csv-json-converter" && <button class="btn-secondary" data-action="to-csv">{ui.toCsv}</button>}
+        <button class="btn-secondary" data-action="copy">{ui.copyResult}</button>
+        <button class="btn-secondary" data-action="reset">{ui.reset}</button>
+      </div>
+      {slug === "qr-code-generator" && <canvas id="qr-canvas" class="h-48 w-48 rounded-md border border-line bg-white p-2"></canvas>}
+      <pre class="result-box whitespace-pre-wrap" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {["image-resizer", "image-compressor", "webp-converter", "image-cropper", "image-rotate-flip", "image-format-converter", "image-mosaic", "image-watermark", "remove-image-metadata", "image-color-picker"].includes(slug) && (
+    <div class="grid gap-4">
+      <label class="font-semibold" for="image-file">{ui.labels.imageFile}</label>
+      <input id="image-file" type="file" accept={slug === "webp-converter" ? "image/jpeg,image/png" : "image/jpeg,image/png,image/webp"} />
+
+      {slug === "image-resizer" && (
+        <div class="grid gap-4 md:grid-cols-3">
+          <label>{ui.labels.width}<input id="width" type="number" inputmode="numeric" min="1" /></label>
+          <label>{ui.labels.height}<input id="height" type="number" inputmode="numeric" min="1" /></label>
+          <label class="flex items-center gap-2 pt-6"><input id="keep-ratio" class="w-auto" type="checkbox" checked />{ui.labels.keepRatio}</label>
+        </div>
+      )}
+
+      {["image-compressor", "webp-converter"].includes(slug) && (
+        <label>{ui.labels.quality}<input id="quality" type="range" min="10" max="100" value="80" /></label>
+      )}
+
+      {slug === "image-cropper" && (
+        <div class="grid gap-4 md:grid-cols-3">
+          <label>{ui.labels.aspectRatio}<select id="aspect-ratio"><option value="free">{lang === "ko" ? "자유 비율" : "Free"}</option><option value="1:1">1:1</option><option value="4:3">4:3</option><option value="16:9">16:9</option></select></label>
+          <label>{ui.labels.cropX}<input id="crop-x" type="number" inputmode="numeric" min="0" value="0" /></label>
+          <label>{ui.labels.cropY}<input id="crop-y" type="number" inputmode="numeric" min="0" value="0" /></label>
+          <label>{ui.labels.cropWidth}<input id="crop-width" type="number" inputmode="numeric" min="1" /></label>
+          <label>{ui.labels.cropHeight}<input id="crop-height" type="number" inputmode="numeric" min="1" /></label>
+        </div>
+      )}
+
+      {slug === "image-rotate-flip" && (
+        <div class="flex flex-wrap gap-2">
+          <button class="btn-secondary" data-action="rotate-left">{lang === "ko" ? "왼쪽으로 90도" : "Rotate Left 90"}</button>
+          <button class="btn-secondary" data-action="rotate-right">{lang === "ko" ? "오른쪽으로 90도" : "Rotate Right 90"}</button>
+          <button class="btn-secondary" data-action="rotate-180">{lang === "ko" ? "180도 회전" : "Rotate 180"}</button>
+          <button class="btn-secondary" data-action="flip-horizontal">{lang === "ko" ? "좌우 뒤집기" : "Flip Horizontal"}</button>
+          <button class="btn-secondary" data-action="flip-vertical">{lang === "ko" ? "상하 뒤집기" : "Flip Vertical"}</button>
+          <button class="btn-secondary" data-action="reset">{ui.reset}</button>
+        </div>
+      )}
+
+      {slug === "image-format-converter" && (
+        <div class="grid gap-4 md:grid-cols-2">
+          <label>{ui.labels.outputFormat}<select id="output-format"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select></label>
+          <label>{ui.labels.quality}<input id="quality" type="range" min="10" max="100" value="80" /></label>
+        </div>
+      )}
+
+      {slug === "image-mosaic" && (
+        <div class="grid gap-4">
+          <div class="grid gap-4 md:grid-cols-5">
+            <label>{ui.labels.mosaicSize}<select id="mosaic-size"><option value="4">4px</option><option value="8">8px</option><option value="12" selected>12px</option><option value="16">16px</option><option value="24">24px</option><option value="32">32px</option><option value="40">40px</option></select></label>
+            <label>{ui.labels.selectionX}<input id="mosaic-x" type="number" readonly value="0" /></label>
+            <label>{ui.labels.selectionY}<input id="mosaic-y" type="number" readonly value="0" /></label>
+            <label>{ui.labels.selectionWidth}<input id="mosaic-width" type="number" readonly value="0" /></label>
+            <label>{ui.labels.selectionHeight}<input id="mosaic-height" type="number" readonly value="0" /></label>
+          </div>
+          <p class="text-sm text-slate-600">{lang === "ko" ? "미리보기 위에서 사각형 영역을 드래그해 선택합니다. 모바일에서는 손가락으로 드래그할 수 있습니다." : "Drag a rectangle over the preview. Touch dragging is supported on mobile browsers where available."}</p>
+          <div class="overflow-auto rounded-md border border-line bg-white p-2">
+            <canvas id="mosaic-canvas" class="max-h-[560px] max-w-full touch-none"></canvas>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button class="btn-primary" data-action="apply-mosaic">{lang === "ko" ? "모자이크 적용" : "Apply Mosaic"}</button>
+            <button class="btn-secondary" data-action="reset">{ui.reset}</button>
+          </div>
+        </div>
+      )}
+
+      {slug === "image-watermark" && (
+        <div class="grid gap-4 md:grid-cols-3">
+          <label class="md:col-span-3">{ui.labels.overlayText}<textarea id="overlay-text" placeholder="Toolbox"></textarea></label>
+          <label>{ui.labels.position}<select id="text-position"><option value="top-left">{lang === "ko" ? "좌상단" : "Top left"}</option><option value="top-right">{lang === "ko" ? "우상단" : "Top right"}</option><option value="center">{lang === "ko" ? "중앙" : "Center"}</option><option value="bottom-left">{lang === "ko" ? "좌하단" : "Bottom left"}</option><option value="bottom-right">{lang === "ko" ? "우하단" : "Bottom right"}</option></select></label>
+          <label>{ui.labels.fontSize}<input id="font-size" type="number" min="8" value="36" /></label>
+          <label>{ui.labels.textColor}<input id="text-color" type="color" value="#ffffff" /></label>
+          <label>{ui.labels.opacity}<input id="text-opacity" type="range" min="10" max="100" value="60" /></label>
+          <label>{ui.labels.rotation}<input id="text-rotation" type="number" min="-180" max="180" value="0" /></label>
+        </div>
+      )}
+
+      {slug === "remove-image-metadata" && (
+        <p class="text-sm text-slate-600">{lang === "ko" ? "브라우저 canvas로 다시 저장하는 방식은 대부분의 이미지 메타데이터를 제거하지만, 모든 형식의 메타데이터 제거를 보장하지는 않습니다." : "Re-saving through a browser canvas removes most image metadata, but it may not guarantee removal of every metadata field."}</p>
+      )}
+
+      {slug === "image-color-picker" && (
+        <div class="grid gap-3">
+          <p class="text-sm text-slate-600">{lang === "ko" ? "이미지를 선택한 뒤 미리보기에서 색상을 알고 싶은 지점을 클릭하세요." : "Select an image, then click a point in the preview to pick its color."}</p>
+          <div class="overflow-auto rounded-md border border-line bg-white p-2">
+            <canvas id="color-canvas" class="max-h-[560px] max-w-full cursor-crosshair"></canvas>
+          </div>
+          <div><button class="btn-secondary" data-action="copy">{ui.copyResult}</button></div>
+          <div id="recent-colors" class="flex flex-wrap gap-2"></div>
+        </div>
+      )}
+
+      <div class={`grid gap-4 ${slug === "image-color-picker" ? "" : "md:grid-cols-2"}`}>
+        {slug !== "image-color-picker" && (
+          <div>
+            <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "미리보기" : "Preview"}</p>
+            <img id="image-preview" alt={lang === "ko" ? "처리된 이미지 미리보기" : "Processed image preview"} class="mt-2 max-h-96 w-full rounded-md border border-line object-contain" />
+          </div>
+        )}
+        <div>
+          <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "처리 결과" : "Processing Result"}</p>
+          <pre class="result-box mt-2 whitespace-pre-wrap" id="result">{ui.result}</pre>
+          <a id="download-link" class="btn-primary mt-3 hidden w-fit" download>{lang === "ko" ? "다운로드" : "Download"}</a>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {slug === "unix-timestamp-converter" && (
+    <div class="grid gap-4 md:grid-cols-2">
+      <label class="md:col-span-2">{ui.labels.mode}<select id="mode"><option value="timestamp-to-date">{ui.modes.timestampToDate}</option><option value="date-to-timestamp">{ui.modes.dateToTimestamp}</option></select></label>
+      <label id="timestamp-wrap">{ui.labels.timestamp}<input id="timestamp" type="number" inputmode="numeric" /></label>
+      <label id="datetime-wrap">{ui.labels.datetime}<input id="datetime" type="datetime-local" /></label>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-2" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "text-compare" && (
+    <div class="grid gap-4 md:grid-cols-2">
+      <label>{ui.labels.originalText}<textarea id="original-text" placeholder={lang === "ko" ? "원본 텍스트를 입력하세요" : "Enter original text"}></textarea></label>
+      <label>{ui.labels.changedText}<textarea id="changed-text" placeholder={lang === "ko" ? "비교할 텍스트를 입력하세요" : "Enter comparison text"}></textarea></label>
+      <label class="flex items-center gap-2"><input id="ignore-whitespace" class="w-auto" type="checkbox" />{ui.labels.ignoreWhitespace}</label>
+      <label class="flex items-center gap-2"><input id="ignore-case" class="w-auto" type="checkbox" />{ui.labels.ignoreCase}</label>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-secondary" data-action="copy">{ui.copyResult}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-2" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "percent-calculator" && (
+    <div class="grid gap-4 md:grid-cols-2">
+      <label class="md:col-span-2">{ui.labels.mode}<select id="mode"><option value="of">{ui.modes.of}</option><option value="ratio">{ui.modes.ratio}</option><option value="change">{ui.modes.change}</option></select></label>
+      <label>{ui.labels.a}<input id="a" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.b}<input id="b" type="number" inputmode="decimal" /></label>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <div class="result-box md:col-span-2" id="result">{ui.result}</div>
+    </div>
+  )}
+
+  {["discount-calculator", "vat-calculator", "bmi-calculator"].includes(slug) && (
+    <div class="grid gap-4 md:grid-cols-2">
+      <label>{slug === "bmi-calculator" ? ui.labels.height : slug === "discount-calculator" ? ui.labels.price : ui.labels.amount}<input id="a" type="number" inputmode="decimal" /></label>
+      <label>{slug === "bmi-calculator" ? ui.labels.weight : slug === "discount-calculator" ? ui.labels.discountRate : ui.labels.basis}{slug === "vat-calculator" ? <select id="mode"><option value="supply">{ui.modes.supply}</option><option value="total">{ui.modes.total}</option></select> : <input id="b" type="number" inputmode="decimal" />}</label>
+      {slug === "vat-calculator" && <label>{ui.labels.vatRate}<input id="vat-rate" type="number" inputmode="decimal" min="0" step="0.1" value="10" /></label>}
+      <div class="flex gap-2 md:col-span-2"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <div class="result-box md:col-span-2" id="result">{ui.result}</div>
+    </div>
+  )}
+
+  {slug === "margin-calculator" && (
+    <div class="grid gap-4 md:grid-cols-3">
+      <label>{ui.labels.salePrice}<input id="sale-price" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.cost}<input id="cost" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.feeRate}<input id="fee-rate" type="number" inputmode="decimal" value="0" /></label>
+      <div class="flex gap-2 md:col-span-3"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-3" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "pyeong-calculator" && (
+    <div class="grid gap-4 md:grid-cols-2">
+      <label>{ui.labels.mode}<select id="mode"><option value="m2-to-pyeong">{ui.modes.m2ToPyeong}</option><option value="pyeong-to-m2">{ui.modes.pyeongToM2}</option></select></label>
+      <label>{ui.labels.area}<input id="area" type="number" inputmode="decimal" /></label>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-primary" data-action="run">{ui.convert}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <div class="result-box md:col-span-2" id="result">{ui.result}</div>
+    </div>
+  )}
+
+  {slug === "compound-interest-calculator" && (
+    <div class="grid gap-4 md:grid-cols-2">
+      <label>{ui.labels.principal}<input id="principal" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.annualRate}<input id="annual-rate" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.years}<input id="years" type="number" inputmode="decimal" value="10" /></label>
+      <label>{ui.labels.monthlyContribution}<input id="monthly-contribution" type="number" inputmode="decimal" value="0" /></label>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-2" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "loan-interest-calculator" && (
+    <div class="grid gap-4 md:grid-cols-2">
+      <label>{ui.labels.loanAmount}<input id="loan-amount" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.annualRate}<input id="annual-rate" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.months}<input id="months" type="number" inputmode="numeric" value="36" /></label>
+      <label>{ui.labels.mode}<select id="mode"><option value="amortized">{ui.modes.amortized}</option><option value="equal-principal">{ui.modes.equalPrincipal}</option><option value="interest-only">{ui.modes.interestOnly}</option></select></label>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-2" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "salary-net-calculator" && (
+    <div class="grid gap-4 md:grid-cols-3">
+      <label>{ui.labels.annualSalary}<input id="annual-salary" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.monthlyTaxFree}<input id="monthly-tax-free" type="number" inputmode="decimal" value="0" /></label>
+      <label>{ui.labels.deductionRate}<input id="deduction-rate" type="number" inputmode="decimal" value="9.4" /></label>
+      <div class="flex gap-2 md:col-span-3"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-3" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "ohms-law-calculator" && (
+    <div class="grid gap-4 md:grid-cols-2">
+      <label>{ui.labels.voltage}<input id="voltage" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.current}<input id="current" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.resistance}<input id="resistance" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.power}<input id="power" type="number" inputmode="decimal" /></label>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-2" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "led-resistor-calculator" && (
+    <div class="grid gap-4 md:grid-cols-3">
+      <label>{ui.labels.supplyVoltage}<input id="supply-voltage" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.forwardVoltage}<input id="forward-voltage" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.ledCurrent}<input id="led-current" type="number" inputmode="decimal" value="20" /></label>
+      <div class="flex gap-2 md:col-span-3"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-3" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "voltage-divider-calculator" && (
+    <div class="grid gap-4 md:grid-cols-3">
+      <label>{ui.labels.vin}<input id="vin" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.r1}<input id="r1" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.r2}<input id="r2" type="number" inputmode="decimal" /></label>
+      <div class="flex gap-2 md:col-span-3"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-3" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "battery-life-calculator" && (
+    <div class="grid gap-4 md:grid-cols-2">
+      <label>{ui.labels.batteryCapacity}<input id="battery-capacity" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.currentDraw}<input id="current-draw" type="number" inputmode="decimal" /></label>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-2" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "resistor-color-code-calculator" && (
+    <div class="grid gap-4 md:grid-cols-4">
+      <label>{ui.labels.band1}<select id="band1"><option value="0">검정 / Black</option><option value="1">갈색 / Brown</option><option value="2">빨강 / Red</option><option value="3">주황 / Orange</option><option value="4">노랑 / Yellow</option><option value="5">초록 / Green</option><option value="6">파랑 / Blue</option><option value="7">보라 / Violet</option><option value="8">회색 / Gray</option><option value="9">흰색 / White</option></select></label>
+      <label>{ui.labels.band2}<select id="band2"><option value="0">검정 / Black</option><option value="1">갈색 / Brown</option><option value="2">빨강 / Red</option><option value="3">주황 / Orange</option><option value="4">노랑 / Yellow</option><option value="5">초록 / Green</option><option value="6">파랑 / Blue</option><option value="7">보라 / Violet</option><option value="8">회색 / Gray</option><option value="9">흰색 / White</option></select></label>
+      <label>{ui.labels.multiplier}<select id="multiplier"><option value="1">검정 ×1</option><option value="10">갈색 ×10</option><option value="100">빨강 ×100</option><option value="1000">주황 ×1k</option><option value="10000">노랑 ×10k</option><option value="100000">초록 ×100k</option><option value="1000000">파랑 ×1M</option><option value="10000000">보라 ×10M</option><option value="0.1">금색 ×0.1</option><option value="0.01">은색 ×0.01</option></select></label>
+      <label>{ui.labels.tolerance}<select id="tolerance"><option value="±1%">갈색 ±1%</option><option value="±2%">빨강 ±2%</option><option value="±5%">금색 ±5%</option><option value="±10%">은색 ±10%</option></select></label>
+      <div class="flex gap-2 md:col-span-4"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-4" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "capacitance-converter" && (
+    <div class="grid gap-4 md:grid-cols-2">
+      <label>{ui.labels.value}<input id="value" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.inputUnit}<select id="unit"><option value="pF">pF</option><option value="nF">nF</option><option value="uF">µF / uF</option><option value="mF">mF</option><option value="F">F</option></select></label>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-2" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "series-parallel-resistor-calculator" && (
+    <div class="grid gap-4 md:grid-cols-2">
+      <label>{ui.labels.mode}<select id="mode"><option value="series">{ui.modes.series}</option><option value="parallel">{ui.modes.parallel}</option></select></label>
+      <label>{ui.labels.resistanceUnit}<select id="unit"><option value="ohm">Ω</option><option value="kohm">kΩ</option><option value="Mohm">MΩ</option></select></label>
+      <label class="md:col-span-2">{ui.labels.resistanceList}<textarea id="values" placeholder="100, 220, 1.5"></textarea></label>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-2" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "filter-calculator" && (
+    <div class="grid gap-4 md:grid-cols-2">
+      <label>{ui.labels.filterCircuit}<select id="circuit"><option value="rc">{lang === "ko" ? "RC 필터" : "RC Filter"}</option><option value="rl">{lang === "ko" ? "RL 필터" : "RL Filter"}</option></select></label>
+      <label>{ui.labels.filterType}<select id="mode"><option value="low-pass">{ui.modes.lowPass}</option><option value="high-pass">{ui.modes.highPass}</option></select></label>
+      <label>{ui.labels.resistance}<input id="resistance" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.resistanceUnit}<select id="resistance-unit"><option value="ohm">Ω</option><option value="kohm">kΩ</option><option value="Mohm">MΩ</option></select></label>
+      <label id="filter-capacitance-wrap">{ui.labels.capacitance}<input id="capacitance" type="number" inputmode="decimal" /></label>
+      <label id="filter-capacitance-unit-wrap">{ui.labels.capacitanceUnit}<select id="capacitance-unit"><option value="pF">pF</option><option value="nF">nF</option><option value="uF">µF / uF</option><option value="mF">mF</option><option value="F">F</option></select></label>
+      <label id="filter-inductance-wrap">{ui.labels.inductance}<input id="inductance" type="number" inputmode="decimal" /></label>
+      <label id="filter-inductance-unit-wrap">{ui.labels.inductanceUnit}<select id="inductance-unit"><option value="nH">nH</option><option value="uH">µH</option><option value="mH">mH</option><option value="H">H</option></select></label>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <div class="result-box md:col-span-2" id="result">{ui.result}</div>
+    </div>
+  )}
+
+  {slug === "awg-wire-size-converter" && (
+    <div class="grid gap-4 md:grid-cols-2">
+      <label>{ui.labels.awg}<select id="awg">{[-3, -2, -1, 0, ...Array.from({ length: 40 }, (_, index) => index + 1)].map((value) => <option value={value}>{value === -3 ? "0000" : value === -2 ? "000" : value === -1 ? "00" : String(value)}</option>)}</select></label>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-primary" data-action="run">{ui.convert}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-2" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "dbm-watt-converter" && (
+    <div class="grid gap-4 md:grid-cols-2">
+      <label>{ui.labels.inputUnit}<select id="unit"><option value="dBm">dBm</option><option value="mW">mW</option><option value="W">W</option></select></label>
+      <label>{ui.labels.value}<input id="value" type="number" inputmode="decimal" /></label>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-2" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "frequency-wavelength-converter" && (
+    <div class="grid gap-4 md:grid-cols-2">
+      <label class="md:col-span-2">{ui.labels.mode}<select id="mode"><option value="frequency-to-wavelength">{ui.modes.frequencyToWavelength}</option><option value="wavelength-to-frequency">{ui.modes.wavelengthToFrequency}</option></select></label>
+      <label id="frequency-wrap">{ui.labels.frequency}<input id="frequency" type="number" inputmode="decimal" /></label>
+      <label id="frequency-unit-wrap">{ui.labels.frequencyUnit}<select id="frequency-unit"><option value="Hz">Hz</option><option value="kHz">kHz</option><option value="MHz">MHz</option><option value="GHz">GHz</option></select></label>
+      <label id="wavelength-wrap">{ui.labels.wavelength}<input id="wavelength" type="number" inputmode="decimal" /></label>
+      <label id="wavelength-unit-wrap">{ui.labels.wavelengthUnit}<select id="wavelength-unit"><option value="m">m</option><option value="cm">cm</option><option value="mm">mm</option><option value="um">µm</option><option value="nm">nm</option></select></label>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-primary" data-action="run">{ui.convert}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-2" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "rc-time-constant-calculator" && (
+    <div class="grid gap-4 md:grid-cols-2">
+      <label>{ui.labels.resistance}<input id="resistance" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.resistanceUnit}<select id="resistance-unit"><option value="ohm">Ω</option><option value="kohm">kΩ</option><option value="Mohm">MΩ</option></select></label>
+      <label>{ui.labels.capacitance}<input id="capacitance" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.capacitanceUnit}<select id="capacitance-unit"><option value="pF">pF</option><option value="nF">nF</option><option value="uF">µF / uF</option><option value="mF">mF</option><option value="F">F</option></select></label>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-2" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "reactance-calculator" && (
+    <div class="grid gap-4 md:grid-cols-2">
+      <label class="md:col-span-2">{ui.labels.mode}<select id="mode"><option value="capacitive">{ui.modes.capacitive}</option><option value="inductive">{ui.modes.inductive}</option></select></label>
+      <label>{ui.labels.frequency}<input id="frequency" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.frequencyUnit}<select id="frequency-unit"><option value="Hz">Hz</option><option value="kHz">kHz</option><option value="MHz">MHz</option></select></label>
+      <label id="capacitance-wrap">{ui.labels.capacitance}<input id="capacitance" type="number" inputmode="decimal" /></label>
+      <label id="capacitance-unit-wrap">{ui.labels.capacitanceUnit}<select id="capacitance-unit"><option value="pF">pF</option><option value="nF">nF</option><option value="uF">µF / uF</option><option value="mF">mF</option><option value="F">F</option></select></label>
+      <label id="inductance-wrap">{ui.labels.inductance}<input id="inductance" type="number" inputmode="decimal" /></label>
+      <label id="inductance-unit-wrap">{ui.labels.inductanceUnit}<select id="inductance-unit"><option value="nH">nH</option><option value="uH">µH</option><option value="mH">mH</option><option value="H">H</option></select></label>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-2" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {["date-calculator", "dday-calculator", "age-calculator"].includes(slug) && (
+    <div class="grid gap-4 md:grid-cols-2">
+      {slug === "date-calculator" && <label class="md:col-span-2">{ui.labels.mode}<select id="mode"><option value="diff">{ui.modes.diff}</option><option value="add">{ui.modes.add}</option><option value="sub">{ui.modes.sub}</option></select></label>}
+      <label>{slug === "age-calculator" ? ui.labels.birthDate : ui.labels.startDate}<input id="start" type="date" /></label>
+      <label><span id="end-label">{slug === "date-calculator" ? ui.labels.endDate : ui.labels.targetDate}</span><input id="end" type="date" /></label>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <div class="result-box md:col-span-2" id="result">{ui.result}</div>
+    </div>
+  )}
+
+  {slug === "unit-converter" && (
+    <div class="grid gap-4 md:grid-cols-3">
+      <label class="md:col-span-3">{ui.labels.unitKind}<select id="unit-kind"><option value="length">{ui.units.length}</option><option value="weight">{ui.units.weight}</option><option value="temperature">{ui.units.temperature}</option></select></label>
+      <label>{ui.labels.value}<input id="a" type="number" inputmode="decimal" /></label>
+      <label>{ui.labels.fromUnit}<select id="from"></select></label>
+      <label>{ui.labels.toUnit}<select id="to"></select></label>
+      <div class="flex gap-2 md:col-span-3"><button class="btn-primary" data-action="run">{ui.convert}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <div class="result-box md:col-span-3" id="result">{ui.result}</div>
+    </div>
+  )}
+
+  {slug === "password-generator" && (
+    <div class="grid gap-4">
+      <label>{ui.labels.length}<input id="length" type="number" min="4" max="64" value="16" /></label>
+      <div class="grid gap-2 sm:grid-cols-2">
+        <label><input class="mr-2 w-auto" type="checkbox" id="upper" checked />{ui.checks.upper}</label>
+        <label><input class="mr-2 w-auto" type="checkbox" id="lower" checked />{ui.checks.lower}</label>
+        <label><input class="mr-2 w-auto" type="checkbox" id="number" checked />{ui.checks.number}</label>
+        <label><input class="mr-2 w-auto" type="checkbox" id="symbol" checked />{ui.checks.symbol}</label>
+        <label><input class="mr-2 w-auto" type="checkbox" id="avoid" />{ui.checks.avoid}</label>
+      </div>
+      <div class="flex flex-wrap gap-2"><button class="btn-primary" data-action="run">{ui.generate}</button><button class="btn-secondary" data-action="copy">{ui.copy}</button></div>
+      <pre class="result-box whitespace-pre-wrap" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {["random-number-generator", "uuid-generator", "lotto-number-generator"].includes(slug) && (
+    <div class="grid gap-4 md:grid-cols-3">
+      {slug === "random-number-generator" && <><label>{ui.labels.min}<input id="min" type="number" value="1" /></label><label>{ui.labels.max}<input id="max" type="number" value="45" /></label></>}
+      <label>{ui.labels.count}<input id="count" type="number" min="1" max="50" value={slug === "lotto-number-generator" ? "5" : "1"} /></label>
+      <div class="flex gap-2 md:col-span-3"><button class="btn-primary" data-action="run">{ui.generate}</button><button class="btn-secondary" data-action="copy">{ui.copy}</button></div>
+      <pre class="result-box whitespace-pre-wrap md:col-span-3" id="result">{ui.result}</pre>
+    </div>
+  )}
+
+  {slug === "random-string-generator" && (
+    <div class="grid gap-4">
+      <div class="grid gap-4 md:grid-cols-2">
+        <label>{ui.labels.length}<input id="length" type="number" min="1" max="256" value="16" /></label>
+        <label>{ui.labels.count}<input id="count" type="number" min="1" max="50" value="5" /></label>
+      </div>
+      <div class="grid gap-2 sm:grid-cols-2">
+        <label><input class="mr-2 w-auto" type="checkbox" id="upper" checked />{ui.checks.upper}</label>
+        <label><input class="mr-2 w-auto" type="checkbox" id="lower" checked />{ui.checks.lower}</label>
+        <label><input class="mr-2 w-auto" type="checkbox" id="number" checked />{ui.checks.number}</label>
+        <label><input class="mr-2 w-auto" type="checkbox" id="symbol" />{ui.checks.symbol}</label>
+      </div>
+      <div class="flex flex-wrap gap-2"><button class="btn-primary" data-action="run">{ui.generate}</button><button class="btn-secondary" data-action="copy">{ui.copy}</button></div>
+      <pre class="result-box whitespace-pre-wrap" id="result">{ui.result}</pre>
+    </div>
+  )}
+</div>
+
+<script>
+  import QRCode from "qrcode";
+  import { awgToMetrics, capacitanceFactors, frequencyFactors, inductanceFactors, resistanceFactors, speedOfLight, wavelengthFactors } from "@/utils/electronics";
+
+  const messages = {
+    ko: {
+      cannotCalculate: "계산할 수 없습니다.",
+      charsWithSpaces: "공백 포함 글자 수",
+      charsNoSpaces: "공백 제외 글자 수",
+      words: "단어 수",
+      lines: "줄 수",
+      sentences: "문장 수",
+      enterQr: "텍스트 또는 URL을 입력하세요.",
+      qrDone: "QR 코드가 생성되었습니다.",
+      checkInput: "입력값을 확인하세요.",
+      startDate: "시작 날짜를 입력하세요.",
+      endDate: "종료 날짜를 입력하세요.",
+      targetDate: "목표 날짜를 입력하세요.",
+      birthDate: "생년월일을 입력하세요.",
+      invalidBase64: "올바른 Base64 문자열이 아닙니다.",
+      chooseChar: "하나 이상의 문자 종류를 선택하세요.",
+      strong: "강함",
+      normal: "보통",
+      strength: "강도",
+      resultDate: "결과 날짜",
+      age: "만 나이",
+      vatRate: "세율",
+      supply: "공급가",
+      vat: "부가세",
+      total: "합계",
+      discount: "할인 금액",
+      final: "최종 금액",
+      change: "변화",
+      dateDiff: "날짜 차이",
+      direction: "방향 포함",
+      bmiNote: "참고: 18.5 미만 저체중, 18.5~22.9 정상, 23 이상 과체중 범위입니다.",
+      addDays: "더할 일수",
+      subDays: "뺄 일수",
+      localTime: "로컬 시간",
+      seconds: "초",
+      milliseconds: "밀리초",
+      marginAmount: "마진 금액",
+      marginRate: "마진율",
+      fee: "수수료",
+      finalAmount: "최종 금액",
+      interest: "이자",
+      totalPaid: "총 납입액",
+      monthlyPayment: "월 상환액",
+      firstMonthPayment: "첫 달 상환액",
+      lastMonthPayment: "마지막 달 상환액",
+      totalInterest: "총 이자",
+      monthlyGross: "월 세전 금액",
+      deduction: "공제액",
+      monthlyNet: "월 예상 실수령액",
+      taxableMonthly: "월 과세 대상",
+      requiredTwoValues: "정확히 2개 값을 입력하세요.",
+      positiveInput: "0보다 큰 값을 입력하세요.",
+      resistanceValue: "저항값",
+      toleranceValue: "허용오차",
+      resistorPower: "저항 소비 전력",
+      vout: "출력 전압(Vout)",
+      formula: "공식",
+      runtimeHours: "예상 사용 시간",
+      runtimeDays: "예상 사용 일수",
+      cutoffFrequency: "차단 주파수",
+      timeConstant: "시간상수",
+      convertedInput: "입력값 환산",
+      equivalentResistance: "합성 저항",
+      diameterMm: "직경(mm)",
+      diameterInch: "직경(inch)",
+      areaMm2: "단면적(mm²)",
+      circularMils: "Circular mils",
+      resistancePerMeter: "미터당 저항",
+      referenceAmpacity: "참고 허용 전류",
+      awgNote: "허용 전류는 절연재, 온도, 배선 방식, 규격에 따라 달라질 수 있으므로 별도 기준을 확인해야 합니다.",
+      wavelengthNote: "매질에 따라 전파 속도가 달라질 수 있으며, 이 도구는 공기/진공 기준으로 계산합니다.",
+      tauNote: "1τ는 약 63.2% 충전 또는 36.8% 방전 지점이며, 5τ는 거의 최종값에 근접하는 시간으로 자주 사용합니다.",
+      reactance: "리액턴스",
+      chooseImage: "이미지 파일을 선택하세요.",
+      unsupportedImage: "지원하지 않는 이미지 형식입니다.",
+      originalSize: "원본 용량",
+      outputSize: "처리 후 용량",
+      originalDimensions: "원본 크기",
+      outputDimensions: "처리 후 크기",
+      pngQualityNote: "PNG는 브라우저 구현에 따라 품질 옵션 효과가 제한될 수 있습니다.",
+      originalFileName: "원본 파일명",
+      outputFormat: "출력 형식",
+      cropArea: "자르기 영역",
+      rotateLeft: "왼쪽으로 90도",
+      rotateRight: "오른쪽으로 90도",
+      rotate180: "180도 회전",
+      flipHorizontal: "좌우 뒤집기",
+      flipVertical: "상하 뒤집기",
+    },
+    en: {
+      cannotCalculate: "Cannot calculate.",
+      charsWithSpaces: "Characters with spaces",
+      charsNoSpaces: "Characters without spaces",
+      words: "Words",
+      lines: "Lines",
+      sentences: "Sentences",
+      enterQr: "Enter text or a URL.",
+      qrDone: "QR code generated.",
+      checkInput: "Check your input.",
+      startDate: "Enter a start date.",
+      endDate: "Enter an end date.",
+      targetDate: "Enter a target date.",
+      birthDate: "Enter a birth date.",
+      invalidBase64: "Invalid Base64 string.",
+      chooseChar: "Choose at least one character type.",
+      strong: "Strong",
+      normal: "Normal",
+      strength: "Strength",
+      resultDate: "Result date",
+      age: "Age",
+      vatRate: "VAT rate",
+      supply: "Supply amount",
+      vat: "VAT",
+      total: "Total",
+      discount: "Discount amount",
+      final: "Final price",
+      change: "change",
+      dateDiff: "Date difference",
+      direction: "Signed difference",
+      bmiNote: "Reference: below 18.5 underweight, 18.5-22.9 normal, 23 or higher overweight.",
+      addDays: "Days to add",
+      subDays: "Days to subtract",
+      localTime: "Local time",
+      seconds: "Seconds",
+      milliseconds: "Milliseconds",
+      marginAmount: "Margin amount",
+      marginRate: "Margin rate",
+      fee: "Fee",
+      finalAmount: "Final amount",
+      interest: "Interest",
+      totalPaid: "Total paid",
+      monthlyPayment: "Monthly payment",
+      firstMonthPayment: "First month payment",
+      lastMonthPayment: "Last month payment",
+      totalInterest: "Total interest",
+      monthlyGross: "Monthly gross pay",
+      deduction: "Deduction",
+      monthlyNet: "Estimated monthly net pay",
+      taxableMonthly: "Monthly taxable amount",
+      requiredTwoValues: "Enter exactly two values.",
+      positiveInput: "Enter values greater than 0.",
+      resistanceValue: "Resistance",
+      toleranceValue: "Tolerance",
+      resistorPower: "Resistor power",
+      vout: "Output voltage (Vout)",
+      formula: "Formula",
+      runtimeHours: "Estimated runtime",
+      runtimeDays: "Estimated days",
+      cutoffFrequency: "Cutoff frequency",
+      timeConstant: "Time constant",
+      convertedInput: "Converted input",
+      equivalentResistance: "Equivalent resistance",
+      diameterMm: "Diameter (mm)",
+      diameterInch: "Diameter (inch)",
+      areaMm2: "Area (mm²)",
+      circularMils: "Circular mils",
+      resistancePerMeter: "Resistance per meter",
+      referenceAmpacity: "Reference ampacity",
+      awgNote: "Current rating depends on insulation, temperature, wiring method, and standards. Always verify it with the applicable specification.",
+      wavelengthNote: "Propagation speed depends on the medium. This tool uses the speed of light in vacuum/air as a basic reference.",
+      tauNote: "1τ is about 63.2% charged or 36.8% discharged, and 5τ is commonly used as a near-final settling time.",
+      reactance: "Reactance",
+      chooseImage: "Choose an image file.",
+      unsupportedImage: "Unsupported image format.",
+      originalSize: "Original size",
+      outputSize: "Output size",
+      originalDimensions: "Original dimensions",
+      outputDimensions: "Output dimensions",
+      pngQualityNote: "PNG quality settings can have limited effect depending on the browser implementation.",
+      originalFileName: "Original file name",
+      outputFormat: "Output format",
+      cropArea: "Crop area",
+      rotateLeft: "Rotate Left 90",
+      rotateRight: "Rotate Right 90",
+      rotate180: "Rotate 180",
+      flipHorizontal: "Flip Horizontal",
+      flipVertical: "Flip Vertical",
+    },
+  };
+
+  const format = (value, lang) => Number.isFinite(value) ? new Intl.NumberFormat(lang === "ko" ? "ko-KR" : "en-US", { maximumFractionDigits: 4 }).format(value) : messages[lang].cannotCalculate;
+  const money = (value, lang) => Number.isFinite(value) ? new Intl.NumberFormat(lang === "ko" ? "ko-KR" : "en-US", { maximumFractionDigits: 0 }).format(value) : messages[lang].cannotCalculate;
+  const formatResistance = (value, lang) => {
+    if (!Number.isFinite(value)) return messages[lang].cannotCalculate;
+    if (Math.abs(value) >= 1000000) return `${format(value / 1000000, lang)} MΩ`;
+    if (Math.abs(value) >= 1000) return `${format(value / 1000, lang)} kΩ`;
+    return `${format(value, lang)} Ω`;
+  };
+  const formatFrequency = (value, lang) => {
+    if (!Number.isFinite(value)) return messages[lang].cannotCalculate;
+    if (Math.abs(value) >= 1000000) return `${format(value / 1000000, lang)} MHz`;
+    if (Math.abs(value) >= 1000) return `${format(value / 1000, lang)} kHz`;
+    return `${format(value, lang)} Hz`;
+  };
+  const formatTime = (value, lang) => {
+    if (!Number.isFinite(value)) return messages[lang].cannotCalculate;
+    if (Math.abs(value) < 0.001) return `${format(value * 1000000, lang)} µs`;
+    if (Math.abs(value) < 1) return `${format(value * 1000, lang)} ms`;
+    return `${format(value, lang)} s`;
+  };
+  const formatPrecise = (value, lang) => {
+    if (!Number.isFinite(value)) return messages[lang].cannotCalculate;
+    if (value !== 0 && Math.abs(value) < 0.000001) return value.toExponential(6);
+    return new Intl.NumberFormat(lang === "ko" ? "ko-KR" : "en-US", { maximumFractionDigits: 12 }).format(value);
+  };
+  const formatPower = (mw, lang) => `${format(10 * Math.log10(mw), lang)} dBm\n${format(mw, lang)} mW\n${format(mw / 1000, lang)} W`;
+  const formatBytes = (bytes, lang) => {
+    if (!Number.isFinite(bytes)) return messages[lang].cannotCalculate;
+    if (bytes >= 1048576) return `${format(bytes / 1048576, lang)} MB`;
+    if (bytes >= 1024) return `${format(bytes / 1024, lang)} KB`;
+    return `${format(bytes, lang)} B`;
+  };
+  const requireFinite = (value, message) => {
+    if (!Number.isFinite(value)) throw new Error(message);
+    return value;
+  };
+  const escapeCsv = (value) => {
+    const text = String(value ?? "");
+    return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  };
+  const parseCsv = (text) => {
+    const rows = [];
+    let row = [], cell = "", quoted = false;
+    for (let i = 0; i < text.length; i += 1) {
+      const char = text[i], next = text[i + 1];
+      if (quoted && char === '"' && next === '"') {
+        cell += '"';
+        i += 1;
+      } else if (char === '"') {
+        quoted = !quoted;
+      } else if (!quoted && char === ",") {
+        row.push(cell);
+        cell = "";
+      } else if (!quoted && (char === "\n" || char === "\r")) {
+        if (char === "\r" && next === "\n") i += 1;
+        row.push(cell);
+        rows.push(row);
+        row = [];
+        cell = "";
+      } else {
+        cell += char;
+      }
+    }
+    row.push(cell);
+    rows.push(row);
+    return rows.filter((items) => items.some((item) => item !== ""));
+  };
+  const csvToJson = (text) => {
+    const rows = parseCsv(text);
+    const headers = rows.shift()?.map((header) => header.trim()) ?? [];
+    return rows.map((row) => Object.fromEntries(headers.map((header, index) => [header || `column${index + 1}`, row[index] ?? ""])));
+  };
+  const jsonToCsv = (text) => {
+    const data = JSON.parse(text);
+    if (!Array.isArray(data)) throw new Error("JSON array required.");
+    const headers = Array.from(data.reduce((set, item) => {
+      Object.keys(item ?? {}).forEach((key) => set.add(key));
+      return set;
+    }, new Set()));
+    return [headers.join(","), ...data.map((item) => headers.map((header) => escapeCsv(item?.[header])).join(","))].join("\n");
+  };
+  const randomChars = (chars, length) => {
+    const bytes = new Uint32Array(length);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, (number) => chars[number % chars.length]).join("");
+  };
+  const loadImageBitmap = async (file) => {
+    if (window.createImageBitmap) return createImageBitmap(file);
+    const url = URL.createObjectURL(file);
+    try {
+      const image = new Image();
+      image.src = url;
+      await image.decode();
+      return image;
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+  };
+  const canvasToBlob = (canvas, type, quality) => new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("Image encoding failed.")), type, quality);
+  });
+  const setImageDownload = (root, blob, filename) => {
+    const previousUrl = root.dataset.downloadUrl;
+    if (previousUrl) URL.revokeObjectURL(previousUrl);
+    const url = URL.createObjectURL(blob);
+    root.dataset.downloadUrl = url;
+    const link = root.querySelector("#download-link");
+    link.href = url;
+    link.download = filename;
+    link.classList.remove("hidden");
+    const preview = root.querySelector("#image-preview");
+    preview.src = url;
+  };
+  const getImageExtension = (type) => type === "image/webp" ? "webp" : type === "image/png" ? "png" : "jpg";
+  const getImageFormatLabel = (type) => type === "image/webp" ? "WebP" : type === "image/png" ? "PNG" : "JPG";
+  const imageToolSlugs = ["image-resizer", "image-compressor", "webp-converter", "image-cropper", "image-rotate-flip", "image-format-converter", "image-mosaic", "image-watermark", "remove-image-metadata", "image-color-picker"];
+  const mosaicText = (lang, key) => ({
+    ko: {
+      noArea: "먼저 모자이크할 영역을 선택하세요.",
+      selected: "선택 영역",
+      applied: "모자이크가 적용되었습니다.",
+      chooseArea: "모자이크할 영역을 드래그해 선택하세요.",
+    },
+    en: {
+      noArea: "Select an area before applying mosaic.",
+      selected: "Selection area",
+      applied: "Mosaic applied.",
+      chooseArea: "Drag over the area you want to pixelate.",
+    },
+  })[lang]?.[key] ?? "";
+  const getMosaicSelection = (root) => ({
+    x: Math.round(Number(root.querySelector("#mosaic-x")?.value) || 0),
+    y: Math.round(Number(root.querySelector("#mosaic-y")?.value) || 0),
+    width: Math.round(Number(root.querySelector("#mosaic-width")?.value) || 0),
+    height: Math.round(Number(root.querySelector("#mosaic-height")?.value) || 0),
+  });
+  const setMosaicSelection = (root, selection) => {
+    [["#mosaic-x", selection.x], ["#mosaic-y", selection.y], ["#mosaic-width", selection.width], ["#mosaic-height", selection.height]].forEach(([selector, value]) => {
+      const input = root.querySelector(selector);
+      if (input) input.value = String(Math.max(0, Math.round(value)));
+    });
+  };
+  const pointOnCanvas = (canvas, event) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = (event.clientX - rect.left) * canvas.width / rect.width;
+    const y = (event.clientY - rect.top) * canvas.height / rect.height;
+    return {
+      x: Math.max(0, Math.min(canvas.width, Math.round(x))),
+      y: Math.max(0, Math.min(canvas.height, Math.round(y))),
+    };
+  };
+  const drawMosaicPreview = (root) => {
+    const state = root._mosaicState;
+    const canvas = root.querySelector("#mosaic-canvas");
+    if (!state?.workCanvas || !canvas) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(state.workCanvas, 0, 0);
+    const selection = getMosaicSelection(root);
+    if (selection.width > 0 && selection.height > 0) {
+      context.save();
+      context.fillStyle = "rgba(37, 99, 235, 0.16)";
+      context.strokeStyle = "#2563eb";
+      context.lineWidth = Math.max(2, Math.round(canvas.width / 500));
+      context.fillRect(selection.x, selection.y, selection.width, selection.height);
+      context.strokeRect(selection.x, selection.y, selection.width, selection.height);
+      context.restore();
+    }
+  };
+  const refreshMosaicOutput = async (root, status = "") => {
+    const state = root._mosaicState;
+    const result = root.querySelector("#result");
+    if (!state?.workCanvas || !state.file) return;
+    const lang = root.dataset.lang || "ko";
+    const m = messages[lang];
+    const outputType = state.file.type || "image/png";
+    const blob = await canvasToBlob(state.workCanvas, outputType, 0.92);
+    const outputBaseName = state.file.name.replace(/\.[^.]+$/, "");
+    setImageDownload(root, blob, `mosaic-${outputBaseName}.${getImageExtension(outputType)}`);
+    const selection = getMosaicSelection(root);
+    const selectionInfo = selection.width > 0 && selection.height > 0
+      ? `\n${mosaicText(lang, "selected")}: x=${selection.x}, y=${selection.y}, width=${selection.width}, height=${selection.height}`
+      : `\n${mosaicText(lang, "chooseArea")}`;
+    result.textContent = `${status ? `${status}\n` : ""}${m.originalFileName}: ${state.file.name}\n${m.originalDimensions}: ${state.width} × ${state.height}px\n${m.originalSize}: ${formatBytes(state.file.size, lang)}\n${m.outputDimensions}: ${state.width} × ${state.height}px\n${m.outputSize}: ${formatBytes(blob.size, lang)}\n${m.outputFormat}: ${getImageFormatLabel(outputType)}${selectionInfo}`;
+  };
+  const applyMosaic = async (root) => {
+    const state = root._mosaicState;
+    const lang = root.dataset.lang || "ko";
+    if (!state?.workCanvas) throw new Error(mosaicText(lang, "chooseArea"));
+    const selection = getMosaicSelection(root);
+    if (selection.width < 1 || selection.height < 1) throw new Error(mosaicText(lang, "noArea"));
+    const blockSize = Math.max(4, Math.round(Number(root.querySelector("#mosaic-size")?.value) || 12));
+    const workContext = state.workCanvas.getContext("2d");
+    if (!workContext) throw new Error(messages[lang].cannotCalculate);
+    const tinyCanvas = document.createElement("canvas");
+    tinyCanvas.width = Math.max(1, Math.ceil(selection.width / blockSize));
+    tinyCanvas.height = Math.max(1, Math.ceil(selection.height / blockSize));
+    const tinyContext = tinyCanvas.getContext("2d");
+    if (!tinyContext) throw new Error(messages[lang].cannotCalculate);
+    tinyContext.imageSmoothingEnabled = false;
+    tinyContext.drawImage(state.workCanvas, selection.x, selection.y, selection.width, selection.height, 0, 0, tinyCanvas.width, tinyCanvas.height);
+    workContext.save();
+    workContext.imageSmoothingEnabled = false;
+    workContext.drawImage(tinyCanvas, 0, 0, tinyCanvas.width, tinyCanvas.height, selection.x, selection.y, selection.width, selection.height);
+    workContext.restore();
+    drawMosaicPreview(root);
+    await refreshMosaicOutput(root, mosaicText(lang, "applied"));
+  };
+  const hexToRgb = (hex) => {
+    const value = hex.replace("#", "");
+    return {
+      r: parseInt(value.slice(0, 2), 16),
+      g: parseInt(value.slice(2, 4), 16),
+      b: parseInt(value.slice(4, 6), 16),
+    };
+  };
+  const rgbToHex = (r, g, b) => `#${[r, g, b].map((value) => value.toString(16).padStart(2, "0")).join("")}`.toUpperCase();
+  const rgbToHsl = (r, g, b) => {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h = 0, s = 0;
+    const l = (max + min) / 2;
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      h = max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+      h *= 60;
+    }
+    return { h: Math.round(h), s: Math.round(s * 100), l: Math.round(l * 100) };
+  };
+  const getTextAnchor = (position, width, height, padding) => {
+    const map = {
+      "top-left": { x: padding, y: padding, align: "left", baseline: "top" },
+      "top-right": { x: width - padding, y: padding, align: "right", baseline: "top" },
+      center: { x: width / 2, y: height / 2, align: "center", baseline: "middle" },
+      "bottom-left": { x: padding, y: height - padding, align: "left", baseline: "bottom" },
+      "bottom-right": { x: width - padding, y: height - padding, align: "right", baseline: "bottom" },
+    };
+    return map[position] ?? map["bottom-right"];
+  };
+  const drawOverlayText = (context, root, width, height) => {
+    const text = root.querySelector("#overlay-text")?.value || "Toolbox";
+    if (!text.trim()) throw new Error(root.dataset.lang === "ko" ? "텍스트를 입력하세요." : "Enter text.");
+    const fontSize = Math.max(8, Number(root.querySelector("#font-size")?.value) || 32);
+    const color = root.querySelector("#text-color")?.value || "#ffffff";
+    const opacity = Math.max(0.1, Math.min(1, Number(root.querySelector("#text-opacity")?.value) / 100 || 0.6));
+    const rotation = (Number(root.querySelector("#text-rotation")?.value) || 0) * Math.PI / 180;
+    const position = root.querySelector("#text-position")?.value || "bottom-right";
+    const padding = Math.max(12, Math.round(Math.min(width, height) * 0.04));
+    const anchor = getTextAnchor(position, width, height, padding);
+    const lines = text.split(/\r\n|\r|\n/);
+    const rgb = hexToRgb(color);
+    context.save();
+    context.globalAlpha = opacity;
+    context.font = `700 ${fontSize}px Arial, sans-serif`;
+    context.textAlign = anchor.align;
+    context.textBaseline = anchor.baseline;
+    context.fillStyle = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+    context.strokeStyle = "rgba(0, 0, 0, 0.45)";
+    context.lineWidth = Math.max(2, Math.round(fontSize / 12));
+    const lineHeight = fontSize * 1.25;
+    const blockHeight = lineHeight * (lines.length - 1);
+    const startY = anchor.baseline === "middle" ? anchor.y - blockHeight / 2 : anchor.baseline === "bottom" ? anchor.y - blockHeight : anchor.y;
+    lines.forEach((line, index) => {
+      const y = startY + index * lineHeight;
+      context.save();
+      context.translate(anchor.x, y);
+      context.rotate(rotation);
+      context.strokeText(line, 0, 0);
+      context.fillText(line, 0, 0);
+      context.restore();
+    });
+    context.restore();
+    return text;
+  };
+  const loadColorCanvas = async (root, file, image) => {
+    const canvas = root.querySelector("#color-canvas");
+    const result = root.querySelector("#result");
+    if (!canvas) return;
+    canvas.width = image.width;
+    canvas.height = image.height;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    if (!context) throw new Error(messages[root.dataset.lang || "ko"].cannotCalculate);
+    context.drawImage(image, 0, 0);
+    root._colorPickerState = { file, width: image.width, height: image.height };
+    const lang = root.dataset.lang || "ko";
+    const m = messages[lang];
+    result.textContent = `${m.originalFileName}: ${file.name}\n${m.originalDimensions}: ${image.width} × ${image.height}px\n${m.originalSize}: ${formatBytes(file.size, lang)}\n${lang === "ko" ? "이미지를 클릭해 색상을 선택하세요." : "Click the image to pick a color."}`;
+  };
+  const pickCanvasColor = async (root, event) => {
+    const canvas = root.querySelector("#color-canvas");
+    const lang = root.dataset.lang || "ko";
+    if (!canvas || !root._colorPickerState) return;
+    const point = pointOnCanvas(canvas, event);
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    if (!context) return;
+    const [r, g, b] = context.getImageData(point.x, point.y, 1, 1).data;
+    const hex = rgbToHex(r, g, b);
+    const hsl = rgbToHsl(r, g, b);
+    root.querySelector("#result").textContent = `HEX: ${hex}\nRGB: rgb(${r}, ${g}, ${b})\nHSL: hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)\nX: ${point.x}, Y: ${point.y}`;
+    const recent = root.querySelector("#recent-colors");
+    if (recent) {
+      const swatch = document.createElement("button");
+      swatch.type = "button";
+      swatch.className = "rounded-md border border-line px-3 py-2 text-sm font-semibold";
+      swatch.style.backgroundColor = hex;
+      swatch.style.color = hsl.l > 55 ? "#0f172a" : "#ffffff";
+      swatch.textContent = hex;
+      swatch.addEventListener("click", () => navigator.clipboard?.writeText(hex));
+      recent.prepend(swatch);
+      while (recent.children.length > 8) recent.lastElementChild?.remove();
+    }
+    await navigator.clipboard?.writeText(hex).catch(() => {});
+  };
+  const compareTexts = (root) => {
+    const lang = root.dataset.lang || "ko";
+    const original = root.querySelector("#original-text")?.value ?? "";
+    const changed = root.querySelector("#changed-text")?.value ?? "";
+    const ignoreWhitespace = root.querySelector("#ignore-whitespace")?.checked;
+    const ignoreCase = root.querySelector("#ignore-case")?.checked;
+    const normalize = (line) => {
+      let value = line;
+      if (ignoreWhitespace) value = value.replace(/\s+/g, "");
+      if (ignoreCase) value = value.toLowerCase();
+      return value;
+    };
+    const a = original.split(/\r\n|\r|\n/);
+    const b = changed.split(/\r\n|\r|\n/);
+    const max = Math.max(a.length, b.length);
+    let added = 0, removed = 0, changedCount = 0, same = 0;
+    const rows = [];
+    for (let i = 0; i < max; i += 1) {
+      const left = a[i];
+      const right = b[i];
+      if (left === undefined) {
+        added += 1;
+        rows.push(`+ ${i + 1}: ${right}`);
+      } else if (right === undefined) {
+        removed += 1;
+        rows.push(`- ${i + 1}: ${left}`);
+      } else if (normalize(left) === normalize(right)) {
+        same += 1;
+      } else {
+        changedCount += 1;
+        rows.push(`~ ${i + 1}\n- ${left}\n+ ${right}`);
+      }
+    }
+    const summary = lang === "ko"
+      ? `요약: 동일 ${same}줄, 변경 ${changedCount}줄, 추가 ${added}줄, 삭제 ${removed}줄`
+      : `Summary: ${same} unchanged, ${changedCount} changed, ${added} added, ${removed} removed`;
+    return `${summary}\n\n${rows.length ? rows.join("\n\n") : (lang === "ko" ? "차이가 없습니다." : "No differences found.")}`;
+  };
+  const textStats = (text, lang) => {
+    const m = messages[lang];
+    const noSpaces = text.replace(/\s/g, "");
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+    const lines = text ? text.split(/\r\n|\r|\n/).length : 0;
+    const sentences = text.trim() ? text.split(/[.!?。！？]+|\n+/).filter(Boolean).length : 0;
+    return `${m.charsWithSpaces}: ${text.length}\n${m.charsNoSpaces}: ${noSpaces.length}\n${m.words}: ${words}\n${m.lines}: ${lines}\n${m.sentences}: ${sentences}`;
+  };
+  const copyResult = async (root) => {
+    const result = root.querySelector("#result")?.textContent ?? "";
+    await navigator.clipboard?.writeText(result);
+  };
+  const dateValue = (value) => value ? new Date(`${value}T00:00:00`) : null;
+  const daysBetween = (a, b) => Math.round((b.getTime() - a.getTime()) / 86400000);
+  const units = {
+    length: { mil: 0.0000254, mm: 0.001, cm: 0.01, m: 1, km: 1000, inch: 0.0254, ft: 0.3048 },
+    weight: { g: 1, kg: 1000, lb: 453.59237 },
+  };
+  const unitLabels = {
+    ko: { mil: "mil", mm: "mm", cm: "cm", m: "m", km: "km", inch: "inch", ft: "ft", g: "g", kg: "kg", lb: "lb", C: "섭씨(°C)", F: "화씨(°F)", K: "켈빈(K)" },
+    en: { mil: "mil", mm: "mm", cm: "cm", m: "m", km: "km", inch: "inch", ft: "ft", g: "g", kg: "kg", lb: "lb", C: "Celsius (°C)", F: "Fahrenheit (°F)", K: "Kelvin (K)" },
+  };
+  const unitOptionsByKind = {
+    length: ["mil", "mm", "cm", "m", "km", "inch", "ft"],
+    weight: ["g", "kg", "lb"],
+    temperature: ["C", "F", "K"],
+  };
+  const syncUnitConverterOptions = (root) => {
+    if (root.dataset.tool !== "unit-converter") return;
+    const lang = root.dataset.lang || "ko";
+    const kind = root.querySelector("#unit-kind").value;
+    const options = unitOptionsByKind[kind];
+    root.querySelectorAll("select#from, select#to").forEach((select, index) => {
+      select.innerHTML = options.map((unit) => `<option value="${unit}">${unitLabels[lang][unit]}</option>`).join("");
+      select.value = options[Math.min(index, options.length - 1)];
+    });
+  };
+  const syncDateCalculatorMode = (root) => {
+    if (root.dataset.tool !== "date-calculator") return;
+    const lang = root.dataset.lang || "ko";
+    const m = messages[lang];
+    const mode = root.querySelector("#mode").value;
+    const endInput = root.querySelector("#end");
+    const endLabel = root.querySelector("#end-label");
+    if (mode === "diff") {
+      endLabel.textContent = m.endDate.replace("Enter an ", "").replace("Enter a ", "").replace(".", "") || m.endDate;
+      if (lang === "ko") endLabel.textContent = "종료 날짜";
+      endInput.type = "date";
+      endInput.placeholder = "";
+      endInput.inputMode = "";
+    } else {
+      endLabel.textContent = mode === "add" ? m.addDays : m.subDays;
+      endInput.type = "number";
+      endInput.placeholder = "30";
+      endInput.inputMode = "numeric";
+    }
+    endInput.value = "";
+  };
+  const syncTimestampConverterMode = (root) => {
+    if (root.dataset.tool !== "unix-timestamp-converter") return;
+    const mode = root.querySelector("#mode").value;
+    const timestampWrap = root.querySelector("#timestamp-wrap");
+    const datetimeWrap = root.querySelector("#datetime-wrap");
+    timestampWrap.classList.toggle("hidden", mode !== "timestamp-to-date");
+    datetimeWrap.classList.toggle("hidden", mode !== "date-to-timestamp");
+  };
+  const syncFrequencyWavelengthMode = (root) => {
+    if (root.dataset.tool !== "frequency-wavelength-converter") return;
+    const isFrequencyInput = root.querySelector("#mode").value === "frequency-to-wavelength";
+    ["#frequency-wrap", "#frequency-unit-wrap"].forEach((selector) => root.querySelector(selector).classList.toggle("hidden", !isFrequencyInput));
+    ["#wavelength-wrap", "#wavelength-unit-wrap"].forEach((selector) => root.querySelector(selector).classList.toggle("hidden", isFrequencyInput));
+  };
+  const syncReactanceMode = (root) => {
+    if (root.dataset.tool !== "reactance-calculator") return;
+    const isCapacitive = root.querySelector("#mode").value === "capacitive";
+    ["#capacitance-wrap", "#capacitance-unit-wrap"].forEach((selector) => root.querySelector(selector).classList.toggle("hidden", !isCapacitive));
+    ["#inductance-wrap", "#inductance-unit-wrap"].forEach((selector) => root.querySelector(selector).classList.toggle("hidden", isCapacitive));
+  };
+  const syncFilterCalculatorCircuit = (root) => {
+    if (root.dataset.tool !== "filter-calculator") return;
+    const isRc = root.querySelector("#circuit").value === "rc";
+    ["#filter-capacitance-wrap", "#filter-capacitance-unit-wrap"].forEach((selector) => root.querySelector(selector).classList.toggle("hidden", !isRc));
+    ["#filter-inductance-wrap", "#filter-inductance-unit-wrap"].forEach((selector) => root.querySelector(selector).classList.toggle("hidden", isRc));
+  };
+  const syncCropAspectRatio = (root) => {
+    if (root.dataset.tool !== "image-cropper") return;
+    const ratio = root.querySelector("#aspect-ratio")?.value;
+    if (!ratio || ratio === "free") return;
+    const [w, h] = ratio.split(":").map(Number);
+    const widthInput = root.querySelector("#crop-width");
+    const heightInput = root.querySelector("#crop-height");
+    const width = Number(widthInput.value);
+    if (Number.isFinite(width) && width > 0) heightInput.value = String(Math.max(1, Math.round(width * h / w)));
+  };
+  const autoRunSlugs = new Set([
+    "character-counter",
+    "remove-spaces",
+    "case-converter",
+    "json-formatter",
+    "base64-converter",
+    "url-encoder-decoder",
+    "csv-json-converter",
+    "text-compare",
+    "unix-timestamp-converter",
+    "percent-calculator",
+    "discount-calculator",
+    "vat-calculator",
+    "date-calculator",
+    "dday-calculator",
+    "age-calculator",
+    "bmi-calculator",
+    "unit-converter",
+    "pyeong-calculator",
+    "margin-calculator",
+    "compound-interest-calculator",
+    "loan-interest-calculator",
+    "salary-net-calculator",
+    "ohms-law-calculator",
+    "led-resistor-calculator",
+    "voltage-divider-calculator",
+    "battery-life-calculator",
+    "resistor-color-code-calculator",
+    "capacitance-converter",
+    "series-parallel-resistor-calculator",
+    "filter-calculator",
+    "awg-wire-size-converter",
+    "dbm-watt-converter",
+    "frequency-wavelength-converter",
+    "rc-time-constant-calculator",
+    "reactance-calculator",
+    "image-resizer",
+    "image-compressor",
+    "webp-converter",
+    "image-cropper",
+    "image-rotate-flip",
+    "image-format-converter",
+    "image-watermark",
+    "remove-image-metadata",
+    "image-color-picker",
+  ]);
+  const selectOnlyAutoRunSlugs = new Set(["awg-wire-size-converter", "resistor-color-code-calculator"]);
+  const passiveDefaultInputIds = new Set([
+    "vat-rate",
+    "fee-rate",
+    "years",
+    "monthly-contribution",
+    "months",
+    "monthly-tax-free",
+    "deduction-rate",
+    "led-current",
+  ]);
+  const hasAutoRunInput = (root) => {
+    if (selectOnlyAutoRunSlugs.has(root.dataset.tool)) return true;
+    return Array.from(root.querySelectorAll("input, textarea")).some((input) => {
+      if (passiveDefaultInputIds.has(input.id)) return false;
+      return input.value.trim() !== "";
+    });
+  };
+  const syncDynamicInputs = (root) => {
+    syncDateCalculatorMode(root);
+    syncTimestampConverterMode(root);
+    syncFrequencyWavelengthMode(root);
+    syncReactanceMode(root);
+    syncUnitConverterOptions(root);
+    syncFilterCalculatorCircuit(root);
+    syncCropAspectRatio(root);
+  };
+  async function run(root) {
+    const slug = root.dataset.tool;
+    const lang = root.dataset.lang || "ko";
+    const m = messages[lang];
+    const result = root.querySelector("#result");
+    const text = root.querySelector("#text-input")?.value ?? "";
+    try {
+      if (slug === "character-counter") result.textContent = textStats(text, lang);
+      if (slug === "remove-spaces") {
+        const mode = root.querySelector("#mode").value;
+        result.textContent = mode === "all" ? text.replace(/\s/g, "") : mode === "line" ? text.replace(/\r?\n/g, " ") : mode === "trim-lines" ? text.split(/\r\n|\r|\n/).map((line) => line.trim()).join("\n") : text.trim();
+      }
+      if (slug === "case-converter") {
+        const mode = root.querySelector("#mode").value;
+        result.textContent = mode === "upper" ? text.toUpperCase() : mode === "lower" ? text.toLowerCase() : text.toLowerCase().replace(/\b\w/g, (match) => match.toUpperCase());
+      }
+      if (slug === "json-formatter") result.textContent = JSON.stringify(JSON.parse(text), null, 2);
+      if (slug === "base64-converter") result.textContent = btoa(unescape(encodeURIComponent(text)));
+      if (slug === "url-encoder-decoder") result.textContent = encodeURIComponent(text);
+      if (slug === "csv-json-converter") result.textContent = JSON.stringify(csvToJson(text), null, 2);
+      if (slug === "text-compare") result.textContent = compareTexts(root);
+      if (slug === "qr-code-generator") {
+        if (!text) throw new Error(m.enterQr);
+        await QRCode.toCanvas(root.querySelector("#qr-canvas"), text, { width: 192, margin: 2 });
+        result.textContent = m.qrDone;
+      }
+      if (imageToolSlugs.includes(slug)) {
+        const file = root.querySelector("#image-file").files?.[0];
+        if (!file) throw new Error(m.chooseImage);
+        const allowedTypes = slug === "webp-converter" ? ["image/jpeg", "image/png"] : ["image/jpeg", "image/png", "image/webp"];
+        if (!allowedTypes.includes(file.type)) throw new Error(m.unsupportedImage);
+
+        const image = await loadImageBitmap(file);
+        const originalWidth = image.width;
+        const originalHeight = image.height;
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error(m.cannotCalculate);
+
+        let outputType = file.type;
+        let outputName = file.name.replace(/\.[^.]+$/, "");
+        let outputWidth = originalWidth;
+        let outputHeight = originalHeight;
+        let quality = 0.8;
+        let sourceX = 0;
+        let sourceY = 0;
+        let sourceWidth = originalWidth;
+        let sourceHeight = originalHeight;
+        let note = "";
+
+        if (slug === "image-mosaic") {
+          const workCanvas = document.createElement("canvas");
+          const workContext = workCanvas.getContext("2d");
+          const displayCanvas = root.querySelector("#mosaic-canvas");
+          if (!workContext || !displayCanvas) throw new Error(m.cannotCalculate);
+          workCanvas.width = originalWidth;
+          workCanvas.height = originalHeight;
+          workContext.drawImage(image, 0, 0, originalWidth, originalHeight);
+          displayCanvas.width = originalWidth;
+          displayCanvas.height = originalHeight;
+          root._mosaicState = { workCanvas, file, width: originalWidth, height: originalHeight };
+          setMosaicSelection(root, { x: 0, y: 0, width: 0, height: 0 });
+          drawMosaicPreview(root);
+          await refreshMosaicOutput(root);
+          return;
+        }
+
+        if (slug === "image-color-picker") {
+          await loadColorCanvas(root, file, image);
+          return;
+        }
+
+        if (slug === "image-resizer") {
+          const widthInput = root.querySelector("#width");
+          const heightInput = root.querySelector("#height");
+          const keepRatio = root.querySelector("#keep-ratio").checked;
+          const rawWidth = Number(widthInput.value);
+          const rawHeight = Number(heightInput.value);
+          outputWidth = Number.isFinite(rawWidth) && rawWidth > 0 ? Math.round(rawWidth) : originalWidth;
+          outputHeight = Number.isFinite(rawHeight) && rawHeight > 0 ? Math.round(rawHeight) : originalHeight;
+          if (keepRatio) {
+            if (widthInput.value) {
+              outputHeight = Math.max(1, Math.round(outputWidth * originalHeight / originalWidth));
+              heightInput.value = String(outputHeight);
+            } else if (heightInput.value) {
+              outputWidth = Math.max(1, Math.round(outputHeight * originalWidth / originalHeight));
+              widthInput.value = String(outputWidth);
+            } else {
+              widthInput.value = String(outputWidth);
+              heightInput.value = String(outputHeight);
+            }
+          }
+          outputName = `${outputName}-${outputWidth}x${outputHeight}`;
+        } else if (["image-compressor", "webp-converter"].includes(slug)) {
+          quality = Math.max(0.1, Math.min(1, Number(root.querySelector("#quality").value) / 100 || 0.8));
+          outputType = slug === "webp-converter" ? "image/webp" : file.type;
+          outputName = slug === "webp-converter" ? `${outputName}.webp` : `${outputName}-compressed.${file.name.split(".").pop() || "image"}`;
+          if (slug === "image-compressor" && file.type === "image/png") note = `\n${m.pngQualityNote}`;
+        } else if (slug === "image-cropper") {
+          const cropXInput = root.querySelector("#crop-x");
+          const cropYInput = root.querySelector("#crop-y");
+          const cropWidthInput = root.querySelector("#crop-width");
+          const cropHeightInput = root.querySelector("#crop-height");
+          sourceX = Math.max(0, Math.round(Number(cropXInput.value) || 0));
+          sourceY = Math.max(0, Math.round(Number(cropYInput.value) || 0));
+          sourceWidth = Math.round(Number(cropWidthInput.value) || originalWidth);
+          sourceHeight = Math.round(Number(cropHeightInput.value) || originalHeight);
+          sourceWidth = Math.max(1, Math.min(sourceWidth, originalWidth - sourceX));
+          sourceHeight = Math.max(1, Math.min(sourceHeight, originalHeight - sourceY));
+          cropWidthInput.value = String(sourceWidth);
+          cropHeightInput.value = String(sourceHeight);
+          outputWidth = sourceWidth;
+          outputHeight = sourceHeight;
+          outputName = `${outputName}-cropped`;
+        } else if (slug === "image-rotate-flip") {
+          const rotation = Number(root.dataset.rotation || "0") % 360;
+          outputWidth = rotation === 90 || rotation === 270 ? originalHeight : originalWidth;
+          outputHeight = rotation === 90 || rotation === 270 ? originalWidth : originalHeight;
+          outputName = `${outputName}-rotated`;
+        } else if (slug === "image-format-converter") {
+          quality = Math.max(0.1, Math.min(1, Number(root.querySelector("#quality").value) / 100 || 0.8));
+          outputType = root.querySelector("#output-format").value;
+          outputName = `${outputName}.${getImageExtension(outputType)}`;
+          if (outputType === "image/png") note = `\n${m.pngQualityNote}`;
+        } else if (slug === "image-watermark") {
+          outputName = `${outputName}-watermark`;
+        } else if (slug === "remove-image-metadata") {
+          outputName = `${outputName}-metadata-removed`;
+          note = `\n${lang === "ko" ? "브라우저 canvas로 다시 저장하는 방식은 대부분의 이미지 메타데이터를 제거하지만, 모든 형식의 메타데이터 제거를 보장하지는 않습니다." : "Re-saving through a browser canvas removes most image metadata, but it may not guarantee removal of every metadata field."}`;
+        }
+
+        canvas.width = outputWidth;
+        canvas.height = outputHeight;
+        if (outputType === "image/jpeg") {
+          context.fillStyle = "#ffffff";
+          context.fillRect(0, 0, outputWidth, outputHeight);
+        }
+        if (slug === "image-rotate-flip") {
+          const rotation = Number(root.dataset.rotation || "0") % 360;
+          const flipX = root.dataset.flipX === "true";
+          const flipY = root.dataset.flipY === "true";
+          context.translate(outputWidth / 2, outputHeight / 2);
+          context.rotate(rotation * Math.PI / 180);
+          context.scale(flipX ? -1 : 1, flipY ? -1 : 1);
+          context.drawImage(image, -originalWidth / 2, -originalHeight / 2, originalWidth, originalHeight);
+        } else {
+          context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, outputWidth, outputHeight);
+          if (slug === "image-watermark") drawOverlayText(context, root, outputWidth, outputHeight);
+        }
+        const blob = await canvasToBlob(canvas, outputType, quality);
+        const extension = getImageExtension(outputType);
+        const filename = outputName.includes(".") ? outputName : `${outputName}.${extension}`;
+        setImageDownload(root, blob, filename);
+        const cropInfo = slug === "image-cropper" ? `\n${m.cropArea}: x=${sourceX}, y=${sourceY}, width=${sourceWidth}, height=${sourceHeight}` : "";
+        result.textContent = `${m.originalFileName}: ${file.name}\n${m.originalDimensions}: ${originalWidth} × ${originalHeight}px\n${m.originalSize}: ${formatBytes(file.size, lang)}\n${m.outputDimensions}: ${outputWidth} × ${outputHeight}px\n${m.outputSize}: ${formatBytes(blob.size, lang)}\n${m.outputFormat}: ${getImageFormatLabel(outputType)}${cropInfo}${note}`;
+      }
+      if (slug === "unix-timestamp-converter") {
+        const mode = root.querySelector("#mode").value;
+        if (mode === "timestamp-to-date") {
+          const raw = requireFinite(Number(root.querySelector("#timestamp").value), m.checkInput);
+          const ms = Math.abs(raw) < 100000000000 ? raw * 1000 : raw;
+          const date = new Date(ms);
+          if (Number.isNaN(date.getTime())) throw new Error(m.checkInput);
+          result.textContent = `${m.localTime}: ${date.toLocaleString(lang === "ko" ? "ko-KR" : "en-US")}\n${m.seconds}: ${Math.floor(ms / 1000)}\n${m.milliseconds}: ${ms}`;
+        } else {
+          const raw = root.querySelector("#datetime").value;
+          if (!raw) throw new Error(m.checkInput);
+          const ms = new Date(raw).getTime();
+          result.textContent = `${m.seconds}: ${Math.floor(ms / 1000)}\n${m.milliseconds}: ${ms}`;
+        }
+      }
+      if (slug === "percent-calculator") {
+        const a = Number(root.querySelector("#a").value), b = Number(root.querySelector("#b").value), mode = root.querySelector("#mode").value;
+        result.textContent = mode === "of" ? `${format(a, lang)} × ${format(b, lang)}% = ${format(a * b / 100, lang)}` : mode === "ratio" ? `${format(a, lang)} / ${format(b, lang)} = ${format(a / b * 100, lang)}%` : `${format(a, lang)} → ${format(b, lang)}: ${format((b - a) / a * 100, lang)}% ${m.change}`;
+      }
+      if (slug === "discount-calculator") {
+        const price = Number(root.querySelector("#a").value), rate = Number(root.querySelector("#b").value), discount = price * rate / 100;
+        result.textContent = `${m.discount}: ${format(discount, lang)}\n${m.final}: ${format(price - discount, lang)}`;
+      }
+      if (slug === "vat-calculator") {
+        const value = Number(root.querySelector("#a").value), mode = root.querySelector("#mode").value;
+        const rate = Number(root.querySelector("#vat-rate").value) / 100;
+        if (!Number.isFinite(rate) || rate < 0) throw new Error(m.checkInput);
+        const supply = mode === "supply" ? value : value / (1 + rate), vat = supply * rate;
+        result.textContent = `${m.vatRate}: ${format(rate * 100, lang)}%\n${m.supply}: ${format(supply, lang)}\n${m.vat}: ${format(vat, lang)}\n${m.total}: ${format(supply + vat, lang)}`;
+      }
+      if (slug === "bmi-calculator") {
+        const cm = Number(root.querySelector("#a").value), kg = Number(root.querySelector("#b").value), bmi = kg / ((cm / 100) ** 2);
+        result.textContent = `BMI: ${format(bmi, lang)}\n${m.bmiNote}`;
+      }
+      if (slug === "margin-calculator") {
+        const salePrice = requireFinite(Number(root.querySelector("#sale-price").value), m.checkInput);
+        const cost = requireFinite(Number(root.querySelector("#cost").value), m.checkInput);
+        const feeRate = Number(root.querySelector("#fee-rate").value) || 0;
+        const fee = salePrice * feeRate / 100;
+        const margin = salePrice - cost - fee;
+        result.textContent = `${m.fee}: ${money(fee, lang)}\n${m.marginAmount}: ${money(margin, lang)}\n${m.marginRate}: ${format(margin / salePrice * 100, lang)}%`;
+      }
+      if (slug === "pyeong-calculator") {
+        const area = requireFinite(Number(root.querySelector("#area").value), m.checkInput);
+        const mode = root.querySelector("#mode").value;
+        const converted = mode === "m2-to-pyeong" ? area / 3.305785 : area * 3.305785;
+        result.textContent = mode === "m2-to-pyeong" ? `${format(area, lang)} m² = ${format(converted, lang)} 평` : `${format(area, lang)} 평 = ${format(converted, lang)} m²`;
+      }
+      if (slug === "compound-interest-calculator") {
+        const principal = requireFinite(Number(root.querySelector("#principal").value), m.checkInput);
+        const annualRate = requireFinite(Number(root.querySelector("#annual-rate").value), m.checkInput) / 100;
+        const years = requireFinite(Number(root.querySelector("#years").value), m.checkInput);
+        const monthlyContribution = Number(root.querySelector("#monthly-contribution").value) || 0;
+        const months = Math.max(0, Math.round(years * 12));
+        const monthlyRate = annualRate / 12;
+        let balance = principal;
+        for (let i = 0; i < months; i += 1) balance = balance * (1 + monthlyRate) + monthlyContribution;
+        const paid = principal + monthlyContribution * months;
+        result.textContent = `${m.finalAmount}: ${money(balance, lang)}\n${m.totalPaid}: ${money(paid, lang)}\n${m.interest}: ${money(balance - paid, lang)}`;
+      }
+      if (slug === "loan-interest-calculator") {
+        const amount = requireFinite(Number(root.querySelector("#loan-amount").value), m.checkInput);
+        const monthlyRate = requireFinite(Number(root.querySelector("#annual-rate").value), m.checkInput) / 100 / 12;
+        const months = Math.max(1, Math.round(requireFinite(Number(root.querySelector("#months").value), m.checkInput)));
+        const mode = root.querySelector("#mode").value;
+        if (mode === "amortized") {
+          const monthly = monthlyRate === 0 ? amount / months : amount * monthlyRate * ((1 + monthlyRate) ** months) / (((1 + monthlyRate) ** months) - 1);
+          result.textContent = `${m.monthlyPayment}: ${money(monthly, lang)}\n${m.totalInterest}: ${money(monthly * months - amount, lang)}\n${m.totalPaid}: ${money(monthly * months, lang)}`;
+        } else if (mode === "equal-principal") {
+          const principalPart = amount / months;
+          const first = principalPart + amount * monthlyRate;
+          const last = principalPart + principalPart * monthlyRate;
+          const interest = principalPart * monthlyRate * months * (months + 1) / 2;
+          result.textContent = `${m.firstMonthPayment}: ${money(first, lang)}\n${m.lastMonthPayment}: ${money(last, lang)}\n${m.totalInterest}: ${money(interest, lang)}\n${m.totalPaid}: ${money(amount + interest, lang)}`;
+        } else {
+          const monthlyInterest = amount * monthlyRate;
+          result.textContent = `${m.monthlyPayment}: ${money(monthlyInterest, lang)}\n${m.totalInterest}: ${money(monthlyInterest * months, lang)}\n${m.totalPaid}: ${money(amount + monthlyInterest * months, lang)}`;
+        }
+      }
+      if (slug === "salary-net-calculator") {
+        const annualSalary = requireFinite(Number(root.querySelector("#annual-salary").value), m.checkInput);
+        const monthlyTaxFree = Number(root.querySelector("#monthly-tax-free").value) || 0;
+        const deductionRate = requireFinite(Number(root.querySelector("#deduction-rate").value), m.checkInput) / 100;
+        const monthlyGross = annualSalary / 12;
+        const taxable = Math.max(0, monthlyGross - monthlyTaxFree);
+        const deduction = taxable * deductionRate;
+        result.textContent = `${m.monthlyGross}: ${money(monthlyGross, lang)}\n${m.taxableMonthly}: ${money(taxable, lang)}\n${m.deduction}: ${money(deduction, lang)}\n${m.monthlyNet}: ${money(monthlyGross - deduction, lang)}`;
+      }
+      if (slug === "ohms-law-calculator") {
+        const values = {
+          voltage: root.querySelector("#voltage").value === "" ? null : Number(root.querySelector("#voltage").value),
+          current: root.querySelector("#current").value === "" ? null : Number(root.querySelector("#current").value),
+          resistance: root.querySelector("#resistance").value === "" ? null : Number(root.querySelector("#resistance").value),
+          power: root.querySelector("#power").value === "" ? null : Number(root.querySelector("#power").value),
+        };
+        if (Object.values(values).filter((value) => value !== null && Number.isFinite(value)).length !== 2) throw new Error(m.requiredTwoValues);
+        let voltage = values.voltage, current = values.current, resistance = values.resistance, power = values.power;
+        if (voltage !== null && current !== null) { resistance = voltage / current; power = voltage * current; }
+        else if (voltage !== null && resistance !== null) { current = voltage / resistance; power = voltage ** 2 / resistance; }
+        else if (voltage !== null && power !== null) { current = power / voltage; resistance = voltage ** 2 / power; }
+        else if (current !== null && resistance !== null) { voltage = current * resistance; power = current ** 2 * resistance; }
+        else if (current !== null && power !== null) { voltage = power / current; resistance = power / (current ** 2); }
+        else if (resistance !== null && power !== null) { voltage = Math.sqrt(power * resistance); current = Math.sqrt(power / resistance); }
+        if ([voltage, current, resistance, power].some((value) => !Number.isFinite(value))) throw new Error(m.checkInput);
+        result.textContent = `V: ${format(voltage, lang)} V\nI: ${format(current, lang)} A\nR: ${formatResistance(resistance, lang)}\nP: ${format(power, lang)} W`;
+      }
+      if (slug === "led-resistor-calculator") {
+        const supply = requireFinite(Number(root.querySelector("#supply-voltage").value), m.checkInput);
+        const forward = requireFinite(Number(root.querySelector("#forward-voltage").value), m.checkInput);
+        const currentMa = requireFinite(Number(root.querySelector("#led-current").value), m.checkInput);
+        if (supply <= forward || currentMa <= 0) throw new Error(m.positiveInput);
+        const currentA = currentMa / 1000;
+        const resistance = (supply - forward) / currentA;
+        const power = (supply - forward) * currentA;
+        result.textContent = `${m.resistanceValue}: ${formatResistance(resistance, lang)}\n${m.resistorPower}: ${format(power, lang)} W`;
+      }
+      if (slug === "voltage-divider-calculator") {
+        const vin = requireFinite(Number(root.querySelector("#vin").value), m.checkInput);
+        const r1 = requireFinite(Number(root.querySelector("#r1").value), m.checkInput);
+        const r2 = requireFinite(Number(root.querySelector("#r2").value), m.checkInput);
+        if (r1 <= 0 || r2 <= 0) throw new Error(m.positiveInput);
+        const vout = vin * r2 / (r1 + r2);
+        result.textContent = `${m.vout}: ${format(vout, lang)} V\n${m.formula}: Vout = Vin × R2 / (R1 + R2)`;
+      }
+      if (slug === "battery-life-calculator") {
+        const capacity = requireFinite(Number(root.querySelector("#battery-capacity").value), m.checkInput);
+        const currentDraw = requireFinite(Number(root.querySelector("#current-draw").value), m.checkInput);
+        if (capacity <= 0 || currentDraw <= 0) throw new Error(m.positiveInput);
+        const hours = capacity / currentDraw;
+        result.textContent = `${m.runtimeHours}: ${format(hours, lang)} h\n${m.runtimeDays}: ${format(hours / 24, lang)} d`;
+      }
+      if (slug === "resistor-color-code-calculator") {
+        const band1 = Number(root.querySelector("#band1").value);
+        const band2 = Number(root.querySelector("#band2").value);
+        const multiplier = Number(root.querySelector("#multiplier").value);
+        const tolerance = root.querySelector("#tolerance").value;
+        const resistance = ((band1 * 10) + band2) * multiplier;
+        result.textContent = `${m.resistanceValue}: ${formatResistance(resistance, lang)}\n${m.toleranceValue}: ${tolerance}`;
+      }
+      if (slug === "capacitance-converter") {
+        const value = requireFinite(Number(root.querySelector("#value").value), m.checkInput);
+        const unit = root.querySelector("#unit").value;
+        if (value < 0) throw new Error(m.positiveInput);
+        const farads = value * capacitanceFactors[unit];
+        result.textContent = `F: ${formatPrecise(farads, lang)}\nmF: ${formatPrecise(farads / capacitanceFactors.mF, lang)}\nµF/uF: ${formatPrecise(farads / capacitanceFactors.uF, lang)}\nnF: ${formatPrecise(farads / capacitanceFactors.nF, lang)}\npF: ${formatPrecise(farads / capacitanceFactors.pF, lang)}`;
+      }
+      if (slug === "series-parallel-resistor-calculator") {
+        const values = root.querySelector("#values").value.split(/[,\s]+/).map((item) => item.trim()).filter(Boolean).map(Number);
+        if (!values.length || values.some((value) => !Number.isFinite(value) || value < 0)) throw new Error(m.checkInput);
+        const unit = root.querySelector("#unit").value;
+        const ohms = values.map((value) => value * resistanceFactors[unit]);
+        const mode = root.querySelector("#mode").value;
+        if (mode === "parallel" && ohms.some((value) => value <= 0)) throw new Error(m.positiveInput);
+        const total = mode === "series" ? ohms.reduce((sum, value) => sum + value, 0) : 1 / ohms.reduce((sum, value) => sum + 1 / value, 0);
+        result.textContent = `${m.equivalentResistance}: ${formatResistance(total, lang)}\nΩ: ${format(total, lang)}\nkΩ: ${format(total / 1000, lang)}\nMΩ: ${format(total / 1000000, lang)}`;
+      }
+      if (slug === "filter-calculator") {
+        const rawR = requireFinite(Number(root.querySelector("#resistance").value), m.checkInput);
+        const rUnit = root.querySelector("#resistance-unit").value;
+        const circuit = root.querySelector("#circuit").value;
+        const mode = root.querySelector("#mode").value;
+        const r = rawR * resistanceFactors[rUnit];
+        if (r <= 0) throw new Error(m.positiveInput);
+        let fc;
+        let formula;
+        let convertedInput;
+        if (circuit === "rc") {
+          const rawC = requireFinite(Number(root.querySelector("#capacitance").value), m.checkInput);
+          const cUnit = root.querySelector("#capacitance-unit").value;
+          const c = rawC * capacitanceFactors[cUnit];
+          if (c <= 0) throw new Error(m.positiveInput);
+          fc = 1 / (2 * Math.PI * r * c);
+          formula = "fc = 1 / (2πRC)";
+          convertedInput = `<p class="mt-1 leading-7 text-slate-700">R = ${formatResistance(r, lang)}</p><p class="leading-7 text-slate-700">C = ${formatPrecise(rawC, lang)} ${cUnit === "uF" ? "µF" : cUnit} = ${formatPrecise(c, lang)} F</p>`;
+        } else {
+          const rawL = requireFinite(Number(root.querySelector("#inductance").value), m.checkInput);
+          const lUnit = root.querySelector("#inductance-unit").value;
+          const l = rawL * inductanceFactors[lUnit];
+          if (l <= 0) throw new Error(m.positiveInput);
+          fc = r / (2 * Math.PI * l);
+          formula = "fc = R / (2πL)";
+          convertedInput = `<p class="mt-1 leading-7 text-slate-700">R = ${formatResistance(r, lang)}</p><p class="leading-7 text-slate-700">L = ${formatPrecise(rawL, lang)} ${lUnit === "uH" ? "µH" : lUnit} = ${formatPrecise(l, lang)} H</p>`;
+        }
+        const interpretation = lang === "ko"
+          ? mode === "low-pass"
+            ? "저역통과 필터는 차단 주파수보다 낮은 주파수를 주로 통과시키고, 높은 주파수를 감쇠시킵니다."
+            : "고역통과 필터는 차단 주파수보다 낮은 주파수를 감쇠시키고, 높은 주파수를 주로 통과시킵니다."
+          : mode === "low-pass"
+            ? "A low-pass filter mainly passes frequencies below the cutoff frequency and attenuates higher frequencies."
+            : "A high-pass filter attenuates frequencies below the cutoff frequency and mainly passes higher frequencies.";
+        const resultTitle = lang === "ko" ? "결과" : "Result";
+        const circuitTitle = lang === "ko" ? "필터 회로" : "Filter Circuit";
+        const typeTitle = lang === "ko" ? "필터 타입" : "Filter Type";
+        const interpretationTitle = lang === "ko" ? "필터 해석" : "Filter interpretation";
+        const inputTitle = lang === "ko" ? "입력값" : "Input values";
+        const formulaTitle = lang === "ko" ? "공식" : "Formula";
+        const circuitLabel = lang === "ko"
+          ? circuit === "rc" ? "RC 필터" : "RL 필터"
+          : circuit === "rc" ? "RC Filter" : "RL Filter";
+        const typeLabel = lang === "ko"
+          ? mode === "low-pass" ? "저역통과" : "고역통과"
+          : mode === "low-pass" ? "Low-pass" : "High-pass";
+        result.innerHTML = `
+          <div class="grid gap-5">
+            <p class="text-sm font-semibold text-slate-600">${resultTitle}</p>
+            <div>
+              <p class="text-sm font-semibold text-slate-600">${m.cutoffFrequency}</p>
+              <p class="mt-1 text-2xl font-bold text-ink">${formatFrequency(fc, lang)}</p>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-600">${circuitTitle}</p>
+              <p class="mt-1 leading-7 text-slate-700">${circuitLabel}</p>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-600">${typeTitle}</p>
+              <p class="mt-1 leading-7 text-slate-700">${typeLabel}</p>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-600">${interpretationTitle}</p>
+              <p class="mt-1 leading-7 text-slate-700">${interpretation}</p>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-600">${inputTitle}</p>
+              ${convertedInput}
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-600">${formulaTitle}</p>
+              <p class="mt-1 font-semibold text-ink">${formula}</p>
+            </div>
+          </div>
+        `;
+      }
+      if (slug === "awg-wire-size-converter") {
+        const awg = Number(root.querySelector("#awg").value);
+        const metrics = awgToMetrics(awg);
+        result.textContent = `${m.diameterMm}: ${format(metrics.diameterMm, lang)}\n${m.diameterInch}: ${format(metrics.diameterInch, lang)}\n${m.areaMm2}: ${format(metrics.areaMm2, lang)}\n${m.circularMils}: ${format(metrics.circularMils, lang)}\n${m.resistancePerMeter}: ${new Intl.NumberFormat(lang === "ko" ? "ko-KR" : "en-US", { maximumFractionDigits: 6 }).format(metrics.resistanceOhmPerMeter)} Ω/m\n${m.referenceAmpacity}: ${format(metrics.referenceAmpacity, lang)} A\n${m.awgNote}`;
+      }
+      if (slug === "dbm-watt-converter") {
+        const value = requireFinite(Number(root.querySelector("#value").value), m.checkInput);
+        const unit = root.querySelector("#unit").value;
+        if ((unit === "mW" || unit === "W") && value <= 0) throw new Error(m.positiveInput);
+        const mw = unit === "dBm" ? 10 ** (value / 10) : unit === "W" ? value * 1000 : value;
+        result.textContent = formatPower(mw, lang);
+      }
+      if (slug === "frequency-wavelength-converter") {
+        const mode = root.querySelector("#mode").value;
+        let frequency;
+        let wavelength;
+        if (mode === "frequency-to-wavelength") {
+          frequency = requireFinite(Number(root.querySelector("#frequency").value), m.checkInput) * frequencyFactors[root.querySelector("#frequency-unit").value];
+          if (frequency <= 0) throw new Error(m.positiveInput);
+          wavelength = speedOfLight / frequency;
+        } else {
+          wavelength = requireFinite(Number(root.querySelector("#wavelength").value), m.checkInput) * wavelengthFactors[root.querySelector("#wavelength-unit").value];
+          if (wavelength <= 0) throw new Error(m.positiveInput);
+          frequency = speedOfLight / wavelength;
+        }
+        result.textContent = `${lang === "ko" ? "주파수" : "Frequency"}: ${formatFrequency(frequency, lang)}\n${lang === "ko" ? "파장" : "Wavelength"}: ${format(wavelength, lang)} m / ${format(wavelength * 100, lang)} cm / ${format(wavelength * 1000, lang)} mm\n${m.formula}: λ = c / f\n${m.wavelengthNote}`;
+      }
+      if (slug === "rc-time-constant-calculator") {
+        const r = requireFinite(Number(root.querySelector("#resistance").value), m.checkInput) * resistanceFactors[root.querySelector("#resistance-unit").value];
+        const c = requireFinite(Number(root.querySelector("#capacitance").value), m.checkInput) * capacitanceFactors[root.querySelector("#capacitance-unit").value];
+        if (r <= 0 || c <= 0) throw new Error(m.positiveInput);
+        const tau = r * c;
+        result.textContent = `${m.timeConstant} τ: ${formatTime(tau, lang)}\n3τ: ${formatTime(tau * 3, lang)}\n5τ: ${formatTime(tau * 5, lang)}\n${m.convertedInput}: R=${formatResistance(r, lang)}, C=${format(c, lang)} F\n${m.formula}: τ = R × C\n${m.tauNote}`;
+      }
+      if (slug === "reactance-calculator") {
+        const f = requireFinite(Number(root.querySelector("#frequency").value), m.checkInput) * frequencyFactors[root.querySelector("#frequency-unit").value];
+        if (f <= 0) throw new Error(m.positiveInput);
+        const mode = root.querySelector("#mode").value;
+        let reactance;
+        let formula;
+        let converted;
+        if (mode === "capacitive") {
+          const c = requireFinite(Number(root.querySelector("#capacitance").value), m.checkInput) * capacitanceFactors[root.querySelector("#capacitance-unit").value];
+          if (c <= 0) throw new Error(m.positiveInput);
+          reactance = 1 / (2 * Math.PI * f * c);
+          formula = "Xc = 1 / (2πfC)";
+          converted = `C=${format(c, lang)} F`;
+        } else {
+          const l = requireFinite(Number(root.querySelector("#inductance").value), m.checkInput) * inductanceFactors[root.querySelector("#inductance-unit").value];
+          if (l <= 0) throw new Error(m.positiveInput);
+          reactance = 2 * Math.PI * f * l;
+          formula = "Xl = 2πfL";
+          converted = `L=${format(l, lang)} H`;
+        }
+        result.textContent = `${m.reactance}: ${formatResistance(reactance, lang)}\n${m.convertedInput}: f=${formatFrequency(f, lang)}, ${converted}\n${m.formula}: ${formula}`;
+      }
+      if (slug === "date-calculator") {
+        const start = dateValue(root.querySelector("#start").value), mode = root.querySelector("#mode").value, raw = root.querySelector("#end").value;
+        if (!start) throw new Error(m.startDate);
+        if (mode === "diff") {
+          const end = dateValue(raw);
+          if (!end) throw new Error(m.endDate);
+          result.textContent = `${m.dateDiff}: ${format(Math.abs(daysBetween(start, end)), lang)}\n${m.direction}: ${format(daysBetween(start, end), lang)}`;
+        } else {
+          const next = new Date(start);
+          next.setDate(start.getDate() + (mode === "add" ? Number(raw) : -Number(raw)));
+          result.textContent = `${m.resultDate}: ${next.toISOString().slice(0, 10)}`;
+        }
+      }
+      if (slug === "dday-calculator") {
+        const start = dateValue(root.querySelector("#start").value) ?? new Date(), end = dateValue(root.querySelector("#end").value);
+        if (!end) throw new Error(m.targetDate);
+        const diff = daysBetween(start, end);
+        result.textContent = diff === 0 ? "D-day" : diff > 0 ? `D-${diff}` : `D+${Math.abs(diff)}`;
+      }
+      if (slug === "age-calculator") {
+        const birth = dateValue(root.querySelector("#start").value), base = dateValue(root.querySelector("#end").value) ?? new Date();
+        if (!birth) throw new Error(m.birthDate);
+        let age = base.getFullYear() - birth.getFullYear();
+        if (base.getMonth() < birth.getMonth() || (base.getMonth() === birth.getMonth() && base.getDate() < birth.getDate())) age -= 1;
+        result.textContent = `${m.age}: ${age}`;
+      }
+      if (slug === "unit-converter") {
+        const value = Number(root.querySelector("#a").value), from = root.querySelector("#from").value, to = root.querySelector("#to").value, kind = root.querySelector("#unit-kind").value;
+        if (kind === "temperature") {
+          const celsius = from === "C" ? value : from === "F" ? (value - 32) * 5 / 9 : value - 273.15;
+          const out = to === "C" ? celsius : to === "F" ? celsius * 9 / 5 + 32 : celsius + 273.15;
+          result.textContent = `${format(value, lang)} ${from} = ${format(out, lang)} ${to}`;
+        } else {
+          const table = kind === "weight" ? units.weight : units.length;
+          result.textContent = `${format(value, lang)} ${from} = ${format(value * table[from] / table[to], lang)} ${to}`;
+        }
+      }
+      if (slug === "password-generator") {
+        const sets = [["upper", "ABCDEFGHJKLMNPQRSTUVWXYZ"], ["lower", "abcdefghijkmnopqrstuvwxyz"], ["number", "23456789"], ["symbol", "!@#$%^&*()-_=+[]{}"]];
+        let chars = sets.filter(([id]) => root.querySelector(`#${id}`).checked).map(([, set]) => set).join("");
+        if (!root.querySelector("#avoid").checked) chars += "Il10O";
+        const length = Math.max(4, Math.min(64, Number(root.querySelector("#length").value) || 16));
+        if (!chars) throw new Error(m.chooseChar);
+        const bytes = new Uint32Array(length);
+        crypto.getRandomValues(bytes);
+        const password = Array.from(bytes, (number) => chars[number % chars.length]).join("");
+        result.textContent = `${password}\n${m.strength}: ${length >= 16 && chars.length >= 30 ? m.strong : m.normal}`;
+      }
+      if (slug === "random-number-generator") {
+        const min = Number(root.querySelector("#min").value), max = Number(root.querySelector("#max").value), count = Number(root.querySelector("#count").value);
+        result.textContent = Array.from({ length: Math.max(1, Math.min(50, count)) }, () => String(Math.floor(Math.random() * (max - min + 1)) + min)).join(", ");
+      }
+      if (slug === "uuid-generator") {
+        const count = Math.max(1, Math.min(50, Number(root.querySelector("#count").value) || 1));
+        result.textContent = Array.from({ length: count }, () => crypto.randomUUID()).join("\n");
+      }
+      if (slug === "lotto-number-generator") {
+        const count = Math.max(1, Math.min(50, Number(root.querySelector("#count").value) || 5));
+        result.textContent = Array.from({ length: count }, () => {
+          const numbers = Array.from({ length: 45 }, (_, index) => index + 1);
+          for (let i = numbers.length - 1; i > 0; i -= 1) {
+            const array = new Uint32Array(1);
+            crypto.getRandomValues(array);
+            const j = array[0] % (i + 1);
+            [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+          }
+          return numbers.slice(0, 6).sort((a, b) => a - b).join(", ");
+        }).join("\n");
+      }
+      if (slug === "random-string-generator") {
+        const sets = [["upper", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"], ["lower", "abcdefghijklmnopqrstuvwxyz"], ["number", "0123456789"], ["symbol", "!@#$%^&*()-_=+[]{}"]];
+        const chars = sets.filter(([id]) => root.querySelector(`#${id}`).checked).map(([, set]) => set).join("");
+        if (!chars) throw new Error(m.chooseChar);
+        const length = Math.max(1, Math.min(256, Number(root.querySelector("#length").value) || 16));
+        const count = Math.max(1, Math.min(50, Number(root.querySelector("#count").value) || 5));
+        result.textContent = Array.from({ length: count }, () => randomChars(chars, length)).join("\n");
+      }
+    } catch (error) {
+      result.textContent = error instanceof Error ? error.message : m.checkInput;
+    }
+  }
+  document.querySelectorAll("[data-tool]").forEach((root) => {
+    const slug = root.dataset.tool;
+    syncUnitConverterOptions(root);
+    if (autoRunSlugs.has(slug)) {
+      root.querySelectorAll('button[data-action="run"]').forEach((button) => button.remove());
+    }
+    const autoRun = () => {
+      if (!autoRunSlugs.has(slug) || !hasAutoRunInput(root)) return;
+      run(root);
+    };
+    root.addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+      const action = button.dataset.action;
+      if (action === "copy") copyResult(root);
+      if (action === "reset") {
+        root.querySelectorAll("input, textarea").forEach((input) => input.value = "");
+        const vatRate = root.querySelector("#vat-rate");
+        if (vatRate) vatRate.value = "10";
+        const quality = root.querySelector("#quality");
+        if (quality) quality.value = "80";
+        const keepRatio = root.querySelector("#keep-ratio");
+        if (keepRatio) keepRatio.checked = true;
+        root.dataset.rotation = "0";
+        root.dataset.flipX = "false";
+        root.dataset.flipY = "false";
+        const previousUrl = root.dataset.downloadUrl;
+        if (previousUrl) URL.revokeObjectURL(previousUrl);
+        delete root.dataset.downloadUrl;
+        const preview = root.querySelector("#image-preview");
+        if (preview) preview.removeAttribute("src");
+        delete root._mosaicState;
+        setMosaicSelection(root, { x: 0, y: 0, width: 0, height: 0 });
+        const mosaicCanvas = root.querySelector("#mosaic-canvas");
+        if (mosaicCanvas) {
+          const context = mosaicCanvas.getContext("2d");
+          if (context) context.clearRect(0, 0, mosaicCanvas.width, mosaicCanvas.height);
+          mosaicCanvas.width = 0;
+          mosaicCanvas.height = 0;
+        }
+        delete root._colorPickerState;
+        const colorCanvas = root.querySelector("#color-canvas");
+        if (colorCanvas) {
+          const context = colorCanvas.getContext("2d");
+          if (context) context.clearRect(0, 0, colorCanvas.width, colorCanvas.height);
+          colorCanvas.width = 0;
+          colorCanvas.height = 0;
+        }
+        const recentColors = root.querySelector("#recent-colors");
+        if (recentColors) recentColors.innerHTML = "";
+        const downloadLink = root.querySelector("#download-link");
+        if (downloadLink) {
+          downloadLink.removeAttribute("href");
+          downloadLink.classList.add("hidden");
+        }
+      }
+      if (action === "compact" && slug === "json-formatter") {
+        try { root.querySelector("#result").textContent = JSON.stringify(JSON.parse(root.querySelector("#text-input").value)); } catch (error) { root.querySelector("#result").textContent = error.message; }
+      }
+      if (action === "decode" && slug === "base64-converter") {
+        try { root.querySelector("#result").textContent = decodeURIComponent(escape(atob(root.querySelector("#text-input").value))); } catch { root.querySelector("#result").textContent = messages[root.dataset.lang || "ko"].invalidBase64; }
+      }
+      if (action === "decode" && slug === "url-encoder-decoder") {
+        try { root.querySelector("#result").textContent = decodeURIComponent(root.querySelector("#text-input").value); } catch { root.querySelector("#result").textContent = messages[root.dataset.lang || "ko"].checkInput; }
+      }
+      if (action === "to-csv" && slug === "csv-json-converter") {
+        try { root.querySelector("#result").textContent = jsonToCsv(root.querySelector("#text-input").value); } catch (error) { root.querySelector("#result").textContent = error.message; }
+      }
+      if (slug === "image-rotate-flip" && ["rotate-left", "rotate-right", "rotate-180", "flip-horizontal", "flip-vertical"].includes(action)) {
+        const rotation = Number(root.dataset.rotation || "0");
+        if (action === "rotate-left") root.dataset.rotation = String((rotation + 270) % 360);
+        if (action === "rotate-right") root.dataset.rotation = String((rotation + 90) % 360);
+        if (action === "rotate-180") root.dataset.rotation = String((rotation + 180) % 360);
+        if (action === "flip-horizontal") root.dataset.flipX = root.dataset.flipX === "true" ? "false" : "true";
+        if (action === "flip-vertical") root.dataset.flipY = root.dataset.flipY === "true" ? "false" : "true";
+        run(root);
+      }
+      if (slug === "image-mosaic" && action === "apply-mosaic") {
+        applyMosaic(root).catch((error) => {
+          root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+        });
+      }
+      if (action === "run") run(root);
+    });
+    root.querySelectorAll("input, textarea, select").forEach((control) => {
+      control.addEventListener("input", autoRun);
+      control.addEventListener("change", () => {
+        if (control.id === "mode") {
+          syncDateCalculatorMode(root);
+          syncTimestampConverterMode(root);
+          syncFrequencyWavelengthMode(root);
+          syncReactanceMode(root);
+        }
+        if (control.id === "circuit") syncFilterCalculatorCircuit(root);
+        if (control.id === "aspect-ratio" || control.id === "crop-width") syncCropAspectRatio(root);
+        if (control.id === "unit-kind") syncUnitConverterOptions(root);
+        if (slug === "image-mosaic" && control.id === "image-file") run(root);
+        autoRun();
+      });
+    });
+    const mosaicCanvas = root.querySelector("#mosaic-canvas");
+    if (mosaicCanvas) {
+      let startPoint = null;
+      let isDragging = false;
+      mosaicCanvas.addEventListener("pointerdown", (event) => {
+        if (!root._mosaicState) return;
+        event.preventDefault();
+        mosaicCanvas.setPointerCapture?.(event.pointerId);
+        startPoint = pointOnCanvas(mosaicCanvas, event);
+        isDragging = true;
+        setMosaicSelection(root, { x: startPoint.x, y: startPoint.y, width: 0, height: 0 });
+        drawMosaicPreview(root);
+      });
+      mosaicCanvas.addEventListener("pointermove", (event) => {
+        if (!isDragging || !startPoint) return;
+        event.preventDefault();
+        const point = pointOnCanvas(mosaicCanvas, event);
+        const selection = {
+          x: Math.min(startPoint.x, point.x),
+          y: Math.min(startPoint.y, point.y),
+          width: Math.abs(point.x - startPoint.x),
+          height: Math.abs(point.y - startPoint.y),
+        };
+        setMosaicSelection(root, selection);
+        drawMosaicPreview(root);
+      });
+      const stopMosaicDrag = async (event) => {
+        if (!isDragging) return;
+        event.preventDefault();
+        isDragging = false;
+        startPoint = null;
+        drawMosaicPreview(root);
+        try {
+          await refreshMosaicOutput(root);
+        } catch (error) {
+          root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+        }
+      };
+      mosaicCanvas.addEventListener("pointerup", stopMosaicDrag);
+      mosaicCanvas.addEventListener("pointercancel", stopMosaicDrag);
+    }
+    const colorCanvas = root.querySelector("#color-canvas");
+    if (colorCanvas) {
+      colorCanvas.addEventListener("click", (event) => {
+        pickCanvasColor(root, event).catch((error) => {
+          root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+        });
+      });
+    }
+    syncDynamicInputs(root);
+    if (selectOnlyAutoRunSlugs.has(slug)) autoRun();
+  });
+</script>

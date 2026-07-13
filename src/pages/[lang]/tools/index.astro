@@ -1,0 +1,45 @@
+---
+import Layout from "@/components/Layout.astro";
+import ToolCard from "@/components/ToolCard.astro";
+import { categorySlugs, getCategoryItems, getToolsByCategory, i18n, languages, type CategorySlug, type Lang } from "@/i18n/translations";
+
+export function getStaticPaths() {
+  return languages.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = i18n[lang];
+const categories = getCategoryItems(lang);
+const otherLang = lang === "ko" ? "en" : "ko";
+---
+
+<Layout
+  title={`${t.common.toolsTitle} - ${t.siteName}`}
+  description={t.common.toolsDescription}
+  canonical={`/${lang}/tools`}
+  lang={lang}
+  alternates={[
+    { lang: otherLang, href: `/${otherLang}/tools` },
+    { lang: "x-default", href: "/ko/tools" },
+  ]}
+>
+  <h1 class="text-3xl font-bold tracking-normal md:text-4xl">{t.common.toolsTitle}</h1>
+  <p class="mt-4 max-w-3xl text-lg leading-8 text-slate-700">{t.common.toolsDescription}</p>
+
+  <div class="mt-10 space-y-12">
+    {categories.map((category) => (
+      <section>
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-bold">{category.name}</h2>
+            <p class="mt-2 text-slate-600">{category.description}</p>
+          </div>
+          <a href={category.path} class="text-sm font-semibold">{t.common.categoryView}</a>
+        </div>
+        <div class="mt-4 grid gap-4 md:grid-cols-3">
+          {getToolsByCategory(lang, category.slug as CategorySlug).map((tool) => <ToolCard tool={tool} />)}
+        </div>
+      </section>
+    ))}
+  </div>
+</Layout>

@@ -1,0 +1,45 @@
+---
+import Layout from "@/components/Layout.astro";
+import { i18n, languages, type Lang } from "@/i18n/translations";
+import { SITE_CONFIG } from "../../../site.config.mjs";
+
+export function getStaticPaths() {
+  return languages.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = i18n[lang];
+const otherLang = lang === "ko" ? "en" : "ko";
+const contactEmail = SITE_CONFIG.contactEmail;
+const title = lang === "ko" ? `문의 - ${t.siteName}` : `Contact - ${t.siteName}`;
+const description = lang === "ko" ? "Toolbox 문의 안내 페이지입니다." : "Contact information for Toolbox.";
+---
+
+<Layout
+  title={title}
+  description={description}
+  canonical={`/${lang}/contact`}
+  lang={lang}
+  alternates={[{ lang: otherLang, href: `/${otherLang}/contact` }, { lang: "x-default", href: "/ko/contact" }]}
+>
+  <article class="prose-lite max-w-3xl">
+    <h1 class="text-3xl font-bold">{lang === "ko" ? "문의" : "Contact"}</h1>
+    {
+      lang === "ko" ? (
+        <>
+          <p class="mt-4">서비스 오류, 도구 제안, 개인정보 관련 문의는 아래 이메일로 연락해 주세요.</p>
+          <p>확인 후 가능한 범위에서 답변하겠습니다.</p>
+        </>
+      ) : (
+        <>
+          <p class="mt-4">For bug reports, tool suggestions, privacy questions, or other inquiries, please contact us by email.</p>
+          <p>We will review your message and respond where possible.</p>
+        </>
+      )
+    }
+    <p class="mt-6 rounded-lg border border-line bg-panel p-4">
+      <span class="font-semibold">{lang === "ko" ? "이메일" : "Email"}: </span>
+      <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+    </p>
+  </article>
+</Layout>

@@ -1,0 +1,14 @@
+---
+import ToolCard from "./ToolCard.astro";
+import { i18n, type Lang } from "@/i18n/translations";
+
+type Props = { tools: { path: string; name: string; description: string }[]; lang: Lang };
+const { tools, lang } = Astro.props;
+---
+
+<section>
+  <h2 class="mt-10 text-2xl font-bold">{i18n[lang].common.relatedTools}</h2>
+  <div class="mt-4 grid gap-4 md:grid-cols-3">
+    {tools.map((tool) => <ToolCard tool={tool} />)}
+  </div>
+</section>
