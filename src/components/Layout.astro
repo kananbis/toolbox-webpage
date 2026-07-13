@@ -31,8 +31,8 @@ const languageAlternateItems = [{ lang, href: canonicalPath }, ...alternates.fil
 const dedupedLanguageAlternateItems = languageAlternateItems.filter(
   (item, index, items) => items.findIndex((candidate) => candidate.lang === item.lang) === index,
 );
-const englishDefaultPath = lang === "en" ? canonicalPath : dedupedLanguageAlternateItems.find((item) => item.lang === "en")?.href ?? "/en/";
-const alternateItems = [...dedupedLanguageAlternateItems, { lang: "x-default" as const, href: englishDefaultPath }];
+const defaultPath = lang === "ko" ? canonicalPath : dedupedLanguageAlternateItems.find((item) => item.lang === "ko")?.href ?? "/ko/";
+const alternateItems = [...dedupedLanguageAlternateItems, { lang: "x-default" as const, href: defaultPath }];
 const absoluteUrl = (href: string) => `${site}${normalizePath(href)}`;
 const gaMeasurementId = import.meta.env.GA_MEASUREMENT_ID;
 ---

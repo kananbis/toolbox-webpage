@@ -1,9 +1,10 @@
 ---
 type Props = { tool: { path: string; name: string; description: string } };
 const { tool } = Astro.props;
+const href = tool.path.endsWith("/") ? tool.path : `${tool.path}/`;
 ---
 
-<a href={tool.path} class="block rounded-lg border border-line bg-white p-5 text-ink no-underline shadow-sm hover:border-brand hover:shadow-md">
+<a href={href} class="block rounded-lg border border-line bg-white p-5 text-ink no-underline shadow-sm hover:border-brand hover:shadow-md">
   <p class="text-sm font-semibold text-brand">{tool.name}</p>
   <p class="mt-2 text-sm leading-6 text-slate-600">{tool.description}</p>
 </a>

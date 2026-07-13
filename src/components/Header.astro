@@ -6,32 +6,34 @@ const segments = currentPath.split("/").filter(Boolean);
 const lang: Lang = isLang(segments[0]) ? segments[0] : "ko";
 const t = i18n[lang];
 const otherLang: Lang = lang === "ko" ? "en" : "ko";
+const withSlash = (path: string) => (path.endsWith("/") ? path : `${path}/`);
 const pathWithoutLang = isLang(segments[0]) ? `/${segments.slice(1).join("/")}` : currentPath;
-const switchPath = `/${otherLang}${pathWithoutLang === "/" ? "" : pathWithoutLang}`;
+const switchPath = withSlash(`/${otherLang}${pathWithoutLang === "/" ? "" : pathWithoutLang}`);
 
 const menuItems = [
-  { href: `/${lang}/tools`, label: t.nav.all },
-  { href: `/${lang}/tools/text`, label: t.nav.text },
-  { href: `/${lang}/tools/calculator`, label: t.nav.calculator },
-  { href: `/${lang}/tools/converter`, label: t.nav.converter },
-  { href: `/${lang}/tools/generator`, label: t.nav.generator },
-  { href: `/${lang}/tools/developer`, label: t.nav.developer },
-  { href: `/${lang}/tools/electronics`, label: t.nav.electronics },
-  { href: `/${lang}/tools/image`, label: t.nav.image },
+  { href: `/${lang}/tools/`, label: t.nav.all },
+  { href: `/${lang}/tools/text/`, label: t.nav.text },
+  { href: `/${lang}/tools/calculator/`, label: t.nav.calculator },
+  { href: `/${lang}/tools/converter/`, label: t.nav.converter },
+  { href: `/${lang}/tools/generator/`, label: t.nav.generator },
+  { href: `/${lang}/tools/developer/`, label: t.nav.developer },
+  { href: `/${lang}/tools/electronics/`, label: t.nav.electronics },
+  { href: `/${lang}/tools/image/`, label: t.nav.image },
 ];
 
 const isActive = (href: string) => {
-  if (href === `/${lang}/tools`) {
+  const normalizedHref = href.replace(/\/$/, "");
+  if (normalizedHref === `/${lang}/tools`) {
     return currentPath === `/${lang}/tools`;
   }
 
-  return currentPath === href;
+  return currentPath === normalizedHref;
 };
 ---
 
 <header class="site-header">
   <div class="header-inner">
-    <a class="site-logo" href={`/${lang}`}>{t.siteName}</a>
+    <a class="site-logo" href={`/${lang}/`}>{t.siteName}</a>
     <div class="nav-area">
       <nav class="site-nav" aria-label={lang === "ko" ? "주요 메뉴" : "Main menu"}>
         {menuItems.map((item) => (
