@@ -17,12 +17,23 @@ const segments = Astro.url.pathname.split("/").filter(Boolean);
 const inferredLang: Lang = isLang(segments[0]) ? segments[0] : "ko";
 const { title, description, canonical = Astro.url.pathname, lang = inferredLang, alternates = [] } = Astro.props;
 const site = Astro.site?.toString().replace(/\/$/, "") ?? SITE_CONFIG.siteUrl;
-const canonicalUrl = canonical.startsWith("http") ? canonical : `${site}${canonical}`;
-const canonicalPath = canonical.startsWith("http") ? new URL(canonical).pathname : canonical;
-const alternateItems = [{ lang, href: canonicalPath }, ...alternates].filter(
+const normalizePath = (href: string) => {
+  const path = href.startsWith("http") ? new URL(href).pathname : href;
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  return cleanPath.endsWith("/") ? cleanPath : `${cleanPath}/`;
+};
+const canonicalPath = normalizePath(canonical);
+const canonicalUrl = `${site}${canonicalPath}`;
+const languageAlternateItems = [{ lang, href: canonicalPath }, ...alternates.filter((item) => item.lang !== "x-default")].map((item) => ({
+  ...item,
+  href: normalizePath(item.href),
+}));
+const dedupedLanguageAlternateItems = languageAlternateItems.filter(
   (item, index, items) => items.findIndex((candidate) => candidate.lang === item.lang) === index,
 );
-const absoluteUrl = (href: string) => (href.startsWith("http") ? href : `${site}${href}`);
+const englishDefaultPath = lang === "en" ? canonicalPath : dedupedLanguageAlternateItems.find((item) => item.lang === "en")?.href ?? "/en/";
+const alternateItems = [...dedupedLanguageAlternateItems, { lang: "x-default" as const, href: englishDefaultPath }];
+const absoluteUrl = (href: string) => `${site}${normalizePath(href)}`;
 const gaMeasurementId = import.meta.env.GA_MEASUREMENT_ID;
 ---
 
@@ -33,6 +44,7 @@ const gaMeasurementId = import.meta.env.GA_MEASUREMENT_ID;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
     <link rel="canonical" href={canonicalUrl} />
     {alternateItems.map((item) => <link rel="alternate" hreflang={item.lang} href={absoluteUrl(item.href)} />)}
     <meta property="og:title" content={title} />
