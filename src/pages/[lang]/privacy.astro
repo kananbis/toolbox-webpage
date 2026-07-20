@@ -11,11 +11,11 @@ const lang = Astro.params.lang as Lang;
 const t = i18n[lang];
 const otherLang = lang === "ko" ? "en" : "ko";
 const contactEmail = SITE_CONFIG.contactEmail;
-const title = lang === "ko" ? `개인정보 처리방침 - ${t.siteName}` : `Privacy Policy - ${t.siteName}`;
+const title = lang === "ko" ? `개인정보처리방침 - ${t.siteName}` : `Privacy Policy - ${t.siteName}`;
 const description =
   lang === "ko"
-    ? "Toolbox 개인정보 처리방침입니다. 입력값과 선택한 파일은 기본적으로 브라우저에서 처리됩니다."
-    : "Privacy policy for Toolbox. User input and selected files are generally processed in the browser.";
+    ? "Toolbox 개인정보처리방침입니다. 입력값과 선택한 파일은 기본적으로 서버로 업로드되지 않고 브라우저에서 처리됩니다."
+    : "Privacy policy for Toolbox. User input and selected files are generally processed in the browser and are not uploaded to a server.";
 ---
 
 <Layout
@@ -26,33 +26,33 @@ const description =
   alternates={[{ lang: otherLang, href: `/${otherLang}/privacy` }, { lang: "x-default", href: "/ko/privacy" }]}
 >
   <article class="prose-lite max-w-3xl">
-    <h1 class="text-3xl font-bold">{lang === "ko" ? "개인정보 처리방침" : "Privacy Policy"}</h1>
+    <h1 class="text-3xl font-bold">{lang === "ko" ? "개인정보처리방침" : "Privacy Policy"}</h1>
     {
       lang === "ko" ? (
         <>
-          <p class="mt-4">Toolbox는 사용자가 입력한 내용과 선택한 파일을 기본적으로 서버로 업로드하지 않고 현재 브라우저 안에서 처리하도록 설계되어 있습니다.</p>
+          <p class="mt-4">Toolbox는 텍스트, 계산값, 선택한 이미지 파일을 가능한 한 현재 브라우저 안에서 처리하도록 설계되어 있습니다.</p>
           <h2>입력값과 파일 처리</h2>
-          <p>텍스트, 계산값, 이미지 파일 등은 각 도구의 기능 수행을 위해 브라우저에서 처리됩니다. 별도로 명시하지 않는 한 이러한 입력값을 서버에 저장하지 않습니다.</p>
-          <h2>쿠키와 제3자 서비스</h2>
-          <p>향후 서비스 분석과 광고 운영을 위해 Google Analytics, Google AdSense 같은 제3자 서비스를 사용할 수 있습니다. 이 경우 쿠키 또는 제3자 스크립트가 사용될 수 있습니다.</p>
-          <h2>광고</h2>
-          <p>Google AdSense 등 광고 서비스가 표시될 경우, 광고 제공자는 사용자에게 적절한 광고를 보여주기 위해 쿠키를 사용할 수 있습니다.</p>
+          <p>입력한 내용과 선택한 파일은 기본적으로 서버로 업로드되지 않으며, 현재 브라우저 안에서만 처리됩니다. 도구 결과를 생성하기 위해 별도의 계정이나 로그인 정보도 요구하지 않습니다.</p>
+          <h2>쿠키와 분석 도구</h2>
+          <p>이 사이트는 서비스 이용 현황을 파악하기 위해 Google Analytics와 같은 분석 도구를 사용할 수 있습니다. 이 과정에서 쿠키 또는 유사 기술이 사용될 수 있습니다.</p>
+          <h2>광고 서비스</h2>
+          <p>이 사이트는 향후 Google AdSense와 같은 제3자 광고 서비스를 사용할 수 있습니다. 이 경우 광고 제공자는 쿠키 또는 유사 기술을 사용해 사용자의 방문 정보에 기반한 광고를 제공할 수 있습니다.</p>
           <h2>문의</h2>
           <p>
             개인정보 관련 문의는{" "}
-            {contactEmail ? <a href={`mailto:${contactEmail}`}>{contactEmail}</a> : "Contact 페이지에 표시된 이메일"}
+            {contactEmail ? <a href={`mailto:${contactEmail}`}>{contactEmail}</a> : "Contact 페이지에 안내된 이메일"}
             로 연락해 주세요.
           </p>
         </>
       ) : (
         <>
-          <p class="mt-4">Toolbox is designed so your input and selected files are generally processed in your current browser without being uploaded to a server.</p>
+          <p class="mt-4">Toolbox is designed to process text, calculation values, and selected image files in your current browser whenever possible.</p>
           <h2>Input and File Processing</h2>
-          <p>Text, calculation values, and image files are processed in the browser for each tool. Unless otherwise stated, this input is not stored on our server.</p>
-          <h2>Cookies and Third-Party Services</h2>
-          <p>We may use third-party services such as Google Analytics and Google AdSense for analytics and advertising in the future. These services may use cookies or third-party scripts.</p>
-          <h2>Advertising</h2>
-          <p>If advertising services such as Google AdSense are used, ad providers may use cookies to show relevant ads.</p>
+          <p>Your input and selected files are generally not uploaded to a server and are processed only in your browser. The tools do not require an account or login to generate results.</p>
+          <h2>Cookies and Analytics</h2>
+          <p>This site may use analytics tools such as Google Analytics to understand site usage. Cookies or similar technologies may be used for this purpose.</p>
+          <h2>Advertising Services</h2>
+          <p>This site may use third-party advertising services such as Google AdSense. These providers may use cookies or similar technologies to serve ads based on users visits.</p>
           <h2>Contact</h2>
           <p>
             For privacy-related questions, contact us through{" "}

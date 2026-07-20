@@ -1,5 +1,6 @@
 ---
 import Layout from "@/components/Layout.astro";
+import AdSlot from "@/components/AdSlot.astro";
 import ToolCard from "@/components/ToolCard.astro";
 import { getCategoryItems, getTools, i18n, languages, type Lang } from "@/i18n/translations";
 
@@ -12,6 +13,7 @@ const t = i18n[lang];
 const featured = getTools(lang).slice(0, 8);
 const categories = getCategoryItems(lang);
 const otherLang = lang === "ko" ? "en" : "ko";
+const caseConverterLabel = lang === "ko" ? "\uC601\uBB38 \uB300\uC18C\uBB38\uC790 \uBCC0\uD658\uAE30" : null;
 ---
 
 <Layout
@@ -39,12 +41,14 @@ const otherLang = lang === "ko" ? "en" : "ko";
       <div class="mt-4 grid gap-3">
         {featured.slice(0, 5).map((tool) => (
           <a href={tool.path} class="rounded-md bg-white p-3 text-sm font-semibold text-ink no-underline shadow-sm">
-            {tool.slug === "case-converter" && lang === "ko" ? "영문 대소문자 변환기" : tool.name}
+            {tool.slug === "case-converter" && caseConverterLabel ? caseConverterLabel : tool.name}
           </a>
         ))}
       </div>
     </div>
   </section>
+
+  <AdSlot lang={lang} placement="homeMiddle" />
 
   <section class="mt-12">
     <h2 class="text-2xl font-bold">{t.home.categories}</h2>

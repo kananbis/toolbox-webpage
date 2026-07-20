@@ -35,6 +35,7 @@ const defaultPath = lang === "ko" ? canonicalPath : dedupedLanguageAlternateItem
 const alternateItems = [...dedupedLanguageAlternateItems, { lang: "x-default" as const, href: defaultPath }];
 const absoluteUrl = (href: string) => `${site}${normalizePath(href)}`;
 const gaMeasurementId = import.meta.env.GA_MEASUREMENT_ID;
+const shouldLoadAdsense = SITE_CONFIG.enableAdsense && SITE_CONFIG.adsenseClientId;
 ---
 
 <!doctype html>
@@ -51,6 +52,15 @@ const gaMeasurementId = import.meta.env.GA_MEASUREMENT_ID;
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalUrl} />
+    {
+      shouldLoadAdsense && (
+        <script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${SITE_CONFIG.adsenseClientId}`}
+          crossorigin="anonymous"
+        />
+      )
+    }
     {
       gaMeasurementId && (
         <>

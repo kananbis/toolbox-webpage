@@ -77,15 +77,42 @@ Set these variables in Cloudflare Pages before production deployment:
 PUBLIC_SITE_URL=https://your-domain.com
 PUBLIC_CONTACT_EMAIL=contact@your-domain.com
 GA_MEASUREMENT_ID=G-XXXXXXXXXX
+PUBLIC_ENABLE_ADSENSE=false
+PUBLIC_ADSENSE_CLIENT_ID=ca-pub-XXXXXXXXXXXXXXXX
+PUBLIC_ADSENSE_SLOT_TOOL_TOP=0000000000
+PUBLIC_ADSENSE_SLOT_TOOL_BOTTOM=0000000000
+PUBLIC_ADSENSE_SLOT_HOME_MIDDLE=0000000000
 ```
 
 Current config defaults:
 
 - `PUBLIC_SITE_URL` falls back to `https://mfwtools.com`
 - `PUBLIC_CONTACT_EMAIL` has no public fallback value and should be set in the deployment environment
-- `GA_MEASUREMENT_ID` is reserved for future analytics setup
+- `PUBLIC_ENABLE_ADSENSE` is disabled unless it is exactly `true`
+- `PUBLIC_ADSENSE_CLIENT_ID` and slot values are empty by default
+- `GA_MEASUREMENT_ID` enables Google Analytics when set
 
 Before real deployment, set `PUBLIC_SITE_URL` to the production domain. This value is used for canonical URLs, hreflang links, sitemap, robots.txt, and Open Graph URLs.
+
+## AdSense Setup
+
+AdSense is prepared but disabled by default. Before approval, keep `PUBLIC_ENABLE_ADSENSE=false` so pages show only lightweight ad placeholders.
+
+After AdSense approval:
+
+1. Set `PUBLIC_ENABLE_ADSENSE=true` in Cloudflare Pages.
+2. Set `PUBLIC_ADSENSE_CLIENT_ID` to the AdSense client ID, for example `ca-pub-XXXXXXXXXXXXXXXX`.
+3. Set the ad slot variables:
+   - `PUBLIC_ADSENSE_SLOT_TOOL_TOP`
+   - `PUBLIC_ADSENSE_SLOT_TOOL_BOTTOM`
+   - `PUBLIC_ADSENSE_SLOT_HOME_MIDDLE`
+4. Update `public/ads.txt` with the real publisher line from AdSense:
+
+```txt
+google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+```
+
+`ads.txt` uses the `pub-` publisher ID, not the `ca-pub-` client ID. Redeploy after changing environment variables or `ads.txt`.
 
 ## Folder Structure
 
