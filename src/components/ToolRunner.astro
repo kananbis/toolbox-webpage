@@ -1394,7 +1394,7 @@ const ui = {
     }
     return new Blob([buffer], { type: "audio/wav" });
   };
-  const ffmpegCoreBaseURL = "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd";
+  const ffmpegCoreBaseURL = "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/esm";
   let ffmpegCoreURLsPromise;
   const getFFmpegCoreURLs = async () => {
     if (!ffmpegCoreURLsPromise) {
