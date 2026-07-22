@@ -1396,18 +1396,14 @@ const ui = {
   };
   const ffmpegCoreBaseURL = "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd";
   let ffmpegCoreURLsPromise;
-  const toAudioBlobURL = async (url, mimeType) => {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Failed to load ${url} (${response.status})`);
-    const blob = await response.blob();
-    return URL.createObjectURL(new Blob([blob], { type: mimeType }));
-  };
   const getFFmpegCoreURLs = async () => {
     if (!ffmpegCoreURLsPromise) {
-      ffmpegCoreURLsPromise = Promise.all([
-        toAudioBlobURL(`${ffmpegCoreBaseURL}/ffmpeg-core.js`, "text/javascript"),
-        toAudioBlobURL(`${ffmpegCoreBaseURL}/ffmpeg-core.wasm`, "application/wasm"),
-      ]).then(([coreURL, wasmURL]) => ({ coreURL, wasmURL }));
+      ffmpegCoreURLsPromise = import("@ffmpeg/util").then(({ toBlobURL }) =>
+        Promise.all([
+          toBlobURL(`${ffmpegCoreBaseURL}/ffmpeg-core.js`, "text/javascript"),
+          toBlobURL(`${ffmpegCoreBaseURL}/ffmpeg-core.wasm`, "application/wasm"),
+        ]).then(([coreURL, wasmURL]) => ({ coreURL, wasmURL }))
+      );
     }
     return ffmpegCoreURLsPromise;
   };
