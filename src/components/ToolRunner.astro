@@ -1394,21 +1394,35 @@ const ui = {
     }
     return new Blob([buffer], { type: "audio/wav" });
   };
-  const ffmpegCoreURL = "/vendor/ffmpeg/ffmpeg-core.js";
-  const ffmpegWasmURL = "/vendor/ffmpeg/ffmpeg-core.wasm";
-  const ffmpegWorkerURL = "/vendor/ffmpeg/worker.js";
+  const ffmpegCoreBaseURL = "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd";
+  let ffmpegCoreURLsPromise;
+  const toAudioBlobURL = async (url, mimeType) => {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Failed to load ${url} (${response.status})`);
+    const blob = await response.blob();
+    return URL.createObjectURL(new Blob([blob], { type: mimeType }));
+  };
+  const getFFmpegCoreURLs = async () => {
+    if (!ffmpegCoreURLsPromise) {
+      ffmpegCoreURLsPromise = Promise.all([
+        toAudioBlobURL(`${ffmpegCoreBaseURL}/ffmpeg-core.js`, "text/javascript"),
+        toAudioBlobURL(`${ffmpegCoreBaseURL}/ffmpeg-core.wasm`, "application/wasm"),
+      ]).then(([coreURL, wasmURL]) => ({ coreURL, wasmURL }));
+    }
+    return ffmpegCoreURLsPromise;
+  };
   let ffmpegAudioPromise;
   const getAudioFFmpeg = async (root) => {
     const lang = root.dataset.lang || "ko";
     if (!ffmpegAudioPromise) {
       ffmpegAudioPromise = (async () => {
-        const [{ FFmpeg }] = await Promise.all([import("@ffmpeg/ffmpeg")]);
+        const [{ FFmpeg }, coreURLs] = await Promise.all([import("@ffmpeg/ffmpeg"), getFFmpegCoreURLs()]);
         const ffmpeg = new FFmpeg();
         ffmpeg.on("progress", ({ progress }) => {
           const safeProgress = Number.isFinite(progress) ? Math.max(0, Math.min(1, progress)) : 0;
           setAudioStatus(root, lang === "ko" ? "변환 중입니다." : "Converting.", 50 + Math.round(safeProgress * 45));
         });
-        await ffmpeg.load({ classWorkerURL: ffmpegWorkerURL, coreURL: ffmpegCoreURL, wasmURL: ffmpegWasmURL });
+        await ffmpeg.load(coreURLs);
         return ffmpeg;
       })();
     }
