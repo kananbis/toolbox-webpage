@@ -459,6 +459,272 @@ const ui = {
     </div>
   )}
 
+  {slug === "audio-converter" && (
+    <div class="grid gap-4">
+      <div class="rounded-md border border-line bg-white p-4 text-sm leading-6 text-slate-700">
+        <p>{lang === "ko" ? "선택한 오디오 파일은 서버로 업로드되지 않으며, 현재 브라우저 안에서만 처리됩니다." : "Selected audio files are not uploaded to a server and are processed only in your browser."}</p>
+        <p class="mt-2">{lang === "ko" ? "본인이 소유했거나 변환할 권한이 있는 오디오 파일만 사용하세요. 저작권이 있는 파일을 무단으로 변환하거나 배포해서는 안 됩니다." : "Only use audio files that you own or have the right to convert. Do not convert or distribute copyrighted files without permission."}</p>
+      </div>
+      <label class="font-semibold" for="audio-file">{lang === "ko" ? "오디오 파일 선택" : "Choose Audio File"}</label>
+      <input id="audio-file" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,.mp3,.wav,.ogg" />
+      <div class="grid gap-4 md:grid-cols-2">
+        <label>{lang === "ko" ? "출력 형식" : "Output format"}
+          <select id="audio-output-format">
+            <option value="mp3">MP3</option>
+            <option value="wav">WAV</option>
+            <option value="ogg">OGG</option>
+          </select>
+        </label>
+        <label>{lang === "ko" ? "비트레이트/품질" : "Bitrate / Quality"}
+          <select id="audio-bitrate">
+            <option value="96">96 kbps</option>
+            <option value="128" selected>128 kbps</option>
+            <option value="192">192 kbps</option>
+            <option value="256">256 kbps</option>
+            <option value="320">320 kbps</option>
+          </select>
+        </label>
+      </div>
+      <p class="text-sm text-slate-600">{lang === "ko" ? "MP3와 OGG 변환은 브라우저에서 ffmpeg.wasm을 불러와 처리합니다. WAV는 무압축 형식이라 결과 파일이 커질 수 있습니다." : "MP3 and OGG conversion loads ffmpeg.wasm in the browser when needed. WAV is uncompressed, so the output file may be larger."}</p>
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "원본 미리 듣기" : "Original Preview"}</p>
+          <audio id="audio-original-preview" class="mt-2 w-full" controls></audio>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "변환 결과 미리 듣기" : "Converted Preview"}</p>
+          <audio id="audio-output-preview" class="mt-2 w-full" controls></audio>
+        </div>
+      </div>
+      <div>
+        <p id="audio-status" class="text-sm text-slate-600">{lang === "ko" ? "오디오 파일을 선택하면 정보가 표시됩니다." : "Choose an audio file to see details."}</p>
+        <progress id="audio-progress" class="mt-2 h-2 w-full" max="100" value="0"></progress>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button class="btn-primary" data-action="run">{lang === "ko" ? "변환" : "Convert"}</button>
+        <button class="btn-secondary" data-action="reset">{ui.reset}</button>
+      </div>
+      <pre class="result-box whitespace-pre-wrap" id="result">{ui.result}</pre>
+      <a id="download-link" class="btn-primary hidden w-fit" download>{lang === "ko" ? "다운로드" : "Download"}</a>
+    </div>
+  )}
+
+  {slug === "audio-cutter" && (
+    <div class="grid gap-4">
+      <div class="rounded-md border border-line bg-white p-4 text-sm leading-6 text-slate-700">
+        <p>{lang === "ko" ? "선택한 오디오 파일은 서버로 업로드되지 않으며, 현재 브라우저 안에서만 처리됩니다." : "Selected audio files are not uploaded to a server and are processed only in your browser."}</p>
+        <p class="mt-2">{lang === "ko" ? "본인이 소유했거나 편집할 권한이 있는 오디오 파일만 사용하세요. 저작권이 있는 파일을 무단으로 편집하거나 배포해서는 안 됩니다." : "Only use audio files that you own or have the right to edit. Do not edit or distribute copyrighted files without permission."}</p>
+      </div>
+      <label class="font-semibold" for="cutter-file">{lang === "ko" ? "오디오 파일 선택" : "Choose Audio File"}</label>
+      <input id="cutter-file" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,.mp3,.wav,.ogg" />
+      <div class="grid gap-4 md:grid-cols-3">
+        <label>{lang === "ko" ? "시작 시간" : "Start time"}
+          <input id="cutter-start" type="text" inputmode="decimal" placeholder="0 또는 00:00" value="0" />
+        </label>
+        <label>{lang === "ko" ? "종료 시간" : "End time"}
+          <input id="cutter-end" type="text" inputmode="decimal" placeholder="25 또는 00:25" />
+        </label>
+        <label>{lang === "ko" ? "출력 형식" : "Output format"}
+          <select id="cutter-output-format">
+            <option value="source" selected>{lang === "ko" ? "원본 형식" : "Original format"}</option>
+            <option value="wav">WAV</option>
+            <option value="mp3">MP3</option>
+            <option value="ogg">OGG</option>
+          </select>
+        </label>
+      </div>
+      <div class="grid gap-2">
+        <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "자를 구간" : "Trim range"}</p>
+        <div class="audio-range-picker">
+          <div id="cutter-range-fill" class="audio-range-fill"></div>
+          <input id="cutter-start-range" aria-label={lang === "ko" ? "시작 위치" : "Start position"} type="range" min="0" max="0" step="0.1" value="0" />
+          <input id="cutter-end-range" aria-label={lang === "ko" ? "종료 위치" : "End position"} type="range" min="0" max="0" step="0.1" value="0" />
+        </div>
+      </div>
+      <p id="cutter-range-label" class="text-sm text-slate-600">{lang === "ko" ? "오디오 파일을 선택하면 선택 구간이 표시됩니다." : "Choose an audio file to see the selected range."}</p>
+      <p class="text-sm text-slate-600">{lang === "ko" ? "기본값은 원본 형식 저장입니다. 직접 선택할 수 있는 출력은 WAV, MP3, OGG이며, MP3와 OGG는 브라우저에서 ffmpeg.wasm을 불러와 인코딩합니다." : "The default is to save in the original format. You can manually choose WAV, MP3, or OGG. MP3 and OGG output load ffmpeg.wasm in the browser for encoding."}</p>
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "원본 미리 듣기" : "Original Preview"}</p>
+          <audio id="audio-original-preview" class="mt-2 w-full" controls></audio>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "선택 구간 미리 듣기" : "Preview Selected Range"}</p>
+          <audio id="audio-output-preview" class="mt-2 w-full" controls></audio>
+        </div>
+      </div>
+      <div>
+        <p id="cutter-status" class="text-sm text-slate-600">{lang === "ko" ? "오디오 파일을 선택하면 정보가 표시됩니다." : "Choose an audio file to see details."}</p>
+        <progress id="cutter-progress" class="mt-2 h-2 w-full" max="100" value="0"></progress>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button class="btn-secondary" data-action="preview-audio-range">{lang === "ko" ? "선택 구간 미리 듣기" : "Preview Selected Range"}</button>
+        <button class="btn-primary" data-action="run">{lang === "ko" ? "자르기" : "Trim"}</button>
+        <button class="btn-secondary" data-action="reset">{ui.reset}</button>
+      </div>
+      <pre class="result-box whitespace-pre-wrap" id="result">{ui.result}</pre>
+      <a id="download-link" class="btn-primary hidden w-fit" download>{lang === "ko" ? "다운로드" : "Download"}</a>
+    </div>
+  )}
+
+  {slug === "audio-compressor" && (
+    <div class="grid gap-4">
+      <div class="rounded-md border border-line bg-white p-4 text-sm leading-6 text-slate-700">
+        <p>{lang === "ko" ? "선택한 오디오 파일은 서버로 업로드되지 않으며, 현재 브라우저 안에서만 처리됩니다." : "Selected audio files are not uploaded to a server and are processed only in your browser."}</p>
+        <p class="mt-2">{lang === "ko" ? "본인이 소유했거나 변환할 권한이 있는 오디오 파일만 사용하세요. 저작권이 있는 파일을 무단으로 변환하거나 배포해서는 안 됩니다." : "Only use audio files that you own or have the right to convert. Do not convert or distribute copyrighted files without permission."}</p>
+      </div>
+      <label class="font-semibold" for="compressor-file">{lang === "ko" ? "오디오 파일 선택" : "Choose Audio File"}</label>
+      <input id="compressor-file" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,.mp3,.wav,.ogg" />
+      <div class="grid gap-4 md:grid-cols-2">
+        <label>{lang === "ko" ? "압축 프리셋" : "Compression preset"}
+          <select id="compressor-preset">
+            <option value="high">{lang === "ko" ? "고음질: 192 kbps" : "High Quality: 192 kbps"}</option>
+            <option value="standard" selected>{lang === "ko" ? "표준: 128 kbps" : "Standard: 128 kbps"}</option>
+            <option value="small">{lang === "ko" ? "작은 용량: 96 kbps" : "Small Size: 96 kbps"}</option>
+            <option value="voice">{lang === "ko" ? "음성용: 64 kbps, Mono" : "Voice: 64 kbps, Mono"}</option>
+          </select>
+        </label>
+        <label>{lang === "ko" ? "출력 형식" : "Output format"}
+          <select id="compressor-output-format">
+            <option value="mp3" selected>MP3</option>
+            <option value="ogg">OGG</option>
+          </select>
+        </label>
+        <label>{lang === "ko" ? "비트레이트" : "Bitrate"}
+          <select id="compressor-bitrate">
+            <option value="64">64 kbps</option>
+            <option value="96">96 kbps</option>
+            <option value="128" selected>128 kbps</option>
+            <option value="192">192 kbps</option>
+          </select>
+        </label>
+        <label>{lang === "ko" ? "채널" : "Channels"}
+          <select id="compressor-channel">
+            <option value="source" selected>{lang === "ko" ? "원본 유지" : "Keep original"}</option>
+            <option value="mono">Mono</option>
+            <option value="stereo">Stereo</option>
+          </select>
+        </label>
+      </div>
+      <p class="text-sm text-slate-600">{lang === "ko" ? "MP3와 OGG 출력은 브라우저에서 ffmpeg.wasm을 불러와 인코딩합니다. WAV는 압축 목적에 적합하지 않아 출력 옵션에서 제외했습니다." : "MP3 and OGG output load ffmpeg.wasm in the browser for encoding. WAV is excluded here because it is not suitable for compression."}</p>
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "원본 미리 듣기" : "Original Preview"}</p>
+          <audio id="audio-original-preview" class="mt-2 w-full" controls></audio>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "압축 결과 미리 듣기" : "Compressed Preview"}</p>
+          <audio id="audio-output-preview" class="mt-2 w-full" controls></audio>
+        </div>
+      </div>
+      <div>
+        <p id="compressor-status" class="text-sm text-slate-600">{lang === "ko" ? "오디오 파일을 선택하면 정보가 표시됩니다." : "Choose an audio file to see details."}</p>
+        <progress id="compressor-progress" class="mt-2 h-2 w-full" max="100" value="0"></progress>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button class="btn-primary" data-action="run">{lang === "ko" ? "압축" : "Compress"}</button>
+        <button class="btn-secondary" data-action="reset">{ui.reset}</button>
+      </div>
+      <pre class="result-box whitespace-pre-wrap" id="result">{ui.result}</pre>
+      <a id="download-link" class="btn-primary hidden w-fit" download>{lang === "ko" ? "다운로드" : "Download"}</a>
+    </div>
+  )}
+
+  {slug === "audio-volume-editor" && (
+    <div class="grid gap-4">
+      <div class="rounded-md border border-line bg-white p-4 text-sm leading-6 text-slate-700">
+        <p>{lang === "ko" ? "선택한 오디오 파일은 서버로 업로드되지 않으며, 현재 브라우저 안에서만 처리됩니다." : "Selected audio files are not uploaded to a server and are processed only in your browser."}</p>
+        <p class="mt-2">{lang === "ko" ? "본인이 소유했거나 편집할 권한이 있는 오디오 파일만 사용하세요. 저작권이 있는 파일을 무단으로 편집하거나 배포해서는 안 됩니다." : "Only use audio files that you own or have the right to edit. Do not edit or distribute copyrighted files without permission."}</p>
+      </div>
+      <label class="font-semibold" for="volume-file">{lang === "ko" ? "오디오 파일 선택" : "Choose Audio File"}</label>
+      <input id="volume-file" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,.mp3,.wav,.ogg" />
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <label for="volume-range">{lang === "ko" ? "볼륨" : "Volume"}</label>
+          <div class="mt-2 flex items-center gap-3">
+            <input id="volume-range" type="range" min="0" max="200" step="1" value="100" />
+            <input id="volume-percent" class="max-w-[110px]" type="number" min="0" max="200" step="1" value="100" />
+          </div>
+          <p id="volume-label" class="mt-2 text-sm text-slate-600">{lang === "ko" ? "볼륨: 100%" : "Volume: 100%"}</p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button class="btn-secondary" type="button" data-action="volume-preset" data-volume="0">{lang === "ko" ? "음소거" : "Mute"}</button>
+            <button class="btn-secondary" type="button" data-action="volume-preset" data-volume="50">{lang === "ko" ? "작게" : "Lower"}</button>
+            <button class="btn-secondary" type="button" data-action="volume-preset" data-volume="100">{lang === "ko" ? "원본" : "Original"}</button>
+            <button class="btn-secondary" type="button" data-action="volume-preset" data-volume="150">{lang === "ko" ? "크게" : "Louder"}</button>
+            <button class="btn-secondary" type="button" data-action="volume-preset" data-volume="200">{lang === "ko" ? "최대" : "Max"}</button>
+          </div>
+        </div>
+        <label>{lang === "ko" ? "출력 형식" : "Output Format"}
+          <select id="volume-output-format">
+            <option value="source" selected>{lang === "ko" ? "원본 형식" : "Original format"}</option>
+            <option value="mp3">MP3</option>
+            <option value="wav">WAV</option>
+            <option value="ogg">OGG</option>
+          </select>
+        </label>
+      </div>
+      <div class="grid gap-4 md:grid-cols-2">
+        <fieldset class="rounded-md border border-line p-4">
+          <label class="flex items-center gap-2"><input id="fade-in-enabled" class="w-auto" type="checkbox" />{lang === "ko" ? "페이드 인 사용" : "Use fade in"}</label>
+          <div class="mt-3 grid gap-3 sm:grid-cols-2">
+            <label>{lang === "ko" ? "프리셋" : "Preset"}
+              <select id="fade-in-preset">
+                <option value="1" selected>1s</option>
+                <option value="0.5">0.5s</option>
+                <option value="2">2s</option>
+                <option value="3">3s</option>
+                <option value="5">5s</option>
+                <option value="custom">{lang === "ko" ? "직접 입력" : "Custom"}</option>
+              </select>
+            </label>
+            <label>{lang === "ko" ? "길이(초)" : "Duration (s)"}
+              <input id="fade-in-duration" type="number" min="0" step="0.1" value="1" />
+            </label>
+          </div>
+        </fieldset>
+        <fieldset class="rounded-md border border-line p-4">
+          <label class="flex items-center gap-2"><input id="fade-out-enabled" class="w-auto" type="checkbox" />{lang === "ko" ? "페이드 아웃 사용" : "Use fade out"}</label>
+          <div class="mt-3 grid gap-3 sm:grid-cols-2">
+            <label>{lang === "ko" ? "프리셋" : "Preset"}
+              <select id="fade-out-preset">
+                <option value="1" selected>1s</option>
+                <option value="0.5">0.5s</option>
+                <option value="2">2s</option>
+                <option value="3">3s</option>
+                <option value="5">5s</option>
+                <option value="custom">{lang === "ko" ? "직접 입력" : "Custom"}</option>
+              </select>
+            </label>
+            <label>{lang === "ko" ? "길이(초)" : "Duration (s)"}
+              <input id="fade-out-duration" type="number" min="0" step="0.1" value="1" />
+            </label>
+          </div>
+        </fieldset>
+      </div>
+      <p id="volume-warning" class="text-sm text-amber-700">{lang === "ko" ? "볼륨을 크게 올리면 일부 구간에서 소리가 깨지거나 왜곡될 수 있습니다." : "Increasing the volume too much may cause clipping or distortion."}</p>
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "원본 미리 듣기" : "Original Preview"}</p>
+          <audio id="audio-original-preview" class="mt-2 w-full" controls></audio>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "결과 미리 듣기" : "Output Preview"}</p>
+          <audio id="audio-output-preview" class="mt-2 w-full" controls></audio>
+        </div>
+      </div>
+      <div>
+        <p id="volume-status" class="text-sm text-slate-600">{lang === "ko" ? "오디오 파일을 선택하면 정보가 표시됩니다." : "Choose an audio file to see details."}</p>
+        <progress id="volume-progress" class="mt-2 h-2 w-full" max="100" value="0"></progress>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button class="btn-primary" data-action="run">{lang === "ko" ? "적용" : "Apply"}</button>
+        <button class="btn-secondary" data-action="reset">{ui.reset}</button>
+      </div>
+      <pre class="result-box whitespace-pre-wrap" id="result">{ui.result}</pre>
+      <a id="download-link" class="btn-primary hidden w-fit" download>{lang === "ko" ? "다운로드" : "Download"}</a>
+    </div>
+  )}
+
   {slug === "unix-timestamp-converter" && (
     <div class="grid gap-4 md:grid-cols-2">
       <label class="md:col-span-2">{ui.labels.mode}<select id="mode"><option value="timestamp-to-date">{ui.modes.timestampToDate}</option><option value="date-to-timestamp">{ui.modes.dateToTimestamp}</option></select></label>
@@ -753,6 +1019,71 @@ const ui = {
   )}
 </div>
 
+<style>
+  .audio-range-picker {
+    position: relative;
+    height: 34px;
+    border-radius: 999px;
+    background: #e2e8f0;
+  }
+
+  .audio-range-fill {
+    position: absolute;
+    top: 13px;
+    bottom: 13px;
+    left: 0%;
+    right: 0%;
+    border-radius: 999px;
+    background: #2563eb;
+    pointer-events: none;
+  }
+
+  .audio-range-picker input[type="range"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 34px;
+    margin: 0;
+    appearance: none;
+    background: transparent;
+    pointer-events: none;
+  }
+
+  .audio-range-picker input[type="range"]::-webkit-slider-runnable-track {
+    height: 6px;
+    background: transparent;
+  }
+
+  .audio-range-picker input[type="range"]::-moz-range-track {
+    height: 6px;
+    background: transparent;
+  }
+
+  .audio-range-picker input[type="range"]::-webkit-slider-thumb {
+    width: 18px;
+    height: 18px;
+    margin-top: -6px;
+    appearance: none;
+    border: 2px solid #ffffff;
+    border-radius: 999px;
+    background: #2563eb;
+    box-shadow: 0 1px 4px rgb(15 23 42 / 0.25);
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .audio-range-picker input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ffffff;
+    border-radius: 999px;
+    background: #2563eb;
+    box-shadow: 0 1px 4px rgb(15 23 42 / 0.25);
+    cursor: pointer;
+    pointer-events: auto;
+  }
+</style>
+
 <script>
   import QRCode from "qrcode";
   import { awgToMetrics, capacitanceFactors, frequencyFactors, inductanceFactors, resistanceFactors, speedOfLight, wavelengthFactors } from "@/utils/electronics";
@@ -966,9 +1297,634 @@ const ui = {
   const formatPower = (mw, lang) => `${format(10 * Math.log10(mw), lang)} dBm\n${format(mw, lang)} mW\n${format(mw / 1000, lang)} W`;
   const formatBytes = (bytes, lang) => {
     if (!Number.isFinite(bytes)) return messages[lang].cannotCalculate;
-    if (bytes >= 1048576) return `${format(bytes / 1048576, lang)} MB`;
-    if (bytes >= 1024) return `${format(bytes / 1024, lang)} KB`;
-    return `${format(bytes, lang)} B`;
+    const sign = bytes < 0 ? "-" : "";
+    const value = Math.abs(bytes);
+    if (value >= 1048576) return `${sign}${format(value / 1048576, lang)} MB`;
+    if (value >= 1024) return `${sign}${format(value / 1024, lang)} KB`;
+    return `${sign}${format(value, lang)} B`;
+  };
+  const formatDuration = (seconds, lang) => {
+    if (!Number.isFinite(seconds)) return messages[lang].cannotCalculate;
+    const minutes = Math.floor(seconds / 60);
+    const rest = Math.round(seconds % 60);
+    return `${minutes}:${String(rest).padStart(2, "0")}`;
+  };
+  const setAudioStatus = (root, text, progress = null) => {
+    const status = root.querySelector("#audio-status") || root.querySelector("#cutter-status") || root.querySelector("#compressor-status") || root.querySelector("#volume-status");
+    const progressEl = root.querySelector("#audio-progress") || root.querySelector("#cutter-progress") || root.querySelector("#compressor-progress") || root.querySelector("#volume-progress");
+    if (status) status.textContent = text;
+    if (progressEl && progress !== null) progressEl.value = progress;
+  };
+  const fileExtension = (name) => name.includes(".") ? name.split(".").pop().toLowerCase() : "";
+  const audioOutputFormats = new Set(["wav", "mp3", "ogg"]);
+  const supportedAudioInputFormats = new Set(["mp3", "wav", "ogg"]);
+  const getSourceAudioFormat = (file) => {
+    const extension = fileExtension(file.name);
+    if (audioOutputFormats.has(extension)) return extension;
+    if (file.type === "audio/mpeg" || file.type === "audio/mp3") return "mp3";
+    if (file.type === "audio/wav" || file.type === "audio/x-wav") return "wav";
+    if (file.type === "audio/ogg") return "ogg";
+    return "wav";
+  };
+  const isSupportedAudioFile = (file) => {
+    const extension = fileExtension(file.name);
+    if (supportedAudioInputFormats.has(extension)) return true;
+    return ["audio/mpeg", "audio/mp3", "audio/wav", "audio/x-wav", "audio/ogg"].includes(file.type);
+  };
+  const assertSupportedAudioFile = (file, lang) => {
+    if (!file) throw new Error(lang === "ko" ? "오디오 파일을 선택하세요." : "Choose an audio file.");
+    if (!isSupportedAudioFile(file)) {
+      throw new Error(lang === "ko"
+        ? "이 오디오 파일을 브라우저에서 읽을 수 없습니다. MP3, WAV, OGG 파일을 사용해보세요."
+        : "This audio file could not be read in the browser. Try using an MP3, WAV, or OGG file.");
+    }
+  };
+  const revokeAudioUrls = (root) => {
+    ["audioOriginalUrl", "audioOutputUrl"].forEach((key) => {
+      if (root.dataset[key]) URL.revokeObjectURL(root.dataset[key]);
+      delete root.dataset[key];
+    });
+  };
+  const setAudioDownload = (root, blob, filename) => {
+    const previousUrl = root.dataset.audioOutputUrl;
+    if (previousUrl) URL.revokeObjectURL(previousUrl);
+    const url = URL.createObjectURL(blob);
+    root.dataset.audioOutputUrl = url;
+    const audio = root.querySelector("#audio-output-preview");
+    const link = root.querySelector("#download-link");
+    if (audio) audio.src = url;
+    if (link) {
+      link.href = url;
+      link.download = filename;
+      link.classList.remove("hidden");
+    }
+  };
+  const encodeWav = (audioBuffer) => {
+    const channels = Math.min(audioBuffer.numberOfChannels, 2);
+    const sampleRate = audioBuffer.sampleRate;
+    const length = audioBuffer.length;
+    const bytesPerSample = 2;
+    const blockAlign = channels * bytesPerSample;
+    const dataSize = length * blockAlign;
+    const buffer = new ArrayBuffer(44 + dataSize);
+    const view = new DataView(buffer);
+    const writeString = (offset, value) => {
+      for (let i = 0; i < value.length; i += 1) view.setUint8(offset + i, value.charCodeAt(i));
+    };
+    writeString(0, "RIFF");
+    view.setUint32(4, 36 + dataSize, true);
+    writeString(8, "WAVE");
+    writeString(12, "fmt ");
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, channels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * blockAlign, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, 16, true);
+    writeString(36, "data");
+    view.setUint32(40, dataSize, true);
+    let offset = 44;
+    for (let i = 0; i < length; i += 1) {
+      for (let channel = 0; channel < channels; channel += 1) {
+        const sample = Math.max(-1, Math.min(1, audioBuffer.getChannelData(channel)[i] || 0));
+        view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
+        offset += 2;
+      }
+    }
+    return new Blob([buffer], { type: "audio/wav" });
+  };
+  const ffmpegCoreURL = "/vendor/ffmpeg/ffmpeg-core.js";
+  const ffmpegWasmURL = "/vendor/ffmpeg/ffmpeg-core.wasm";
+  const ffmpegWorkerURL = "/vendor/ffmpeg/worker.js";
+  let ffmpegAudioPromise;
+  const getAudioFFmpeg = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    if (!ffmpegAudioPromise) {
+      ffmpegAudioPromise = (async () => {
+        const [{ FFmpeg }] = await Promise.all([import("@ffmpeg/ffmpeg")]);
+        const ffmpeg = new FFmpeg();
+        ffmpeg.on("progress", ({ progress }) => {
+          const safeProgress = Number.isFinite(progress) ? Math.max(0, Math.min(1, progress)) : 0;
+          setAudioStatus(root, lang === "ko" ? "변환 중입니다." : "Converting.", 50 + Math.round(safeProgress * 45));
+        });
+        await ffmpeg.load({ classWorkerURL: ffmpegWorkerURL, coreURL: ffmpegCoreURL, wasmURL: ffmpegWasmURL });
+        return ffmpeg;
+      })();
+    }
+    return ffmpegAudioPromise;
+  };
+  const convertAudioWithFFmpeg = async (root, file, outputFormat) => {
+    const lang = root.dataset.lang || "ko";
+    setAudioStatus(root, lang === "ko" ? "변환 라이브러리를 불러오는 중입니다." : "Loading conversion library.", 35);
+    let ffmpeg;
+    try {
+      ffmpeg = await getAudioFFmpeg(root);
+    } catch (error) {
+      ffmpegAudioPromise = null;
+      const detail = error?.message || String(error || "");
+      throw new Error(lang === "ko" ? `변환 라이브러리 로딩에 실패했습니다.${detail ? ` (${detail})` : ""}` : `Conversion library loading failed.${detail ? ` (${detail})` : ""}`);
+    }
+    const inputExt = fileExtension(file.name) || "audio";
+    const inputName = `input-${Date.now()}.${inputExt}`;
+    const outputName = `output-${Date.now()}.${outputFormat}`;
+    const bitrate = root.querySelector("#audio-bitrate")?.value || root.querySelector("#compressor-bitrate")?.value || "128";
+    await ffmpeg.writeFile(inputName, new Uint8Array(await file.arrayBuffer()));
+    setAudioStatus(root, lang === "ko" ? "변환 중입니다." : "Converting.", 50);
+    const argsByFormat = {
+      mp3: ["-i", inputName, "-vn", "-codec:a", "libmp3lame", "-b:a", `${bitrate}k`, outputName],
+      ogg: ["-i", inputName, "-vn", "-codec:a", "libvorbis", "-b:a", `${bitrate}k`, outputName],
+    };
+    const args = argsByFormat[outputFormat];
+    if (!args) throw new Error(lang === "ko" ? "지원하지 않는 출력 형식입니다." : "Unsupported output format.");
+    const exitCode = await ffmpeg.exec(args);
+    if (exitCode !== 0) throw new Error(lang === "ko" ? "변환에 실패했습니다." : "Conversion failed.");
+    const data = await ffmpeg.readFile(outputName);
+    await Promise.allSettled([ffmpeg.deleteFile(inputName), ffmpeg.deleteFile(outputName)]);
+    const mime = outputFormat === "mp3" ? "audio/mpeg" : "audio/ogg";
+    return new Blob([data], { type: mime });
+  };
+  const loadAudioInfo = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const m = messages[lang];
+    const file = root.querySelector("#audio-file")?.files?.[0];
+    const result = root.querySelector("#result");
+    assertSupportedAudioFile(file, lang);
+    revokeAudioUrls(root);
+    const originalUrl = URL.createObjectURL(file);
+    root.dataset.audioOriginalUrl = originalUrl;
+    const originalPreview = root.querySelector("#audio-original-preview");
+    if (originalPreview) originalPreview.src = originalUrl;
+    const largeNote = file.size >= 52428800
+      ? (lang === "ko" ? "이 파일은 50MB 이상이라 모바일 브라우저에서 실패할 수 있습니다." : "This file is over 50 MB and may fail in a mobile browser.")
+      : file.size >= 20971520
+        ? (lang === "ko" ? "이 파일은 용량이 커서 변환 시간이 길어질 수 있습니다." : "This file is large and may take longer to convert.")
+        : "";
+    setAudioStatus(root, lang === "ko" ? "오디오 파일을 불러오는 중입니다." : "Loading audio file.", 10);
+    const metadata = await new Promise((resolve) => {
+      const audio = document.createElement("audio");
+      audio.preload = "metadata";
+      audio.onloadedmetadata = () => {
+        URL.revokeObjectURL(audio.src);
+        resolve({ duration: audio.duration });
+      };
+      audio.onerror = () => {
+        URL.revokeObjectURL(audio.src);
+        resolve({ duration: NaN });
+      };
+      audio.src = URL.createObjectURL(file);
+    });
+    const info = `${m.originalFileName}: ${file.name}
+${m.originalSize}: ${formatBytes(file.size, lang)}
+${lang === "ko" ? "원본 형식" : "Original format"}: ${file.type || fileExtension(file.name) || "audio"}
+${lang === "ko" ? "오디오 길이" : "Audio duration"}: ${formatDuration(metadata.duration, lang)}${largeNote ? `\n${largeNote}` : ""}`;
+    if (result) result.textContent = info;
+    setAudioStatus(root, lang === "ko" ? "변환 준비 중입니다." : "Preparing conversion.", 30);
+    return file;
+  };
+  const convertAudio = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const m = messages[lang];
+    const file = await loadAudioInfo(root);
+    const outputFormat = root.querySelector("#audio-output-format")?.value || "wav";
+    let blob;
+    let audioBuffer;
+    if (outputFormat === "wav") {
+      setAudioStatus(root, lang === "ko" ? "변환 중입니다." : "Converting.", 50);
+      const arrayBuffer = await file.arrayBuffer();
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) throw new Error(lang === "ko" ? "이 브라우저에서는 오디오 디코딩을 사용할 수 없습니다." : "Audio decoding is not available in this browser.");
+      const audioContext = new AudioContextClass();
+      try {
+        audioBuffer = await audioContext.decodeAudioData(arrayBuffer.slice(0));
+      } catch {
+        throw new Error(lang === "ko" ? "이 오디오 파일을 브라우저에서 읽을 수 없습니다. 다른 형식의 파일을 사용해보세요." : "This audio file could not be read in the browser. Try using a different file format.");
+      } finally {
+        audioContext.close?.();
+      }
+      setAudioStatus(root, lang === "ko" ? "변환 중입니다." : "Converting.", 80);
+      blob = encodeWav(audioBuffer);
+    } else {
+      blob = await convertAudioWithFFmpeg(root, file, outputFormat);
+    }
+    const baseName = file.name.replace(/\.[^.]+$/, "") || "audio";
+    setAudioDownload(root, blob, `${baseName}-converted.${outputFormat}`);
+    const change = file.size > 0 ? (blob.size - file.size) / file.size * 100 : 0;
+    root.querySelector("#result").textContent = `${m.originalFileName}: ${file.name}
+${m.originalSize}: ${formatBytes(file.size, lang)}
+${audioBuffer ? `${lang === "ko" ? "오디오 길이" : "Audio duration"}: ${formatDuration(audioBuffer.duration, lang)}
+${lang === "ko" ? "샘플레이트" : "Sample rate"}: ${format(audioBuffer.sampleRate, lang)} Hz
+${lang === "ko" ? "채널 수" : "Channels"}: ${audioBuffer.numberOfChannels}
+` : ""}${m.outputFormat}: ${outputFormat.toUpperCase()}
+${m.outputSize}: ${formatBytes(blob.size, lang)}
+${lang === "ko" ? "원본 대비 용량 변화" : "Size change compared with the original"}: ${format(change, lang)}%`;
+    setAudioStatus(root, lang === "ko" ? "변환이 완료되었습니다." : "Conversion complete.", 100);
+  };
+  const parseAudioTime = (value) => {
+    const text = String(value ?? "").trim();
+    if (!text) return NaN;
+    if (!text.includes(":")) return Number(text);
+    const parts = text.split(":").map((part) => Number(part));
+    if (parts.some((part) => !Number.isFinite(part) || part < 0)) return NaN;
+    if (parts.length === 2) return parts[0] * 60 + parts[1];
+    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    return NaN;
+  };
+  const formatSecondsLabel = (seconds, lang) => {
+    if (!Number.isFinite(seconds)) return messages[lang].cannotCalculate;
+    return `${format(seconds, lang)}s`;
+  };
+  const getAudioContext = (lang) => {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) throw new Error(lang === "ko" ? "이 브라우저에서는 오디오 디코딩을 사용할 수 없습니다." : "Audio decoding is not available in this browser.");
+    return new AudioContextClass();
+  };
+  const loadAudioBuffer = async (file, lang) => {
+    const audioContext = getAudioContext(lang);
+    try {
+      return await audioContext.decodeAudioData(await file.arrayBuffer());
+    } catch {
+      throw new Error(lang === "ko" ? "이 오디오 파일을 브라우저에서 읽을 수 없습니다. 다른 형식의 파일을 사용해보세요." : "This audio file could not be read in the browser. Try using a different file format.");
+    } finally {
+      audioContext.close?.();
+    }
+  };
+  const trimAudioBuffer = (audioBuffer, start, end) => {
+    const sampleRate = audioBuffer.sampleRate;
+    const startFrame = Math.max(0, Math.floor(start * sampleRate));
+    const endFrame = Math.min(audioBuffer.length, Math.ceil(end * sampleRate));
+    const frameCount = Math.max(1, endFrame - startFrame);
+    const offlineContext = new OfflineAudioContext(audioBuffer.numberOfChannels, frameCount, sampleRate);
+    const trimmed = offlineContext.createBuffer(audioBuffer.numberOfChannels, frameCount, sampleRate);
+    for (let channel = 0; channel < audioBuffer.numberOfChannels; channel += 1) {
+      const source = audioBuffer.getChannelData(channel).subarray(startFrame, endFrame);
+      trimmed.copyToChannel(source, channel, 0);
+    }
+    return trimmed;
+  };
+  const setCutterRangeLabel = (root) => {
+    const lang = root.dataset.lang || "ko";
+    const label = root.querySelector("#cutter-range-label");
+    if (!label) return;
+    const duration = Number(root.dataset.cutterDuration || "0");
+    const start = parseAudioTime(root.querySelector("#cutter-start")?.value);
+    const end = parseAudioTime(root.querySelector("#cutter-end")?.value);
+    if (!duration || !Number.isFinite(start) || !Number.isFinite(end) || end <= start) {
+      label.textContent = lang === "ko" ? "시작 시간과 종료 시간을 입력하면 선택 구간이 표시됩니다." : "Enter the start and end times to see the selected range.";
+      return;
+    }
+    label.textContent = lang === "ko"
+      ? `선택 구간: ${formatSecondsLabel(start, lang)} ~ ${formatSecondsLabel(end, lang)} / 구간 길이: ${formatSecondsLabel(end - start, lang)}`
+      : `Selected range: ${formatSecondsLabel(start, lang)} to ${formatSecondsLabel(end, lang)} / Duration: ${formatSecondsLabel(end - start, lang)}`;
+  };
+  const syncCutterRanges = (root, source = "") => {
+    if (root.dataset.tool !== "audio-cutter") return;
+    const duration = Number(root.dataset.cutterDuration || "0");
+    const startInput = root.querySelector("#cutter-start");
+    const endInput = root.querySelector("#cutter-end");
+    const startRange = root.querySelector("#cutter-start-range");
+    const endRange = root.querySelector("#cutter-end-range");
+    const rangeFill = root.querySelector("#cutter-range-fill");
+    if (!startInput || !endInput || !startRange || !endRange || !duration) {
+      setCutterRangeLabel(root);
+      return;
+    }
+    startRange.max = String(duration);
+    endRange.max = String(duration);
+    if (source === "start-range") startInput.value = startRange.value;
+    if (source === "end-range") endInput.value = endRange.value;
+    if (source !== "start-range") {
+      const start = parseAudioTime(startInput.value);
+      if (Number.isFinite(start)) startRange.value = String(Math.max(0, Math.min(duration, start)));
+    }
+    if (source !== "end-range") {
+      const end = parseAudioTime(endInput.value);
+      if (Number.isFinite(end)) endRange.value = String(Math.max(0, Math.min(duration, end)));
+    }
+    let startValue = Number(startRange.value);
+    let endValue = Number(endRange.value);
+    if (Number.isFinite(startValue) && Number.isFinite(endValue)) {
+      if (source === "start-range" && startValue > endValue) {
+        endValue = startValue;
+        endRange.value = String(endValue);
+        endInput.value = String(Math.round(endValue * 10) / 10);
+      }
+      if (source === "end-range" && endValue < startValue) {
+        startValue = endValue;
+        startRange.value = String(startValue);
+        startInput.value = String(Math.round(startValue * 10) / 10);
+      }
+      if (rangeFill) {
+        const startPercent = Math.max(0, Math.min(100, startValue / duration * 100));
+        const endPercent = Math.max(0, Math.min(100, endValue / duration * 100));
+        rangeFill.style.left = `calc(${startPercent}% + ${9 - 0.18 * startPercent}px)`;
+        rangeFill.style.right = `calc(${100 - endPercent}% + ${-9 + 0.18 * endPercent}px)`;
+      }
+    }
+    setCutterRangeLabel(root);
+  };
+  const loadAudioCutterInfo = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const m = messages[lang];
+    const file = root.querySelector("#cutter-file")?.files?.[0];
+    const result = root.querySelector("#result");
+    assertSupportedAudioFile(file, lang);
+    revokeAudioUrls(root);
+    setAudioStatus(root, lang === "ko" ? "오디오 파일을 불러오는 중입니다." : "Loading audio file.", 10);
+    const originalUrl = URL.createObjectURL(file);
+    root.dataset.audioOriginalUrl = originalUrl;
+    const originalPreview = root.querySelector("#audio-original-preview");
+    if (originalPreview) originalPreview.src = originalUrl;
+    const audioBuffer = await loadAudioBuffer(file, lang);
+    root._cutterState = { file, audioBuffer };
+    root.dataset.cutterDuration = String(audioBuffer.duration);
+    const outputSelect = root.querySelector("#cutter-output-format");
+    if (outputSelect) outputSelect.value = "source";
+    const endInput = root.querySelector("#cutter-end");
+    if (endInput && !endInput.value) endInput.value = String(Math.round(audioBuffer.duration * 10) / 10);
+    syncCutterRanges(root);
+    const largeNote = file.size >= 52428800
+      ? (lang === "ko" ? "\n이 파일은 50MB 이상이라 모바일 브라우저에서 실패할 수 있습니다." : "\nThis file is over 50 MB and may fail in a mobile browser.")
+      : file.size >= 20971520
+        ? (lang === "ko" ? "\n이 파일은 용량이 커서 처리 시간이 길어질 수 있습니다." : "\nThis file is large and may take longer to process.")
+        : "";
+    if (result) result.textContent = `${m.originalFileName}: ${file.name}
+${m.originalSize}: ${formatBytes(file.size, lang)}
+${lang === "ko" ? "원본 형식" : "Original format"}: ${file.type || fileExtension(file.name) || "audio"}
+${lang === "ko" ? "오디오 길이" : "Audio duration"}: ${formatDuration(audioBuffer.duration, lang)}
+${lang === "ko" ? "샘플레이트" : "Sample rate"}: ${format(audioBuffer.sampleRate, lang)} Hz
+${lang === "ko" ? "채널 수" : "Channels"}: ${audioBuffer.numberOfChannels}${largeNote}`;
+    setAudioStatus(root, lang === "ko" ? "자를 구간을 입력하세요." : "Enter the range to trim.", 30);
+  };
+  const getCutterRange = (root) => {
+    const lang = root.dataset.lang || "ko";
+    const duration = Number(root.dataset.cutterDuration || "0");
+    const start = parseAudioTime(root.querySelector("#cutter-start")?.value);
+    const end = parseAudioTime(root.querySelector("#cutter-end")?.value);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || end <= start) {
+      throw new Error(lang === "ko" ? "시작 시간과 종료 시간을 올바르게 입력해주세요. 종료 시간은 시작 시간보다 커야 합니다." : "Please enter valid start and end times. The end time must be greater than the start time.");
+    }
+    if (duration && end > duration + 0.001) {
+      throw new Error(lang === "ko" ? "종료 시간은 오디오 전체 길이를 초과할 수 없습니다." : "The end time cannot exceed the audio duration.");
+    }
+    return { start, end };
+  };
+  const createTrimmedWavBlob = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    if (!root._cutterState?.audioBuffer) await loadAudioCutterInfo(root);
+    const { audioBuffer } = root._cutterState;
+    const { start, end } = getCutterRange(root);
+    setAudioStatus(root, lang === "ko" ? "선택 구간을 자르는 중입니다." : "Trimming selected range.", 55);
+    const trimmedBuffer = trimAudioBuffer(audioBuffer, start, end);
+    return { blob: encodeWav(trimmedBuffer), duration: end - start, start, end };
+  };
+  const previewAudioRange = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const { blob } = await createTrimmedWavBlob(root);
+    const previousUrl = root.dataset.audioOutputUrl;
+    if (previousUrl) URL.revokeObjectURL(previousUrl);
+    const url = URL.createObjectURL(blob);
+    root.dataset.audioOutputUrl = url;
+    const audio = root.querySelector("#audio-output-preview");
+    if (audio) {
+      audio.src = url;
+      audio.play?.().catch(() => {});
+    }
+    setAudioStatus(root, lang === "ko" ? "선택 구간 미리 듣기를 생성했습니다." : "Selected range preview is ready.", 70);
+  };
+  const trimAudio = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const m = messages[lang];
+    if (!root._cutterState?.audioBuffer) await loadAudioCutterInfo(root);
+    const { file } = root._cutterState;
+    const selectedFormat = root.querySelector("#cutter-output-format")?.value || "source";
+    const outputFormat = selectedFormat === "source" ? getSourceAudioFormat(file) : selectedFormat;
+    const trimmed = await createTrimmedWavBlob(root);
+    let blob = trimmed.blob;
+    if (outputFormat !== "wav") {
+      const wavFile = new File([trimmed.blob], `${file.name.replace(/\.[^.]+$/, "") || "audio"}-trimmed.wav`, { type: "audio/wav" });
+      blob = await convertAudioWithFFmpeg(root, wavFile, outputFormat);
+    }
+    const baseName = file.name.replace(/\.[^.]+$/, "") || "audio";
+    setAudioDownload(root, blob, `${baseName}-trimmed.${outputFormat}`);
+    root.querySelector("#result").textContent = `${m.originalFileName}: ${file.name}
+${m.outputFormat}: ${outputFormat.toUpperCase()}
+${m.outputSize}: ${formatBytes(blob.size, lang)}
+${lang === "ko" ? "선택 구간" : "Selected range"}: ${formatSecondsLabel(trimmed.start, lang)} ~ ${formatSecondsLabel(trimmed.end, lang)}
+${lang === "ko" ? "구간 길이" : "Trimmed duration"}: ${formatSecondsLabel(trimmed.duration, lang)}`;
+    setAudioStatus(root, lang === "ko" ? "자르기가 완료되었습니다." : "Trim complete.", 100);
+  };
+  const applyAudioCompressionPreset = (root) => {
+    const preset = root.querySelector("#compressor-preset")?.value || "standard";
+    const bitrate = root.querySelector("#compressor-bitrate");
+    const channel = root.querySelector("#compressor-channel");
+    const presets = {
+      high: { bitrate: "192", channel: "source" },
+      standard: { bitrate: "128", channel: "source" },
+      small: { bitrate: "96", channel: "source" },
+      voice: { bitrate: "64", channel: "mono" },
+    };
+    const next = presets[preset] || presets.standard;
+    if (bitrate) bitrate.value = next.bitrate;
+    if (channel) channel.value = next.channel;
+  };
+  const renderAudioChannels = (audioBuffer, channelMode) => {
+    if (channelMode === "source") return audioBuffer;
+    const sampleRate = audioBuffer.sampleRate;
+    const length = audioBuffer.length;
+    const channels = channelMode === "mono" ? 1 : 2;
+    const offlineContext = new OfflineAudioContext(channels, length, sampleRate);
+    const rendered = offlineContext.createBuffer(channels, length, sampleRate);
+    if (channelMode === "mono") {
+      const target = rendered.getChannelData(0);
+      for (let channel = 0; channel < audioBuffer.numberOfChannels; channel += 1) {
+        const source = audioBuffer.getChannelData(channel);
+        for (let i = 0; i < length; i += 1) target[i] += source[i] / audioBuffer.numberOfChannels;
+      }
+      return rendered;
+    }
+    rendered.copyToChannel(audioBuffer.getChannelData(0), 0, 0);
+    rendered.copyToChannel(audioBuffer.getChannelData(Math.min(1, audioBuffer.numberOfChannels - 1)), 1, 0);
+    return rendered;
+  };
+  const loadAudioCompressorInfo = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const m = messages[lang];
+    const file = root.querySelector("#compressor-file")?.files?.[0];
+    const result = root.querySelector("#result");
+    assertSupportedAudioFile(file, lang);
+    revokeAudioUrls(root);
+    setAudioStatus(root, lang === "ko" ? "오디오 파일을 불러오는 중입니다." : "Loading audio file.", 10);
+    const originalUrl = URL.createObjectURL(file);
+    root.dataset.audioOriginalUrl = originalUrl;
+    const originalPreview = root.querySelector("#audio-original-preview");
+    if (originalPreview) originalPreview.src = originalUrl;
+    const audioBuffer = await loadAudioBuffer(file, lang);
+    root._compressorState = { file, audioBuffer };
+    const largeNote = file.size >= 52428800
+      ? (lang === "ko" ? "\n이 파일은 50MB 이상이라 모바일 브라우저에서 실패할 수 있습니다." : "\nThis file is over 50 MB and may fail in a mobile browser.")
+      : file.size >= 20971520
+        ? (lang === "ko" ? "\n이 파일은 용량이 커서 압축 시간이 길어질 수 있습니다." : "\nThis file is large and may take longer to compress.")
+        : "";
+    if (result) result.textContent = `${m.originalFileName}: ${file.name}
+${m.originalSize}: ${formatBytes(file.size, lang)}
+${lang === "ko" ? "원본 형식" : "Original format"}: ${file.type || fileExtension(file.name) || "audio"}
+${lang === "ko" ? "오디오 길이" : "Audio duration"}: ${formatDuration(audioBuffer.duration, lang)}
+${lang === "ko" ? "샘플레이트" : "Sample rate"}: ${format(audioBuffer.sampleRate, lang)} Hz
+${lang === "ko" ? "채널 수" : "Channels"}: ${audioBuffer.numberOfChannels}${largeNote}`;
+    setAudioStatus(root, lang === "ko" ? "압축 준비 중입니다." : "Preparing compression.", 30);
+  };
+  const compressAudio = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const m = messages[lang];
+    if (!root._compressorState?.audioBuffer) await loadAudioCompressorInfo(root);
+    const { file, audioBuffer } = root._compressorState;
+    const outputFormat = root.querySelector("#compressor-output-format")?.value || "mp3";
+    if (!["mp3", "ogg"].includes(outputFormat)) throw new Error(lang === "ko" ? "지원하지 않는 출력 형식입니다." : "Unsupported output format.");
+    const bitrate = root.querySelector("#compressor-bitrate")?.value || "128";
+    const channelMode = root.querySelector("#compressor-channel")?.value || "source";
+    setAudioStatus(root, lang === "ko" ? "압축 준비 중입니다." : "Preparing compression.", 40);
+    const renderedBuffer = renderAudioChannels(audioBuffer, channelMode);
+    const wavBlob = encodeWav(renderedBuffer);
+    const wavFile = new File([wavBlob], `${file.name.replace(/\.[^.]+$/, "") || "audio"}-source.wav`, { type: "audio/wav" });
+    setAudioStatus(root, lang === "ko" ? "압축 중입니다." : "Compressing.", 50);
+    const blob = await convertAudioWithFFmpeg(root, wavFile, outputFormat);
+    const baseName = file.name.replace(/\.[^.]+$/, "") || "audio";
+    setAudioDownload(root, blob, `${baseName}-compressed.${outputFormat}`);
+    const reduced = file.size - blob.size;
+    const reductionRate = file.size > 0 ? reduced / file.size * 100 : 0;
+    const channelLabel = channelMode === "mono" ? "Mono" : channelMode === "stereo" ? "Stereo" : (lang === "ko" ? "원본 유지" : "Keep original");
+    const largerNote = blob.size > file.size
+      ? `\n${lang === "ko" ? "선택한 설정에서는 결과 파일이 원본보다 커졌습니다. 더 낮은 비트레이트나 다른 출력 형식을 선택해보세요." : "With the selected settings, the output file is larger than the original. Try a lower bitrate or a different output format."}`
+      : "";
+    root.querySelector("#result").textContent = `${m.originalFileName}: ${file.name}
+${lang === "ko" ? "원본 파일 크기" : "Original file size"}: ${formatBytes(file.size, lang)}
+${lang === "ko" ? "압축 후 파일 크기" : "Compressed file size"}: ${formatBytes(blob.size, lang)}
+${lang === "ko" ? "감소한 용량" : "Reduced size"}: ${formatBytes(reduced, lang)}
+${lang === "ko" ? "감소율" : "Reduction rate"}: ${format(reductionRate, lang)}%
+${m.outputFormat}: ${outputFormat.toUpperCase()}
+${lang === "ko" ? "적용된 비트레이트" : "Applied bitrate"}: ${bitrate} kbps
+${lang === "ko" ? "적용된 채널 설정" : "Applied channel setting"}: ${channelLabel}${largerNote}`;
+    setAudioStatus(root, lang === "ko" ? "압축이 완료되었습니다." : "Compression complete.", 100);
+  };
+  const syncVolumeInputs = (root, value) => {
+    const lang = root.dataset.lang || "ko";
+    const next = Math.max(0, Math.min(200, Math.round(Number(value) || 0)));
+    const range = root.querySelector("#volume-range");
+    const input = root.querySelector("#volume-percent");
+    const label = root.querySelector("#volume-label");
+    if (range) range.value = String(next);
+    if (input) input.value = String(next);
+    if (label) label.textContent = lang === "ko" ? `볼륨: ${next}%` : `Volume: ${next}%`;
+  };
+  const syncFadePreset = (root, kind) => {
+    const preset = root.querySelector(`#fade-${kind}-preset`)?.value;
+    const input = root.querySelector(`#fade-${kind}-duration`);
+    if (input && preset && preset !== "custom") input.value = preset;
+  };
+  const markFadePresetCustom = (root, kind) => {
+    const preset = root.querySelector(`#fade-${kind}-preset`);
+    if (preset) preset.value = "custom";
+  };
+  const loadAudioVolumeInfo = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const m = messages[lang];
+    const file = root.querySelector("#volume-file")?.files?.[0];
+    const result = root.querySelector("#result");
+    assertSupportedAudioFile(file, lang);
+    revokeAudioUrls(root);
+    setAudioStatus(root, lang === "ko" ? "오디오 파일을 불러오는 중입니다." : "Loading audio file.", 10);
+    const originalUrl = URL.createObjectURL(file);
+    root.dataset.audioOriginalUrl = originalUrl;
+    const originalPreview = root.querySelector("#audio-original-preview");
+    if (originalPreview) originalPreview.src = originalUrl;
+    const audioBuffer = await loadAudioBuffer(file, lang);
+    root._volumeState = { file, audioBuffer };
+    const outputSelect = root.querySelector("#volume-output-format");
+    if (outputSelect) outputSelect.value = "source";
+    const largeNote = file.size >= 52428800
+      ? (lang === "ko" ? "\n이 파일은 50MB 이상이라 모바일 브라우저에서 실패할 수 있습니다." : "\nThis file is over 50 MB and may fail in a mobile browser.")
+      : file.size >= 20971520
+        ? (lang === "ko" ? "\n이 파일은 용량이 커서 처리 시간이 길어질 수 있습니다." : "\nThis file is large and may take longer to process.")
+        : "";
+    if (result) result.textContent = `${m.originalFileName}: ${file.name}
+${m.originalSize}: ${formatBytes(file.size, lang)}
+${lang === "ko" ? "원본 형식" : "Original format"}: ${file.type || fileExtension(file.name) || "audio"}
+${lang === "ko" ? "오디오 길이" : "Audio duration"}: ${formatDuration(audioBuffer.duration, lang)}
+${lang === "ko" ? "샘플레이트" : "Sample rate"}: ${format(audioBuffer.sampleRate, lang)} Hz
+${lang === "ko" ? "채널 수" : "Channels"}: ${audioBuffer.numberOfChannels}${largeNote}`;
+    setAudioStatus(root, lang === "ko" ? "볼륨 조절 준비 중입니다." : "Preparing volume adjustment.", 30);
+  };
+  const getVolumeSettings = (root) => {
+    const lang = root.dataset.lang || "ko";
+    const duration = root._volumeState?.audioBuffer?.duration || 0;
+    const volume = Number(root.querySelector("#volume-percent")?.value);
+    if (!Number.isFinite(volume) || volume < 0 || volume > 200) {
+      throw new Error(lang === "ko" ? "볼륨 값을 올바르게 입력해주세요. 볼륨은 0%에서 200% 사이여야 합니다." : "Please enter a valid volume value. Volume must be between 0% and 200%.");
+    }
+    const fadeInEnabled = root.querySelector("#fade-in-enabled")?.checked;
+    const fadeOutEnabled = root.querySelector("#fade-out-enabled")?.checked;
+    const fadeIn = fadeInEnabled ? Number(root.querySelector("#fade-in-duration")?.value) : 0;
+    const fadeOut = fadeOutEnabled ? Number(root.querySelector("#fade-out-duration")?.value) : 0;
+    if (!Number.isFinite(fadeIn) || fadeIn < 0) throw new Error(lang === "ko" ? "페이드 인 길이를 올바르게 입력해주세요." : "Please enter a valid fade in duration.");
+    if (!Number.isFinite(fadeOut) || fadeOut < 0) throw new Error(lang === "ko" ? "페이드 아웃 길이를 올바르게 입력해주세요." : "Please enter a valid fade out duration.");
+    if (duration && fadeIn + fadeOut > duration) {
+      throw new Error(lang === "ko" ? "페이드 인과 페이드 아웃 길이의 합이 오디오 전체 길이보다 길 수 없습니다." : "The total fade in and fade out duration cannot be longer than the audio duration.");
+    }
+    return { volume, fadeIn, fadeOut };
+  };
+  const createVolumeEditedBuffer = (audioBuffer, settings) => {
+    const sampleRate = audioBuffer.sampleRate;
+    const offlineContext = new OfflineAudioContext(audioBuffer.numberOfChannels, audioBuffer.length, sampleRate);
+    const edited = offlineContext.createBuffer(audioBuffer.numberOfChannels, audioBuffer.length, sampleRate);
+    const gain = settings.volume / 100;
+    const fadeInFrames = Math.floor(settings.fadeIn * sampleRate);
+    const fadeOutFrames = Math.floor(settings.fadeOut * sampleRate);
+    let clipped = false;
+    for (let channel = 0; channel < audioBuffer.numberOfChannels; channel += 1) {
+      const source = audioBuffer.getChannelData(channel);
+      const target = edited.getChannelData(channel);
+      for (let i = 0; i < audioBuffer.length; i += 1) {
+        let factor = gain;
+        if (fadeInFrames > 0 && i < fadeInFrames) factor *= i / fadeInFrames;
+        if (fadeOutFrames > 0 && i >= audioBuffer.length - fadeOutFrames) factor *= Math.max(0, (audioBuffer.length - i - 1) / fadeOutFrames);
+        const value = source[i] * factor;
+        if (value > 1 || value < -1) clipped = true;
+        target[i] = Math.max(-1, Math.min(1, value));
+      }
+    }
+    return { audioBuffer: edited, clipped };
+  };
+  const editAudioVolume = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const m = messages[lang];
+    if (!root._volumeState?.audioBuffer) await loadAudioVolumeInfo(root);
+    const { file, audioBuffer } = root._volumeState;
+    const settings = getVolumeSettings(root);
+    const selectedFormat = root.querySelector("#volume-output-format")?.value || "source";
+    const outputFormat = selectedFormat === "source" ? getSourceAudioFormat(file) : selectedFormat;
+    if (!audioOutputFormats.has(outputFormat)) throw new Error(lang === "ko" ? "지원하지 않는 출력 형식입니다." : "Unsupported output format.");
+    setAudioStatus(root, lang === "ko" ? "오디오를 처리하는 중입니다." : "Processing audio.", 50);
+    const edited = createVolumeEditedBuffer(audioBuffer, settings);
+    let blob = encodeWav(edited.audioBuffer);
+    if (outputFormat !== "wav") {
+      const wavFile = new File([blob], `${file.name.replace(/\.[^.]+$/, "") || "audio"}-volume-edited.wav`, { type: "audio/wav" });
+      blob = await convertAudioWithFFmpeg(root, wavFile, outputFormat);
+    }
+    const baseName = file.name.replace(/\.[^.]+$/, "") || "audio";
+    setAudioDownload(root, blob, `${baseName}-volume-edited.${outputFormat}`);
+    const fadeInLabel = settings.fadeIn > 0 ? `${format(settings.fadeIn, lang)}s` : (lang === "ko" ? "사용 안 함" : "Off");
+    const fadeOutLabel = settings.fadeOut > 0 ? `${format(settings.fadeOut, lang)}s` : (lang === "ko" ? "사용 안 함" : "Off");
+    const clipNote = edited.clipped
+      ? `\n${lang === "ko" ? "선택한 볼륨 설정에서 클리핑이 발생할 수 있습니다." : "Clipping may occur with the selected volume setting."}`
+      : "";
+    root.querySelector("#result").textContent = `${lang === "ko" ? "원본 파일 크기" : "Original file size"}: ${formatBytes(file.size, lang)}
+${lang === "ko" ? "결과 파일 크기" : "Output file size"}: ${formatBytes(blob.size, lang)}
+${m.outputFormat}: ${outputFormat.toUpperCase()}
+${lang === "ko" ? "적용된 볼륨" : "Applied volume"}: ${format(settings.volume, lang)}%
+${lang === "ko" ? "페이드 인 설정" : "Fade in setting"}: ${fadeInLabel}
+${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabel}${clipNote}`;
+    setAudioStatus(root, lang === "ko" ? "처리가 완료되었습니다." : "Processing complete.", 100);
   };
   const requireFinite = (value, message) => {
     if (!Number.isFinite(value)) throw new Error(message);
@@ -1479,6 +2435,10 @@ const ui = {
       if (slug === "url-encoder-decoder") result.textContent = encodeURIComponent(text);
       if (slug === "csv-json-converter") result.textContent = JSON.stringify(csvToJson(text), null, 2);
       if (slug === "text-compare") result.textContent = compareTexts(root);
+      if (slug === "audio-converter") await convertAudio(root);
+      if (slug === "audio-cutter") await trimAudio(root);
+      if (slug === "audio-compressor") await compressAudio(root);
+      if (slug === "audio-volume-editor") await editAudioVolume(root);
       if (slug === "qr-code-generator") {
         if (!text) throw new Error(m.enterQr);
         await QRCode.toCanvas(root.querySelector("#qr-canvas"), text, { width: 192, margin: 2 });
@@ -2009,6 +2969,10 @@ const ui = {
         root.dataset.rotation = "0";
         root.dataset.flipX = "false";
         root.dataset.flipY = "false";
+        delete root._cutterState;
+        delete root._compressorState;
+        delete root._volumeState;
+        delete root.dataset.cutterDuration;
         const previousUrl = root.dataset.downloadUrl;
         if (previousUrl) URL.revokeObjectURL(previousUrl);
         delete root.dataset.downloadUrl;
@@ -2033,6 +2997,13 @@ const ui = {
         }
         const recentColors = root.querySelector("#recent-colors");
         if (recentColors) recentColors.innerHTML = "";
+        revokeAudioUrls(root);
+        const originalAudio = root.querySelector("#audio-original-preview");
+        const outputAudio = root.querySelector("#audio-output-preview");
+        if (originalAudio) originalAudio.removeAttribute("src");
+        if (outputAudio) outputAudio.removeAttribute("src");
+        setAudioStatus(root, root.dataset.lang === "ko" ? "오디오 파일을 선택하면 정보가 표시됩니다." : "Choose an audio file to see details.", 0);
+        syncVolumeInputs(root, 100);
         const downloadLink = root.querySelector("#download-link");
         if (downloadLink) {
           downloadLink.removeAttribute("href");
@@ -2065,6 +3036,15 @@ const ui = {
           root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
         });
       }
+      if (slug === "audio-volume-editor" && action === "volume-preset") {
+        syncVolumeInputs(root, button.dataset.volume || "100");
+      }
+      if (slug === "audio-cutter" && action === "preview-audio-range") {
+        previewAudioRange(root).catch((error) => {
+          root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+          setAudioStatus(root, root.dataset.lang === "ko" ? "선택 구간 미리 듣기에 실패했습니다." : "Range preview failed.", 0);
+        });
+      }
       if (action === "run") run(root);
     });
     root.querySelectorAll("input, textarea, select").forEach((control) => {
@@ -2080,6 +3060,45 @@ const ui = {
         if (control.id === "aspect-ratio" || control.id === "crop-width") syncCropAspectRatio(root);
         if (control.id === "unit-kind") syncUnitConverterOptions(root);
         if (slug === "image-mosaic" && control.id === "image-file") run(root);
+        if (slug === "audio-converter" && control.id === "audio-file") {
+          loadAudioInfo(root).catch((error) => {
+            root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+            setAudioStatus(root, root.dataset.lang === "ko" ? "변환에 실패했습니다." : "Conversion failed.", 0);
+          });
+        }
+        if (slug === "audio-cutter") {
+          if (control.id === "cutter-file") {
+            loadAudioCutterInfo(root).catch((error) => {
+              root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+              setAudioStatus(root, root.dataset.lang === "ko" ? "오디오 파일을 읽을 수 없습니다." : "Audio file could not be read.", 0);
+            });
+          }
+          if (["cutter-start", "cutter-end", "cutter-start-range", "cutter-end-range"].includes(control.id)) {
+            syncCutterRanges(root, control.id === "cutter-start-range" ? "start-range" : control.id === "cutter-end-range" ? "end-range" : "");
+          }
+        }
+        if (slug === "audio-compressor") {
+          if (control.id === "compressor-file") {
+            loadAudioCompressorInfo(root).catch((error) => {
+              root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+              setAudioStatus(root, root.dataset.lang === "ko" ? "오디오 파일을 읽을 수 없습니다." : "Audio file could not be read.", 0);
+            });
+          }
+          if (control.id === "compressor-preset") applyAudioCompressionPreset(root);
+        }
+        if (slug === "audio-volume-editor") {
+          if (control.id === "volume-file") {
+            loadAudioVolumeInfo(root).catch((error) => {
+              root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+              setAudioStatus(root, root.dataset.lang === "ko" ? "오디오 파일을 읽을 수 없습니다." : "Audio file could not be read.", 0);
+            });
+          }
+          if (control.id === "volume-range" || control.id === "volume-percent") syncVolumeInputs(root, control.value);
+          if (control.id === "fade-in-preset") syncFadePreset(root, "in");
+          if (control.id === "fade-out-preset") syncFadePreset(root, "out");
+          if (control.id === "fade-in-duration") markFadePresetCustom(root, "in");
+          if (control.id === "fade-out-duration") markFadePresetCustom(root, "out");
+        }
         autoRun();
       });
     });

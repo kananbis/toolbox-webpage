@@ -31,6 +31,14 @@ const otherLang = lang === "ko" ? "en" : "ko";
 const basis = tool.basis ?? getToolBasis(lang, tool.slug) ?? t.common.basisText;
 const formattedBasis = basis.replace(/\. /g, ".\n");
 const isImageTool = ["image-resizer", "image-compressor", "webp-converter", "image-cropper", "image-rotate-flip", "image-format-converter", "image-mosaic", "image-watermark", "remove-image-metadata", "image-color-picker"].includes(tool.slug);
+const isAudioTool = ["audio-converter", "audio-cutter", "audio-compressor", "audio-volume-editor"].includes(tool.slug);
+const privacyNote = isImageTool
+  ? t.common.imagePrivacyNote
+  : isAudioTool
+    ? lang === "ko"
+      ? "선택한 오디오 파일은 서버로 업로드되지 않으며, 현재 브라우저 안에서만 처리됩니다."
+      : "Selected audio files are not uploaded to a server and are processed only in your browser."
+    : t.common.privacyNote;
 ---
 
 <Layout
@@ -52,7 +60,7 @@ const isImageTool = ["image-resizer", "image-compressor", "webp-converter", "ima
 
     <section class="mt-8">
       <ToolRunner slug={tool.slug} lang={lang} />
-      {tool.privacy && <p class="mt-3 text-sm text-slate-600">{isImageTool ? t.common.imagePrivacyNote : t.common.privacyNote}</p>}
+      {tool.privacy && <p class="mt-3 text-sm text-slate-600">{privacyNote}</p>}
     </section>
 
     <section class="prose-lite">
