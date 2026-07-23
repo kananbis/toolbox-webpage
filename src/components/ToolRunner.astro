@@ -459,6 +459,226 @@ const ui = {
     </div>
   )}
 
+  {["pdf-merger", "pdf-splitter", "pdf-page-extractor", "image-to-pdf", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg", "pdf-watermark", "pdf-page-numbers", "pdf-organizer"].includes(slug) && (
+    <div class="grid gap-4">
+      <div class="rounded-md border border-line bg-white p-4 text-sm leading-6 text-slate-700">
+        <p>{lang === "ko" ? "선택한 파일은 서버로 업로드되지 않으며, 현재 브라우저 안에서만 처리됩니다." : "Selected files are not uploaded to a server and are processed only in your browser."}</p>
+        <p class="mt-2">{lang === "ko" ? "본인이 소유했거나 편집할 권한이 있는 파일만 사용하세요. 저작권이 있는 파일을 무단으로 편집하거나 배포해서는 안 됩니다." : "Only use files that you own or have the right to edit. Do not edit or distribute copyrighted files without permission."}</p>
+      </div>
+
+      {slug === "image-to-pdf" ? (
+        <>
+          <label class="font-semibold" for="pdf-image-files">{lang === "ko" ? "이미지 선택" : "Choose Images"}</label>
+          <input id="pdf-image-files" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" multiple />
+        </>
+      ) : (
+        <>
+          <label class="font-semibold" for="pdf-files">{slug === "pdf-merger" ? (lang === "ko" ? "PDF 파일 선택" : "Choose PDF Files") : (lang === "ko" ? "PDF 파일 선택" : "Choose PDF File")}</label>
+          <input id="pdf-files" type="file" accept="application/pdf,.pdf" multiple={slug === "pdf-merger"} />
+        </>
+      )}
+
+      <div id="pdf-file-list" class="grid gap-2"></div>
+
+      {slug === "pdf-splitter" && (
+        <div class="grid gap-4 md:grid-cols-2">
+          <label>{lang === "ko" ? "분할 방식" : "Split mode"}
+            <select id="pdf-split-mode">
+              <option value="each">{lang === "ko" ? "모든 페이지를 각각 분할" : "Split every page"}</option>
+              <option value="ranges">{lang === "ko" ? "지정한 페이지 범위로 분할" : "Split by ranges"}</option>
+            </select>
+          </label>
+          <label>{lang === "ko" ? "페이지 범위" : "Page ranges"}
+            <input id="pdf-page-ranges" type="text" placeholder="1-3,5" />
+          </label>
+        </div>
+      )}
+
+      {["pdf-page-extractor", "pdf-page-delete"].includes(slug) && (
+        <label>{slug === "pdf-page-delete" ? (lang === "ko" ? "삭제할 페이지" : "Pages to delete") : (lang === "ko" ? "추출할 페이지" : "Pages to extract")}
+          <input id="pdf-page-ranges" type="text" placeholder="1,3,5 or 2-4,7" />
+        </label>
+      )}
+
+      {slug === "pdf-to-jpg" && (
+        <div class="grid gap-4 md:grid-cols-2">
+          <label>{lang === "ko" ? "변환할 페이지" : "Pages to convert"}
+            <select id="pdf-jpg-mode">
+              <option value="all">{lang === "ko" ? "모든 페이지" : "All pages"}</option>
+              <option value="custom">{lang === "ko" ? "특정 페이지" : "Specific pages"}</option>
+            </select>
+          </label>
+          <label>{lang === "ko" ? "페이지 범위" : "Page ranges"}
+            <input id="pdf-page-ranges" type="text" placeholder="1,3,5 or 2-4" />
+          </label>
+          <label>{lang === "ko" ? "JPG 품질" : "JPG quality"}
+            <select id="pdf-jpg-quality">
+              <option value="0.7">70%</option>
+              <option value="0.8">80%</option>
+              <option value="0.9" selected>90%</option>
+              <option value="1">100%</option>
+            </select>
+          </label>
+          <label>{lang === "ko" ? "배율" : "Scale"}
+            <select id="pdf-jpg-scale">
+              <option value="1">1x</option>
+              <option value="1.5" selected>1.5x</option>
+              <option value="2">2x</option>
+            </select>
+          </label>
+        </div>
+      )}
+
+      {slug === "pdf-rotate" && (
+        <div class="grid gap-4 md:grid-cols-3">
+          <label>{lang === "ko" ? "회전 대상" : "Pages"}
+            <select id="pdf-rotate-mode">
+              <option value="all">{lang === "ko" ? "모든 페이지" : "All pages"}</option>
+              <option value="custom">{lang === "ko" ? "특정 페이지" : "Specific pages"}</option>
+            </select>
+          </label>
+          <label>{lang === "ko" ? "특정 페이지" : "Specific pages"}
+            <input id="pdf-page-ranges" type="text" placeholder="1,3,5 or 2-4" />
+          </label>
+          <label>{lang === "ko" ? "회전 각도" : "Rotation"}
+            <select id="pdf-rotation">
+              <option value="90">{lang === "ko" ? "오른쪽으로 90도" : "90 clockwise"}</option>
+              <option value="180">180</option>
+              <option value="270">{lang === "ko" ? "왼쪽으로 90도" : "90 counterclockwise"}</option>
+            </select>
+          </label>
+        </div>
+      )}
+
+      {slug === "pdf-watermark" && (
+        <div class="grid gap-4 md:grid-cols-3">
+          <label class="md:col-span-3">{lang === "ko" ? "워터마크 텍스트" : "Watermark text"}
+            <input id="pdf-watermark-text" type="text" placeholder="CONFIDENTIAL" />
+          </label>
+          <label>{lang === "ko" ? "적용 페이지" : "Pages"}
+            <select id="pdf-watermark-mode">
+              <option value="all">{lang === "ko" ? "모든 페이지" : "All pages"}</option>
+              <option value="custom">{lang === "ko" ? "특정 페이지" : "Specific pages"}</option>
+            </select>
+          </label>
+          <label>{lang === "ko" ? "특정 페이지" : "Specific pages"}
+            <input id="pdf-page-ranges" type="text" placeholder="1,3,5 or 2-4" />
+          </label>
+          <label>{lang === "ko" ? "위치" : "Position"}
+            <select id="pdf-watermark-position">
+              <option value="center">{lang === "ko" ? "가운데" : "Center"}</option>
+              <option value="top-left">{lang === "ko" ? "왼쪽 위" : "Top Left"}</option>
+              <option value="top-right">{lang === "ko" ? "오른쪽 위" : "Top Right"}</option>
+              <option value="bottom-left">{lang === "ko" ? "왼쪽 아래" : "Bottom Left"}</option>
+              <option value="bottom-right">{lang === "ko" ? "오른쪽 아래" : "Bottom Right"}</option>
+            </select>
+          </label>
+          <label>{lang === "ko" ? "글자 크기" : "Font size"}
+            <select id="pdf-watermark-size"><option>24</option><option>36</option><option selected>48</option><option>72</option></select>
+          </label>
+          <label>{lang === "ko" ? "투명도" : "Opacity"}
+            <select id="pdf-watermark-opacity"><option value="0.1">10%</option><option value="0.2" selected>20%</option><option value="0.3">30%</option><option value="0.5">50%</option></select>
+          </label>
+          <label>{lang === "ko" ? "회전 각도" : "Rotation"}
+            <select id="pdf-watermark-rotation"><option value="0">0</option><option value="30">30</option><option value="45" selected>45</option><option value="-45">-45</option></select>
+          </label>
+          <label>{lang === "ko" ? "색상" : "Color"}
+            <select id="pdf-watermark-color">
+              <option value="gray">{lang === "ko" ? "회색" : "Gray"}</option>
+              <option value="black">{lang === "ko" ? "검정" : "Black"}</option>
+              <option value="red">{lang === "ko" ? "빨강" : "Red"}</option>
+              <option value="blue">{lang === "ko" ? "파랑" : "Blue"}</option>
+            </select>
+          </label>
+        </div>
+      )}
+
+      {slug === "pdf-page-numbers" && (
+        <div class="grid gap-4 md:grid-cols-3">
+          <label>{lang === "ko" ? "위치" : "Position"}
+            <select id="pdf-number-position">
+              <option value="bottom-center">{lang === "ko" ? "아래 가운데" : "Bottom Center"}</option>
+              <option value="bottom-right">{lang === "ko" ? "아래 오른쪽" : "Bottom Right"}</option>
+              <option value="bottom-left">{lang === "ko" ? "아래 왼쪽" : "Bottom Left"}</option>
+              <option value="top-center">{lang === "ko" ? "위 가운데" : "Top Center"}</option>
+              <option value="top-right">{lang === "ko" ? "위 오른쪽" : "Top Right"}</option>
+              <option value="top-left">{lang === "ko" ? "위 왼쪽" : "Top Left"}</option>
+            </select>
+          </label>
+          <label>{lang === "ko" ? "번호 형식" : "Number format"}
+            <select id="pdf-number-format">
+              <option value="number">1</option>
+              <option value="number-total">1 / N</option>
+              <option value="page">Page 1</option>
+              <option value="page-total">Page 1 of N</option>
+            </select>
+          </label>
+          <label>{lang === "ko" ? "시작 번호" : "Start number"}<input id="pdf-number-start" type="number" min="0" value="1" /></label>
+          <label>{lang === "ko" ? "적용 대상" : "Pages"}
+            <select id="pdf-number-mode">
+              <option value="all">{lang === "ko" ? "모든 페이지" : "All pages"}</option>
+              <option value="custom">{lang === "ko" ? "특정 페이지" : "Specific pages"}</option>
+            </select>
+          </label>
+          <label>{lang === "ko" ? "특정 페이지" : "Specific pages"}<input id="pdf-page-ranges" type="text" placeholder="1,3,5 or 2-4" /></label>
+          <label>{lang === "ko" ? "글자 크기" : "Font size"}<select id="pdf-number-size"><option>10</option><option selected>12</option><option>14</option><option>16</option></select></label>
+          <label>{lang === "ko" ? "여백" : "Margin"}
+            <select id="pdf-number-margin">
+              <option value="12">{lang === "ko" ? "매우 작게" : "Extra Small"}</option>
+              <option value="24">{lang === "ko" ? "작게" : "Small"}</option>
+              <option value="36" selected>{lang === "ko" ? "보통" : "Normal"}</option>
+              <option value="54">{lang === "ko" ? "넓게" : "Large"}</option>
+              <option value="72">{lang === "ko" ? "아주 넓게" : "Extra Large"}</option>
+            </select>
+          </label>
+        </div>
+      )}
+
+      {slug === "image-to-pdf" && (
+        <div class="grid gap-4 md:grid-cols-2">
+          <label>{lang === "ko" ? "페이지 크기" : "Page size"}
+            <select id="pdf-page-size">
+              <option value="image">{lang === "ko" ? "이미지 크기 기준" : "Use image size"}</option>
+              <option value="a4-portrait">A4 {lang === "ko" ? "세로" : "Portrait"}</option>
+              <option value="a4-landscape">A4 {lang === "ko" ? "가로" : "Landscape"}</option>
+              <option value="letter-portrait">Letter {lang === "ko" ? "세로" : "Portrait"}</option>
+              <option value="letter-landscape">Letter {lang === "ko" ? "가로" : "Landscape"}</option>
+            </select>
+          </label>
+          <label>{lang === "ko" ? "여백" : "Margin"}
+            <select id="pdf-margin"><option value="0">{lang === "ko" ? "없음" : "None"}</option><option value="24">{lang === "ko" ? "작게" : "Small"}</option><option value="48" selected>{lang === "ko" ? "보통" : "Normal"}</option></select>
+          </label>
+        </div>
+      )}
+
+      {slug === "pdf-organizer" && (
+        <div class="grid gap-2">
+          <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "페이지 목록" : "Page list"}</p>
+          <div id="pdf-organizer-list" class="grid gap-2"></div>
+        </div>
+      )}
+
+      <p id="pdf-status" class="text-sm text-slate-600">{lang === "ko" ? "파일을 선택하면 정보가 표시됩니다." : "Choose files to see details."}</p>
+      <div class="flex flex-wrap gap-2">
+        <button class="btn-primary" data-action="run">
+          {slug === "pdf-merger" ? (lang === "ko" ? "합치기" : "Merge") :
+            slug === "pdf-splitter" ? (lang === "ko" ? "분할" : "Split") :
+            slug === "pdf-page-extractor" ? (lang === "ko" ? "페이지 추출" : "Extract Pages") :
+            slug === "image-to-pdf" ? (lang === "ko" ? "PDF 만들기" : "Create PDF") :
+            slug === "pdf-rotate" ? (lang === "ko" ? "회전" : "Rotate") :
+            slug === "pdf-page-delete" ? (lang === "ko" ? "페이지 삭제" : "Delete Pages") :
+            slug === "pdf-to-jpg" ? (lang === "ko" ? "JPG로 변환" : "Convert to JPG") :
+            slug === "pdf-watermark" ? (lang === "ko" ? "워터마크 추가" : "Add Watermark") :
+            slug === "pdf-page-numbers" ? (lang === "ko" ? "페이지 번호 추가" : "Add Page Numbers") :
+            (lang === "ko" ? "새 PDF 만들기" : "Create New PDF")}
+        </button>
+        <button class="btn-secondary" data-action="reset">{ui.reset}</button>
+      </div>
+      <pre class="result-box whitespace-pre-wrap" id="result">{ui.result}</pre>
+      <div id="pdf-downloads" class="flex flex-wrap gap-2"></div>
+    </div>
+  )}
+
   {slug === "audio-converter" && (
     <div class="grid gap-4">
       <div class="rounded-md border border-line bg-white p-4 text-sm leading-6 text-slate-700">
@@ -1985,6 +2205,488 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
     }, new Set()));
     return [headers.join(","), ...data.map((item) => headers.map((header) => escapeCsv(item?.[header])).join(","))].join("\n");
   };
+  const pdfToolSlugs = ["pdf-merger", "pdf-splitter", "pdf-page-extractor", "image-to-pdf", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg", "pdf-watermark", "pdf-page-numbers", "pdf-organizer"];
+  let pdfLibPromise;
+  const getPdfLib = () => {
+    if (!pdfLibPromise) pdfLibPromise = import("pdf-lib");
+    return pdfLibPromise;
+  };
+  let pdfJsPromise;
+  const getPdfJs = async () => {
+    if (!pdfJsPromise) {
+      pdfJsPromise = Promise.all([
+        import("pdfjs-dist"),
+        import("pdfjs-dist/build/pdf.worker.mjs?url"),
+      ]).then(([pdfjs, worker]) => {
+        pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
+        return pdfjs;
+      });
+    }
+    return pdfJsPromise;
+  };
+  const pdfMessages = {
+    ko: {
+      choosePdf: "PDF 파일을 선택해주세요.",
+      chooseTwoPdfs: "PDF 파일을 2개 이상 선택해주세요.",
+      chooseImage: "이미지를 선택해주세요.",
+      invalidPdf: "PDF 파일을 읽을 수 없습니다. 파일이 손상되었거나 암호화되어 있을 수 있습니다.",
+      invalidImage: "JPG, PNG, WebP 이미지만 사용할 수 있습니다.",
+      invalidPages: "페이지 번호를 올바르게 입력해주세요. 페이지 번호는 1부터 시작하며 전체 페이지 수를 초과할 수 없습니다.",
+      needOnePage: "최소 1페이지는 남아 있어야 합니다.",
+      emptyWatermark: "워터마크 텍스트를 입력해주세요.",
+      invalidStartNumber: "페이지 번호 시작 번호를 올바르게 입력해주세요.",
+      processing: "처리 중입니다.",
+      done: "처리가 완료되었습니다.",
+      large: "이 파일은 용량이 커서 처리 시간이 길어질 수 있습니다.",
+      mobileLarge: "이 파일은 매우 커서 모바일 브라우저에서 실패할 수 있습니다.",
+      outputFiles: "결과 파일",
+      pages: "페이지",
+      totalPages: "총 페이지 수",
+      originalFile: "원본 파일",
+      originalSize: "원본 용량",
+      resultSize: "결과 용량",
+      resultCount: "결과 개수",
+      download: "다운로드",
+      page: "페이지",
+      moveUp: "위로",
+      moveDown: "아래로",
+      remove: "삭제",
+      rotate: "회전",
+    },
+    en: {
+      choosePdf: "Choose a PDF file.",
+      chooseTwoPdfs: "Choose at least two PDF files.",
+      chooseImage: "Choose images.",
+      invalidPdf: "This PDF file could not be read. It may be damaged or encrypted.",
+      invalidImage: "Only JPG, PNG, and WebP images are supported.",
+      invalidPages: "Please enter valid page numbers. Page numbers start from 1 and cannot exceed the total number of pages.",
+      needOnePage: "At least one page must remain.",
+      emptyWatermark: "Enter watermark text.",
+      invalidStartNumber: "Please enter a valid starting page number.",
+      processing: "Processing.",
+      done: "Processing complete.",
+      large: "This file is large and may take longer to process.",
+      mobileLarge: "This file is very large and may fail in a mobile browser.",
+      outputFiles: "Output files",
+      pages: "Pages",
+      totalPages: "Total pages",
+      originalFile: "Original file",
+      originalSize: "Original size",
+      resultSize: "Result size",
+      resultCount: "Result count",
+      download: "Download",
+      page: "Page",
+      moveUp: "Up",
+      moveDown: "Down",
+      remove: "Delete",
+      rotate: "Rotate",
+    },
+  };
+  const pdfText = (lang, key) => pdfMessages[lang]?.[key] ?? pdfMessages.en[key];
+  const isPdfFile = (file) => file?.type === "application/pdf" || /\.pdf$/i.test(file?.name || "");
+  const isPdfImageFile = (file) => ["image/jpeg", "image/png", "image/webp"].includes(file?.type) || /\.(jpe?g|png|webp)$/i.test(file?.name || "");
+  const baseFileName = (name, fallback = "file") => (name || fallback).replace(/\.[^.]+$/, "") || fallback;
+  const setPdfStatus = (root, text) => {
+    const status = root.querySelector("#pdf-status");
+    if (status) status.textContent = text;
+  };
+  const clearPdfDownloads = (root) => {
+    const container = root.querySelector("#pdf-downloads");
+    if (container) container.innerHTML = "";
+    (root._pdfDownloadUrls || []).forEach((url) => URL.revokeObjectURL(url));
+    root._pdfDownloadUrls = [];
+  };
+  const addPdfDownload = (root, data, filename, type = "application/pdf") => {
+    const container = root.querySelector("#pdf-downloads");
+    if (!container) return null;
+    const blob = data instanceof Blob ? data : new Blob([data], { type });
+    const url = URL.createObjectURL(blob);
+    root._pdfDownloadUrls = [...(root._pdfDownloadUrls || []), url];
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.className = "btn-primary";
+    link.textContent = `${pdfText(root.dataset.lang || "ko", "download")} ${filename}`;
+    container.appendChild(link);
+    return blob;
+  };
+  const renderPdfFileList = (root) => {
+    const lang = root.dataset.lang || "ko";
+    const slug = root.dataset.tool;
+    const list = root.querySelector("#pdf-file-list");
+    if (!list) return;
+    const items = root._pdfFiles || [];
+    list.innerHTML = "";
+    items.forEach((item, index) => {
+      const row = document.createElement("div");
+      row.className = "flex flex-col gap-2 rounded-md border border-line bg-white p-3 text-sm text-slate-700 sm:flex-row sm:items-center sm:justify-between";
+      const details = [item.file.name, formatBytes(item.file.size, lang)];
+      if (item.pageCount) details.push(`${pdfText(lang, "totalPages")}: ${item.pageCount}`);
+      if (item.width && item.height) details.push(`${item.width} x ${item.height}px`);
+      row.innerHTML = `<span>${details.join(" / ")}</span>`;
+      if (["pdf-merger", "image-to-pdf"].includes(slug)) {
+        const actions = document.createElement("div");
+        actions.className = "flex flex-wrap gap-2";
+        actions.innerHTML = `<button class="btn-secondary" data-action="pdf-up" data-index="${index}">${pdfText(lang, "moveUp")}</button><button class="btn-secondary" data-action="pdf-down" data-index="${index}">${pdfText(lang, "moveDown")}</button><button class="btn-secondary" data-action="pdf-remove" data-index="${index}">${pdfText(lang, "remove")}</button>`;
+        row.appendChild(actions);
+      }
+      list.appendChild(row);
+    });
+  };
+  const renderPdfOrganizer = (root) => {
+    const lang = root.dataset.lang || "ko";
+    const list = root.querySelector("#pdf-organizer-list");
+    if (!list) return;
+    const pages = root._pdfOrganizerPages || [];
+    list.innerHTML = "";
+    pages.forEach((item, index) => {
+      const row = document.createElement("div");
+      row.className = "flex flex-col gap-2 rounded-md border border-line bg-white p-3 text-sm text-slate-700 sm:flex-row sm:items-center sm:justify-between";
+      row.innerHTML = `<span>${pdfText(lang, "page")} ${item.sourceIndex + 1} / ${item.rotation}°</span><span class="flex flex-wrap gap-2"><button class="btn-secondary" data-action="pdf-page-up" data-index="${index}">${pdfText(lang, "moveUp")}</button><button class="btn-secondary" data-action="pdf-page-down" data-index="${index}">${pdfText(lang, "moveDown")}</button><button class="btn-secondary" data-action="pdf-page-delete" data-index="${index}">${pdfText(lang, "remove")}</button><button class="btn-secondary" data-action="pdf-page-rotate" data-index="${index}">${pdfText(lang, "rotate")}</button></span>`;
+      list.appendChild(row);
+    });
+  };
+  const loadImageSize = async (file) => {
+    const image = await loadImageBitmap(file);
+    return { width: image.width, height: image.height };
+  };
+  const loadPdfFileItems = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const slug = root.dataset.tool;
+    clearPdfDownloads(root);
+    const input = root.querySelector(slug === "image-to-pdf" ? "#pdf-image-files" : "#pdf-files");
+    const files = Array.from(input?.files || []);
+    const { PDFDocument } = await getPdfLib();
+    const items = [];
+    for (const file of files) {
+      if (file.size >= 50 * 1024 * 1024) setPdfStatus(root, pdfText(lang, "mobileLarge"));
+      else if (file.size >= 20 * 1024 * 1024) setPdfStatus(root, pdfText(lang, "large"));
+      if (slug === "image-to-pdf") {
+        if (!isPdfImageFile(file)) throw new Error(pdfText(lang, "invalidImage"));
+        items.push({ file, ...(await loadImageSize(file)) });
+      } else {
+        if (!isPdfFile(file)) throw new Error(pdfText(lang, "invalidPdf"));
+        let pageCount = 0;
+        try {
+          const pdf = await PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: false });
+          pageCount = pdf.getPageCount();
+        } catch {
+          throw new Error(pdfText(lang, "invalidPdf"));
+        }
+        items.push({ file, pageCount });
+      }
+    }
+    root._pdfFiles = items;
+    if (slug === "pdf-organizer" && items[0]) {
+      root._pdfOrganizerPages = Array.from({ length: items[0].pageCount }, (_, index) => ({ sourceIndex: index, rotation: 0 }));
+      renderPdfOrganizer(root);
+    }
+    renderPdfFileList(root);
+    setPdfStatus(root, items.length ? `${pdfText(lang, "resultCount")}: ${items.length}` : (slug === "image-to-pdf" ? pdfText(lang, "chooseImage") : pdfText(lang, "choosePdf")));
+  };
+  const parsePdfPageGroups = (input, pageCount, combine = false, lang = "ko") => {
+    const text = String(input || "").trim();
+    if (!text) throw new Error(pdfText(lang, "invalidPages"));
+    const groups = combine ? [[]] : [];
+    for (const chunk of text.split(",")) {
+      const part = chunk.trim();
+      if (!part) continue;
+      const match = part.match(/^(\d+)(?:\s*-\s*(\d+))?$/);
+      if (!match) throw new Error(pdfText(lang, "invalidPages"));
+      const start = Number(match[1]);
+      const end = Number(match[2] || match[1]);
+      if (!Number.isInteger(start) || !Number.isInteger(end) || start < 1 || end < start || end > pageCount) throw new Error(pdfText(lang, "invalidPages"));
+      const pages = Array.from({ length: end - start + 1 }, (_, offset) => start - 1 + offset);
+      if (combine) groups[0].push(...pages);
+      else groups.push(pages);
+    }
+    if (!groups.length || groups.some((group) => !group.length)) throw new Error(pdfText(lang, "invalidPages"));
+    return groups;
+  };
+  const loadSinglePdf = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const item = root._pdfFiles?.[0];
+    if (!item) throw new Error(pdfText(lang, "choosePdf"));
+    const { PDFDocument } = await getPdfLib();
+    try {
+      return { item, pdf: await PDFDocument.load(await item.file.arrayBuffer(), { ignoreEncryption: false }) };
+    } catch {
+      throw new Error(pdfText(lang, "invalidPdf"));
+    }
+  };
+  const savePdfResult = (root, bytes, filename, summary) => {
+    clearPdfDownloads(root);
+    const blob = addPdfDownload(root, bytes, filename);
+    const lang = root.dataset.lang || "ko";
+    root.querySelector("#result").textContent = `${summary}\n${pdfText(lang, "resultSize")}: ${formatBytes(blob.size, lang)}`;
+    setPdfStatus(root, pdfText(lang, "done"));
+  };
+  const mergePdfs = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const items = root._pdfFiles || [];
+    if (items.length < 2) throw new Error(pdfText(lang, "chooseTwoPdfs"));
+    const { PDFDocument } = await getPdfLib();
+    const output = await PDFDocument.create();
+    for (const item of items) {
+      const source = await PDFDocument.load(await item.file.arrayBuffer(), { ignoreEncryption: false });
+      const pages = await output.copyPages(source, source.getPageIndices());
+      pages.forEach((page) => output.addPage(page));
+    }
+    const bytes = await output.save();
+    savePdfResult(root, bytes, "merged.pdf", `${pdfText(lang, "resultCount")}: 1\n${pdfText(lang, "pages")}: ${output.getPageCount()}`);
+  };
+  const splitPdf = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const { item, pdf } = await loadSinglePdf(root);
+    const { PDFDocument } = await getPdfLib();
+    const mode = root.querySelector("#pdf-split-mode")?.value || "each";
+    const groups = mode === "each"
+      ? pdf.getPageIndices().map((index) => [index])
+      : parsePdfPageGroups(root.querySelector("#pdf-page-ranges")?.value, pdf.getPageCount(), false, lang);
+    clearPdfDownloads(root);
+    for (const group of groups) {
+      const output = await PDFDocument.create();
+      const pages = await output.copyPages(pdf, group);
+      pages.forEach((page) => output.addPage(page));
+      const label = group.length === 1 ? `page-${group[0] + 1}` : `pages-${group[0] + 1}-${group[group.length - 1] + 1}`;
+      addPdfDownload(root, await output.save(), `${baseFileName(item.file.name, "document")}-${label}.pdf`);
+    }
+    root.querySelector("#result").textContent = `${pdfText(lang, "originalFile")}: ${item.file.name}\n${pdfText(lang, "totalPages")}: ${pdf.getPageCount()}\n${pdfText(lang, "resultCount")}: ${groups.length}`;
+    setPdfStatus(root, pdfText(lang, "done"));
+  };
+  const extractPdfPages = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const { item, pdf } = await loadSinglePdf(root);
+    const { PDFDocument } = await getPdfLib();
+    const pagesToCopy = parsePdfPageGroups(root.querySelector("#pdf-page-ranges")?.value, pdf.getPageCount(), true, lang)[0];
+    const output = await PDFDocument.create();
+    const pages = await output.copyPages(pdf, pagesToCopy);
+    pages.forEach((page) => output.addPage(page));
+    savePdfResult(root, await output.save(), `${baseFileName(item.file.name, "document")}-extracted.pdf`, `${pdfText(lang, "originalFile")}: ${item.file.name}\n${pdfText(lang, "pages")}: ${pagesToCopy.map((page) => page + 1).join(", ")}`);
+  };
+  const deletePdfPages = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const { item, pdf } = await loadSinglePdf(root);
+    const { PDFDocument } = await getPdfLib();
+    const deleteSet = new Set(parsePdfPageGroups(root.querySelector("#pdf-page-ranges")?.value, pdf.getPageCount(), true, lang)[0]);
+    if (deleteSet.size >= pdf.getPageCount()) throw new Error(pdfText(lang, "needOnePage"));
+    const keepPages = pdf.getPageIndices().filter((index) => !deleteSet.has(index));
+    const output = await PDFDocument.create();
+    const pages = await output.copyPages(pdf, keepPages);
+    pages.forEach((page) => output.addPage(page));
+    savePdfResult(root, await output.save(), `${baseFileName(item.file.name, "document")}-pages-deleted.pdf`, `${pdfText(lang, "originalFile")}: ${item.file.name}\n${pdfText(lang, "pages")}: ${keepPages.length}`);
+  };
+  const rotatePdf = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const { item, pdf } = await loadSinglePdf(root);
+    const { degrees } = await getPdfLib();
+    const mode = root.querySelector("#pdf-rotate-mode")?.value || "all";
+    const angle = Number(root.querySelector("#pdf-rotation")?.value || 90);
+    const targets = mode === "all" ? pdf.getPageIndices() : parsePdfPageGroups(root.querySelector("#pdf-page-ranges")?.value, pdf.getPageCount(), true, lang)[0];
+    targets.forEach((index) => {
+      const page = pdf.getPage(index);
+      page.setRotation(degrees((page.getRotation().angle + angle) % 360));
+    });
+    savePdfResult(root, await pdf.save(), `${baseFileName(item.file.name, "document")}-rotated.pdf`, `${pdfText(lang, "originalFile")}: ${item.file.name}\n${pdfText(lang, "pages")}: ${targets.map((page) => page + 1).join(", ")}`);
+  };
+  const imageFileToPngBytes = async (file) => {
+    const image = await loadImageBitmap(file);
+    const canvas = document.createElement("canvas");
+    canvas.width = image.width;
+    canvas.height = image.height;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Canvas failed.");
+    context.drawImage(image, 0, 0);
+    return { bytes: await (await canvasToBlob(canvas, "image/png", 0.92)).arrayBuffer(), width: image.width, height: image.height };
+  };
+  const pdfPageSize = (mode, width, height) => {
+    const sizes = {
+      "a4-portrait": [595.28, 841.89],
+      "a4-landscape": [841.89, 595.28],
+      "letter-portrait": [612, 792],
+      "letter-landscape": [792, 612],
+    };
+    return sizes[mode] || [width, height];
+  };
+  const createImagePdf = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const items = root._pdfFiles || [];
+    if (!items.length) throw new Error(pdfText(lang, "chooseImage"));
+    const { PDFDocument } = await getPdfLib();
+    const output = await PDFDocument.create();
+    const pageSizeMode = root.querySelector("#pdf-page-size")?.value || "image";
+    const margin = Number(root.querySelector("#pdf-margin")?.value || 0);
+    for (const item of items) {
+      const imageData = await imageFileToPngBytes(item.file);
+      const image = await output.embedPng(imageData.bytes);
+      const [pageWidth, pageHeight] = pdfPageSize(pageSizeMode, imageData.width, imageData.height);
+      const page = output.addPage([pageWidth, pageHeight]);
+      const maxWidth = Math.max(1, pageWidth - margin * 2);
+      const maxHeight = Math.max(1, pageHeight - margin * 2);
+      const scale = Math.min(maxWidth / imageData.width, maxHeight / imageData.height);
+      const drawWidth = imageData.width * scale;
+      const drawHeight = imageData.height * scale;
+      page.drawImage(image, { x: (pageWidth - drawWidth) / 2, y: (pageHeight - drawHeight) / 2, width: drawWidth, height: drawHeight });
+    }
+    savePdfResult(root, await output.save(), "images.pdf", `${pdfText(lang, "resultCount")}: 1\n${pdfText(lang, "pages")}: ${items.length}`);
+  };
+  const pdfColor = (rgb, color) => ({
+    gray: rgb(0.45, 0.45, 0.45),
+    black: rgb(0, 0, 0),
+    red: rgb(0.8, 0.05, 0.05),
+    blue: rgb(0.08, 0.25, 0.75),
+  })[color] || rgb(0.45, 0.45, 0.45);
+  const watermarkPosition = (page, width, height, position) => {
+    const { width: pageWidth, height: pageHeight } = page.getSize();
+    const margin = 48;
+    const map = {
+      center: [(pageWidth - width) / 2, (pageHeight - height) / 2],
+      "top-left": [margin, pageHeight - margin - height],
+      "top-right": [pageWidth - margin - width, pageHeight - margin - height],
+      "bottom-left": [margin, margin],
+      "bottom-right": [pageWidth - margin - width, margin],
+    };
+    return map[position] || map.center;
+  };
+  const watermarkCssColor = (color) => ({
+    gray: "#6b7280",
+    black: "#111827",
+    red: "#dc2626",
+    blue: "#2563eb",
+  })[color] || "#6b7280";
+  const createWatermarkImage = async (text, size, color) => {
+    const measureCanvas = document.createElement("canvas");
+    const measureContext = measureCanvas.getContext("2d");
+    if (!measureContext) throw new Error("Canvas failed.");
+    measureContext.font = `600 ${size}px Arial, sans-serif`;
+    const metrics = measureContext.measureText(text);
+    const width = Math.max(size * 3, Math.ceil(metrics.width + size));
+    const height = Math.ceil(size * 1.8);
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Canvas failed.");
+    context.font = `600 ${size}px Arial, sans-serif`;
+    context.fillStyle = watermarkCssColor(color);
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText(text, width / 2, height / 2);
+    return { bytes: await (await canvasToBlob(canvas, "image/png", 0.92)).arrayBuffer(), width, height };
+  };
+  const watermarkPdf = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const { item, pdf } = await loadSinglePdf(root);
+    const { degrees } = await getPdfLib();
+    const text = root.querySelector("#pdf-watermark-text")?.value.trim();
+    if (!text) throw new Error(pdfText(lang, "emptyWatermark"));
+    const mode = root.querySelector("#pdf-watermark-mode")?.value || "all";
+    const targets = mode === "all" ? pdf.getPageIndices() : parsePdfPageGroups(root.querySelector("#pdf-page-ranges")?.value, pdf.getPageCount(), true, lang)[0];
+    const size = Number(root.querySelector("#pdf-watermark-size")?.value || 48);
+    const opacity = Number(root.querySelector("#pdf-watermark-opacity")?.value || 0.2);
+    const rotation = Number(root.querySelector("#pdf-watermark-rotation")?.value || 45);
+    const watermarkImageData = await createWatermarkImage(text, size, root.querySelector("#pdf-watermark-color")?.value);
+    const watermarkImage = await pdf.embedPng(watermarkImageData.bytes);
+    const position = root.querySelector("#pdf-watermark-position")?.value || "center";
+    for (const index of targets) {
+      const page = pdf.getPage(index);
+      const [x, y] = watermarkPosition(page, watermarkImageData.width, watermarkImageData.height, position);
+      page.drawImage(watermarkImage, { x, y, width: watermarkImageData.width, height: watermarkImageData.height, opacity, rotate: degrees(rotation) });
+    }
+    savePdfResult(root, await pdf.save(), `${baseFileName(item.file.name, "document")}-watermarked.pdf`, `${pdfText(lang, "originalFile")}: ${item.file.name}\n${pdfText(lang, "pages")}: ${targets.map((page) => page + 1).join(", ")}`);
+  };
+  const pageNumberText = (formatType, number, total) => {
+    if (formatType === "number-total") return `${number} / ${total}`;
+    if (formatType === "page") return `Page ${number}`;
+    if (formatType === "page-total") return `Page ${number} of ${total}`;
+    return String(number);
+  };
+  const pageNumberPosition = (page, text, size, position, margin) => {
+    const { width, height } = page.getSize();
+    const textWidth = text.length * size * 0.5;
+    const x = position.endsWith("left") ? margin : position.endsWith("right") ? width - margin - textWidth : (width - textWidth) / 2;
+    const y = position.startsWith("top") ? height - margin : margin;
+    return { x, y };
+  };
+  const addPdfPageNumbers = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const { item, pdf } = await loadSinglePdf(root);
+    const { StandardFonts, rgb } = await getPdfLib();
+    const mode = root.querySelector("#pdf-number-mode")?.value || "all";
+    const targets = mode === "all" ? pdf.getPageIndices() : parsePdfPageGroups(root.querySelector("#pdf-page-ranges")?.value, pdf.getPageCount(), true, lang)[0];
+    const startNumber = Number(root.querySelector("#pdf-number-start")?.value || 1);
+    if (!Number.isInteger(startNumber) || startNumber < 0) throw new Error(pdfText(lang, "invalidStartNumber"));
+    const formatType = root.querySelector("#pdf-number-format")?.value || "number";
+    const position = root.querySelector("#pdf-number-position")?.value || "bottom-center";
+    const size = Number(root.querySelector("#pdf-number-size")?.value || 12);
+    const margin = Number(root.querySelector("#pdf-number-margin")?.value || 36);
+    const font = await pdf.embedFont(StandardFonts.Helvetica);
+    targets.forEach((pageIndex, order) => {
+      const page = pdf.getPage(pageIndex);
+      const text = pageNumberText(formatType, startNumber + order, pdf.getPageCount());
+      page.drawText(text, { ...pageNumberPosition(page, text, size, position, margin), size, font, color: rgb(0.15, 0.15, 0.15) });
+    });
+    savePdfResult(root, await pdf.save(), `${baseFileName(item.file.name, "document")}-page-numbers.pdf`, `${pdfText(lang, "originalFile")}: ${item.file.name}\n${pdfText(lang, "pages")}: ${targets.length}\n${lang === "ko" ? "여백" : "Margin"}: ${margin} pt`);
+  };
+  const organizePdf = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const { item, pdf } = await loadSinglePdf(root);
+    const { PDFDocument, degrees } = await getPdfLib();
+    const pagesState = root._pdfOrganizerPages || [];
+    if (!pagesState.length) throw new Error(pdfText(lang, "needOnePage"));
+    const output = await PDFDocument.create();
+    for (const itemState of pagesState) {
+      const [copied] = await output.copyPages(pdf, [itemState.sourceIndex]);
+      copied.setRotation(degrees((copied.getRotation().angle + itemState.rotation) % 360));
+      output.addPage(copied);
+    }
+    savePdfResult(root, await output.save(), `${baseFileName(item.file.name, "document")}-organized.pdf`, `${pdfText(lang, "originalFile")}: ${item.file.name}\n${pdfText(lang, "pages")}: ${pagesState.length}`);
+  };
+  const convertPdfToJpg = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const item = root._pdfFiles?.[0];
+    if (!item) throw new Error(pdfText(lang, "choosePdf"));
+    const pdfjs = await getPdfJs();
+    const documentTask = pdfjs.getDocument({ data: new Uint8Array(await item.file.arrayBuffer()) });
+    const pdf = await documentTask.promise;
+    const mode = root.querySelector("#pdf-jpg-mode")?.value || "all";
+    const pages = mode === "all" ? Array.from({ length: pdf.numPages }, (_, index) => index + 1) : parsePdfPageGroups(root.querySelector("#pdf-page-ranges")?.value, pdf.numPages, true, lang)[0].map((index) => index + 1);
+    const quality = Number(root.querySelector("#pdf-jpg-quality")?.value || 0.9);
+    const scale = Number(root.querySelector("#pdf-jpg-scale")?.value || 1.5);
+    clearPdfDownloads(root);
+    for (const pageNumber of pages) {
+      const page = await pdf.getPage(pageNumber);
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.ceil(viewport.width);
+      canvas.height = Math.ceil(viewport.height);
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error(pdfText(lang, "invalidPdf"));
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      await page.render({ canvasContext: context, viewport }).promise;
+      const blob = await canvasToBlob(canvas, "image/jpeg", quality);
+      addPdfDownload(root, blob, `${baseFileName(item.file.name, "document")}-page-${pageNumber}.jpg`, "image/jpeg");
+    }
+    root.querySelector("#result").textContent = `${pdfText(lang, "originalFile")}: ${item.file.name}\n${pdfText(lang, "totalPages")}: ${pdf.numPages}\n${pdfText(lang, "resultCount")}: ${pages.length}`;
+    setPdfStatus(root, pdfText(lang, "done"));
+  };
+  const runPdfTool = async (root) => {
+    const slug = root.dataset.tool;
+    const lang = root.dataset.lang || "ko";
+    if (!root._pdfFiles?.length) await loadPdfFileItems(root);
+    setPdfStatus(root, pdfText(lang, "processing"));
+    if (slug === "pdf-merger") await mergePdfs(root);
+    if (slug === "pdf-splitter") await splitPdf(root);
+    if (slug === "pdf-page-extractor") await extractPdfPages(root);
+    if (slug === "image-to-pdf") await createImagePdf(root);
+    if (slug === "pdf-rotate") await rotatePdf(root);
+    if (slug === "pdf-page-delete") await deletePdfPages(root);
+    if (slug === "pdf-to-jpg") await convertPdfToJpg(root);
+    if (slug === "pdf-watermark") await watermarkPdf(root);
+    if (slug === "pdf-page-numbers") await addPdfPageNumbers(root);
+    if (slug === "pdf-organizer") await organizePdf(root);
+  };
   const randomChars = (chars, length) => {
     const bytes = new Uint32Array(length);
     crypto.getRandomValues(bytes);
@@ -2445,6 +3147,7 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
       if (slug === "url-encoder-decoder") result.textContent = encodeURIComponent(text);
       if (slug === "csv-json-converter") result.textContent = JSON.stringify(csvToJson(text), null, 2);
       if (slug === "text-compare") result.textContent = compareTexts(root);
+      if (pdfToolSlugs.includes(slug)) await runPdfTool(root);
       if (slug === "audio-converter") await convertAudio(root);
       if (slug === "audio-cutter") await trimAudio(root);
       if (slug === "audio-compressor") await compressAudio(root);
@@ -2982,6 +3685,8 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
         delete root._cutterState;
         delete root._compressorState;
         delete root._volumeState;
+        delete root._pdfFiles;
+        delete root._pdfOrganizerPages;
         delete root.dataset.cutterDuration;
         const previousUrl = root.dataset.downloadUrl;
         if (previousUrl) URL.revokeObjectURL(previousUrl);
@@ -3007,6 +3712,10 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
         }
         const recentColors = root.querySelector("#recent-colors");
         if (recentColors) recentColors.innerHTML = "";
+        clearPdfDownloads(root);
+        renderPdfFileList(root);
+        renderPdfOrganizer(root);
+        setPdfStatus(root, root.dataset.lang === "ko" ? "파일을 선택하면 정보가 표시됩니다." : "Choose files to see details.");
         revokeAudioUrls(root);
         const originalAudio = root.querySelector("#audio-original-preview");
         const outputAudio = root.querySelector("#audio-output-preview");
@@ -3031,6 +3740,31 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
       }
       if (action === "to-csv" && slug === "csv-json-converter") {
         try { root.querySelector("#result").textContent = jsonToCsv(root.querySelector("#text-input").value); } catch (error) { root.querySelector("#result").textContent = error.message; }
+      }
+      if (pdfToolSlugs.includes(slug) && ["pdf-up", "pdf-down", "pdf-remove"].includes(action)) {
+        const items = root._pdfFiles || [];
+        const index = Number(button.dataset.index);
+        if (action === "pdf-up" && index > 0) [items[index - 1], items[index]] = [items[index], items[index - 1]];
+        if (action === "pdf-down" && index < items.length - 1) [items[index + 1], items[index]] = [items[index], items[index + 1]];
+        if (action === "pdf-remove") items.splice(index, 1);
+        root._pdfFiles = items;
+        if (slug === "pdf-organizer" && items[0]) root._pdfOrganizerPages = Array.from({ length: items[0].pageCount }, (_, pageIndex) => ({ sourceIndex: pageIndex, rotation: 0 }));
+        renderPdfFileList(root);
+        renderPdfOrganizer(root);
+      }
+      if (slug === "pdf-organizer" && ["pdf-page-up", "pdf-page-down", "pdf-page-delete", "pdf-page-rotate"].includes(action)) {
+        const lang = root.dataset.lang || "ko";
+        const pages = root._pdfOrganizerPages || [];
+        const index = Number(button.dataset.index);
+        if (action === "pdf-page-up" && index > 0) [pages[index - 1], pages[index]] = [pages[index], pages[index - 1]];
+        if (action === "pdf-page-down" && index < pages.length - 1) [pages[index + 1], pages[index]] = [pages[index], pages[index + 1]];
+        if (action === "pdf-page-delete") {
+          if (pages.length <= 1) root.querySelector("#result").textContent = pdfText(lang, "needOnePage");
+          else pages.splice(index, 1);
+        }
+        if (action === "pdf-page-rotate") pages[index].rotation = (pages[index].rotation + 90) % 360;
+        root._pdfOrganizerPages = pages;
+        renderPdfOrganizer(root);
       }
       if (slug === "image-rotate-flip" && ["rotate-left", "rotate-right", "rotate-180", "flip-horizontal", "flip-vertical"].includes(action)) {
         const rotation = Number(root.dataset.rotation || "0");
@@ -3069,6 +3803,12 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
         if (control.id === "circuit") syncFilterCalculatorCircuit(root);
         if (control.id === "aspect-ratio" || control.id === "crop-width") syncCropAspectRatio(root);
         if (control.id === "unit-kind") syncUnitConverterOptions(root);
+        if (pdfToolSlugs.includes(slug) && ["pdf-files", "pdf-image-files"].includes(control.id)) {
+          loadPdfFileItems(root).catch((error) => {
+            root.querySelector("#result").textContent = error instanceof Error ? error.message : pdfText(root.dataset.lang || "ko", "invalidPdf");
+            setPdfStatus(root, error instanceof Error ? error.message : pdfText(root.dataset.lang || "ko", "invalidPdf"));
+          });
+        }
         if (slug === "image-mosaic" && control.id === "image-file") run(root);
         if (slug === "audio-converter" && control.id === "audio-file") {
           loadAudioInfo(root).catch((error) => {

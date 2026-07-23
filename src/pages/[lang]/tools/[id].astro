@@ -2,12 +2,12 @@
 import Layout from "@/components/Layout.astro";
 import ToolCard from "@/components/ToolCard.astro";
 import ToolLayout from "@/components/ToolLayout.astro";
-import { categorySlugs, getCategoryItems, getToolsByCategory, getTool, languages, i18n, type CategorySlug, type Lang } from "@/i18n/translations";
+import { baseTools, categorySlugs, getCategoryItems, getToolsByCategory, getTool, languages, i18n, type CategorySlug, type Lang } from "@/i18n/translations";
 
 export function getStaticPaths() {
   return languages.flatMap((lang) => [
     ...categorySlugs.map((category) => ({ params: { lang, id: category }, props: { kind: "category", lang, id: category } })),
-    ...Object.keys(i18n[lang].tools).map((slug) => ({ params: { lang, id: slug }, props: { kind: "tool", lang, id: slug } })),
+    ...baseTools.map((tool) => ({ params: { lang, id: tool.slug }, props: { kind: "tool", lang, id: tool.slug } })),
   ]);
 }
 

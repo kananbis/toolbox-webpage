@@ -32,13 +32,18 @@ const basis = tool.basis ?? getToolBasis(lang, tool.slug) ?? t.common.basisText;
 const formattedBasis = basis.replace(/\. /g, ".\n");
 const isImageTool = ["image-resizer", "image-compressor", "webp-converter", "image-cropper", "image-rotate-flip", "image-format-converter", "image-mosaic", "image-watermark", "remove-image-metadata", "image-color-picker"].includes(tool.slug);
 const isAudioTool = ["audio-converter", "audio-cutter", "audio-compressor", "audio-volume-editor"].includes(tool.slug);
+const isPdfTool = ["pdf-merger", "pdf-splitter", "pdf-page-extractor", "image-to-pdf", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg", "pdf-watermark", "pdf-page-numbers", "pdf-organizer"].includes(tool.slug);
 const privacyNote = isImageTool
   ? t.common.imagePrivacyNote
   : isAudioTool
     ? lang === "ko"
       ? "선택한 오디오 파일은 서버로 업로드되지 않으며, 현재 브라우저 안에서만 처리됩니다."
       : "Selected audio files are not uploaded to a server and are processed only in your browser."
-    : t.common.privacyNote;
+    : isPdfTool
+      ? lang === "ko"
+        ? "선택한 파일은 서버로 업로드되지 않으며, 현재 브라우저 안에서만 처리됩니다."
+        : "Selected files are not uploaded to a server and are processed only in your browser."
+      : t.common.privacyNote;
 ---
 
 <Layout

@@ -16,6 +16,8 @@
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
     "astro": "^7.0.7",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^6.1.200",
     "qrcode": "^1.5.4",
     "tailwindcss": "^3.4.17"
   },

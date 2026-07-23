@@ -1,9 +1,9 @@
 export type Lang = "ko" | "en";
-export type CategorySlug = "text" | "calculator" | "converter" | "audio" | "generator" | "developer" | "electronics" | "image";
+export type CategorySlug = "text" | "calculator" | "converter" | "audio" | "pdf" | "generator" | "developer" | "electronics" | "image";
 
 export const languages: Lang[] = ["ko", "en"];
 
-export const categorySlugs: CategorySlug[] = ["text", "calculator", "converter", "audio", "generator", "developer", "electronics", "image"];
+export const categorySlugs: CategorySlug[] = ["text", "calculator", "converter", "audio", "pdf", "generator", "developer", "electronics", "image"];
 
 export const baseTools = [
   { slug: "character-counter", category: "text", privacy: true },
@@ -21,6 +21,16 @@ export const baseTools = [
   { slug: "audio-cutter", category: "audio", privacy: true },
   { slug: "audio-compressor", category: "audio", privacy: true },
   { slug: "audio-volume-editor", category: "audio", privacy: true },
+  { slug: "pdf-merger", category: "pdf", privacy: true },
+  { slug: "pdf-splitter", category: "pdf", privacy: true },
+  { slug: "pdf-page-extractor", category: "pdf", privacy: true },
+  { slug: "image-to-pdf", category: "pdf", privacy: true },
+  { slug: "pdf-rotate", category: "pdf", privacy: true },
+  { slug: "pdf-page-delete", category: "pdf", privacy: true },
+  { slug: "pdf-to-jpg", category: "pdf", privacy: true },
+  { slug: "pdf-watermark", category: "pdf", privacy: true },
+  { slug: "pdf-page-numbers", category: "pdf", privacy: true },
+  { slug: "pdf-organizer", category: "pdf", privacy: true },
   { slug: "unix-timestamp-converter", category: "converter" },
   { slug: "pyeong-calculator", category: "converter" },
   { slug: "password-generator", category: "generator", privacy: true },
@@ -137,6 +147,7 @@ export const i18n = {
       calculator: { name: "계산기", description: "퍼센트, 할인율, 부가세, 날짜, BMI, 마진율, 복리, 대출 이자를 간단히 계산합니다." },
       converter: { name: "변환기", description: "온도, 길이, 무게, 평수, 시간 값을 필요한 형식으로 변환합니다." },
       audio: { name: "오디오 도구", description: "오디오 변환, 자르기, 압축, 볼륨 조절처럼 자주 필요한 오디오 파일 작업을 브라우저에서 처리합니다." },
+      pdf: { name: "PDF 도구", description: "PDF 파일 합치기, 나누기, 페이지 추출, 회전, 페이지 삭제, 워터마크, 페이지 번호 추가, 이미지 변환 같은 작업을 브라우저에서 처리합니다." },
       generator: { name: "생성기", description: "비밀번호, 랜덤 숫자, 랜덤 문자, UUID, QR 코드, 로또 번호를 바로 생성합니다." },
       developer: { name: "개발자 도구", description: "JSON, Base64, URL 인코딩, CSV/JSON 변환 작업을 빠르게 처리합니다." },
       electronics: { name: "전자 계산기", description: "옴의 법칙, 전압 분배기, LED 저항, 배터리 수명, RC/RL 필터, 리액턴스처럼 전자 회로에서 자주 쓰는 값을 계산합니다." },
@@ -235,6 +246,7 @@ export const i18n = {
       calculator: { name: "Calculators", description: "Calculate percentages, discounts, VAT, dates, BMI, margins, compound interest, and loan interest." },
       converter: { name: "Converters", description: "Convert temperature, length, weight, pyeong, and time values into the format you need." },
       audio: { name: "Audio Tools", description: "Convert, trim, compress, and adjust audio files directly in your browser." },
+      pdf: { name: "PDF Tools", description: "Merge, split, extract, rotate, delete pages, add watermarks, add page numbers, and convert PDF files directly in your browser." },
       generator: { name: "Generators", description: "Generate passwords, random numbers, random strings, UUIDs, QR codes, and lotto numbers." },
       developer: { name: "Developer Tools", description: "Handle JSON, Base64, URL encoding, and CSV/JSON conversion tasks quickly." },
       electronics: { name: "Electronics Calculators", description: "Calculate common electronics values such as Ohms law, voltage divider output, LED resistor values, battery life, RC/RL filters, and reactance." },
@@ -406,12 +418,66 @@ const toolBasis = {
 } satisfies Record<Lang, Partial<Record<ToolSlug, string>>>;
 
 export function getToolBasis(lang: Lang, slug: ToolSlug) {
-  return toolBasis[lang][slug];
+  return pdfToolBasis[lang][slug] ?? toolBasis[lang][slug];
 }
 
 export function isLang(value: string | undefined): value is Lang {
   return value === "ko" || value === "en";
 }
+
+const pdfToolText = {
+  ko: {
+    "pdf-merger": { name: "PDF 합치기", description: "여러 개의 PDF 파일을 선택한 순서대로 하나의 PDF로 합칩니다. 선택한 파일은 서버로 업로드되지 않고 브라우저에서 처리됩니다.", seoTitle: "PDF 합치기 - 여러 PDF 파일을 하나로 병합", intro: "여러 PDF 파일을 선택한 순서대로 하나의 PDF 문서로 합칠 수 있습니다.", usage: ["PDF 파일을 두 개 이상 선택합니다.", "파일 순서를 확인하고 필요하면 위/아래 버튼으로 조정합니다.", "합치기 버튼을 누릅니다.", "완성된 PDF 파일을 다운로드합니다."], examples: ["여러 계약서 PDF를 하나로 합치기", "스캔한 PDF 여러 개를 순서대로 병합하기"], faq: [{ question: "PDF 파일이 서버로 업로드되나요?", answer: "아니요. 선택한 PDF 파일은 브라우저 안에서만 처리됩니다." }, { question: "암호가 걸린 PDF도 합칠 수 있나요?", answer: "암호화된 PDF는 브라우저에서 처리하지 못할 수 있습니다." }] },
+    "pdf-splitter": { name: "PDF 분할", description: "PDF 파일을 페이지별 또는 지정한 페이지 범위별로 나누어 새 PDF 파일로 저장합니다. 선택한 파일은 서버로 업로드되지 않습니다.", seoTitle: "PDF 분할 - PDF 파일을 페이지별로 나누기", intro: "PDF 파일을 모든 페이지별 또는 원하는 페이지 범위별로 나눕니다.", usage: ["PDF 파일을 선택합니다.", "분할 방식을 선택합니다.", "필요하면 페이지 범위를 입력합니다.", "분할 버튼을 누르고 결과 파일을 다운로드합니다."], examples: ["긴 PDF를 페이지별 파일로 나누기", "1-3, 4-6처럼 구간별 PDF 만들기"], faq: [{ question: "페이지 번호는 0부터 시작하나요?", answer: "아니요. 사용자가 입력하는 페이지 번호는 1부터 시작합니다." }, { question: "여러 결과 파일은 어떻게 받나요?", answer: "현재 MVP에서는 결과 파일을 각각 다운로드할 수 있게 표시합니다." }] },
+    "pdf-page-extractor": { name: "PDF 페이지 추출", description: "PDF 파일에서 원하는 페이지만 선택해 새 PDF 파일로 저장합니다. 선택한 파일은 서버로 업로드되지 않고 브라우저에서 처리됩니다.", seoTitle: "PDF 페이지 추출 - 원하는 페이지만 새 PDF로 저장", intro: "PDF에서 필요한 페이지만 골라 하나의 새 PDF 파일로 저장합니다.", usage: ["PDF 파일을 선택합니다.", "추출할 페이지 번호나 범위를 입력합니다.", "페이지 추출 버튼을 누릅니다.", "생성된 PDF 파일을 다운로드합니다."], examples: ["보고서에서 필요한 페이지만 추출하기", "1,3,5 페이지만 새 PDF로 저장하기"], faq: [{ question: "PDF 분할과 무엇이 다른가요?", answer: "페이지 추출은 선택한 페이지를 하나의 새 PDF로 저장하는 용도입니다." }, { question: "여러 페이지를 한 번에 추출할 수 있나요?", answer: "네. 1,3,5 또는 2-4 같은 형식으로 지정할 수 있습니다." }] },
+    "image-to-pdf": { name: "이미지 PDF 변환", description: "JPG, PNG, WebP 이미지를 선택한 순서대로 하나의 PDF 파일로 변환합니다. 선택한 이미지는 서버로 업로드되지 않고 브라우저에서 처리됩니다.", seoTitle: "이미지 PDF 변환 - JPG PNG WebP 이미지를 PDF로 만들기", intro: "여러 이미지를 선택한 순서대로 PDF 페이지에 배치해 하나의 PDF 파일로 만듭니다.", usage: ["PDF로 만들 이미지를 선택합니다.", "이미지 순서를 확인하고 조정합니다.", "페이지 크기와 여백을 선택합니다.", "PDF 만들기 버튼을 누릅니다."], examples: ["스캔 이미지 여러 장을 PDF로 만들기", "JPG 사진을 하나의 PDF 문서로 묶기"], faq: [{ question: "선택한 이미지가 서버로 업로드되나요?", answer: "아니요. 선택한 이미지는 브라우저 안에서만 처리됩니다." }, { question: "이미지 여러 장을 하나의 PDF로 만들 수 있나요?", answer: "네. 여러 이미지를 선택하면 여러 페이지로 저장됩니다." }] },
+    "pdf-rotate": { name: "PDF 회전", description: "PDF 파일의 전체 페이지 또는 선택한 페이지를 90도, 180도, 270도로 회전해 새 PDF로 저장합니다. 선택한 파일은 서버로 업로드되지 않습니다.", seoTitle: "PDF 회전 - PDF 페이지 방향 돌리기", intro: "PDF 전체 페이지 또는 특정 페이지만 골라 방향을 회전한 새 PDF 파일을 생성합니다.", usage: ["PDF 파일을 선택합니다.", "모든 페이지 또는 특정 페이지를 선택합니다.", "회전 각도를 선택합니다.", "회전 버튼을 누르고 결과 PDF를 다운로드합니다."], examples: ["스캔 방향이 틀어진 PDF 바로잡기", "특정 페이지만 90도 회전하기"], faq: [{ question: "모든 페이지를 한 번에 회전할 수 있나요?", answer: "네. 모든 페이지를 선택하면 전체에 같은 각도가 적용됩니다." }, { question: "원본 PDF가 수정되나요?", answer: "아니요. 새 PDF 파일이 생성됩니다." }] },
+    "pdf-page-delete": { name: "PDF 페이지 삭제", description: "PDF 파일에서 원하지 않는 페이지를 삭제하고 새 PDF로 저장합니다. 선택한 파일은 서버로 업로드되지 않고 브라우저에서 처리됩니다.", seoTitle: "PDF 페이지 삭제 - 원하지 않는 PDF 페이지 제거", intro: "PDF에서 삭제할 페이지 번호나 범위를 지정해 나머지 페이지만 새 PDF로 저장합니다.", usage: ["PDF 파일을 선택합니다.", "삭제할 페이지 번호나 범위를 입력합니다.", "페이지 삭제 버튼을 누릅니다.", "페이지가 삭제된 새 PDF 파일을 다운로드합니다."], examples: ["스캔 PDF에서 빈 페이지 삭제하기", "보고서에서 불필요한 부록 페이지 제거하기", "1,3,5 또는 2-4 같은 범위로 여러 페이지 삭제하기"], faq: [{ question: "원본 PDF가 직접 수정되나요?", answer: "아니요. 원본 파일은 변경되지 않고 페이지가 삭제된 새 PDF 파일이 생성됩니다." }, { question: "여러 페이지를 한 번에 삭제할 수 있나요?", answer: "네. 1,3,5 또는 2-4 같은 형식으로 여러 페이지를 지정할 수 있습니다." }, { question: "모든 페이지를 삭제할 수 있나요?", answer: "아니요. PDF에는 최소 1페이지가 남아 있어야 합니다." }, { question: "암호가 걸린 PDF도 처리할 수 있나요?", answer: "암호화된 PDF는 브라우저에서 처리하지 못할 수 있습니다." }] },
+    "pdf-to-jpg": { name: "PDF JPG 변환", description: "PDF 파일의 페이지를 JPG 이미지로 변환해 다운로드합니다. 선택한 PDF는 서버로 업로드되지 않고 브라우저에서 처리됩니다.", seoTitle: "PDF JPG 변환 - PDF 페이지를 JPG 이미지로 저장", intro: "PDF의 전체 페이지 또는 선택한 페이지만 JPG 이미지로 변환합니다.", usage: ["PDF 파일을 선택합니다.", "모든 페이지 또는 특정 페이지를 선택합니다.", "품질과 배율을 선택합니다.", "JPG로 변환 버튼을 누르고 결과 이미지를 다운로드합니다."], examples: ["PDF 첫 페이지만 JPG로 저장하기", "문서의 모든 페이지를 이미지로 변환하기", "고해상도 확인용으로 2x 배율 JPG 만들기"], faq: [{ question: "PDF 파일이 서버로 업로드되나요?", answer: "아니요. 선택한 PDF 파일은 브라우저 안에서만 처리됩니다." }, { question: "여러 페이지를 한 번에 JPG로 변환할 수 있나요?", answer: "네. 모든 페이지 또는 선택한 페이지를 JPG 이미지로 변환할 수 있습니다." }, { question: "JPG 품질은 무엇을 의미하나요?", answer: "품질이 높을수록 이미지가 더 선명할 수 있지만 파일 크기도 커질 수 있습니다." }, { question: "텍스트 선택이 가능한 PDF로 유지되나요?", answer: "아니요. JPG 변환 결과는 이미지 파일입니다." }] },
+    "pdf-watermark": { name: "PDF 워터마크", description: "PDF 파일에 텍스트 워터마크를 추가하고 새 PDF로 저장합니다. 선택한 파일은 서버로 업로드되지 않고 브라우저에서 처리됩니다.", seoTitle: "PDF 워터마크 - PDF에 텍스트 워터마크 추가", intro: "PDF 전체 또는 선택한 페이지에 텍스트 워터마크를 넣어 새 PDF로 저장합니다.", usage: ["PDF 파일을 선택합니다.", "워터마크 텍스트와 위치, 크기, 투명도, 회전, 색상을 설정합니다.", "적용할 페이지를 선택합니다.", "워터마크 추가 버튼을 누르고 결과 PDF를 다운로드합니다."], examples: ["문서에 CONFIDENTIAL 워터마크 넣기", "검토용 PDF에 초안 표시 추가하기", "특정 페이지만 워터마크 적용하기"], faq: [{ question: "이미지 워터마크도 넣을 수 있나요?", answer: "이번 버전은 텍스트 워터마크를 우선 지원합니다." }, { question: "특정 페이지만 워터마크를 넣을 수 있나요?", answer: "네. 페이지 번호나 범위를 입력해 특정 페이지만 선택할 수 있습니다." }, { question: "원본 PDF가 수정되나요?", answer: "아니요. 원본 파일은 변경되지 않고 새 PDF 파일이 생성됩니다." }, { question: "워터마크를 나중에 제거할 수 있나요?", answer: "이 도구는 워터마크 추가용입니다. 제거 기능은 제공하지 않습니다." }] },
+    "pdf-page-numbers": { name: "PDF 페이지 번호", description: "PDF 파일에 페이지 번호를 추가하고 새 PDF로 저장합니다. 선택한 파일은 서버로 업로드되지 않고 브라우저에서 처리됩니다.", seoTitle: "PDF 페이지 번호 - PDF에 페이지 번호 넣기", intro: "PDF의 지정한 위치에 페이지 번호를 넣고 새 PDF 파일로 저장합니다.", usage: ["PDF 파일을 선택합니다.", "페이지 번호 위치, 형식, 시작 번호를 설정합니다.", "전체 페이지 또는 특정 페이지를 선택합니다.", "페이지 번호 추가 버튼을 누르고 결과 PDF를 다운로드합니다."], examples: ["보고서 하단 중앙에 페이지 번호 넣기", "2페이지부터 Page 1 형식으로 번호 시작하기", "특정 구간에만 페이지 번호 추가하기"], faq: [{ question: "페이지 번호 시작 번호를 바꿀 수 있나요?", answer: "네. 시작 번호를 0 이상 정수로 설정할 수 있습니다." }, { question: "특정 페이지만 페이지 번호를 넣을 수 있나요?", answer: "네. 페이지 범위를 입력해 특정 페이지만 선택할 수 있습니다." }, { question: "원본 PDF가 수정되나요?", answer: "아니요. 원본 파일은 변경되지 않고 새 PDF 파일이 생성됩니다." }, { question: "기존 페이지 번호를 삭제할 수 있나요?", answer: "아니요. 이 도구는 새 페이지 번호를 추가하는 기능만 제공합니다." }] },
+    "pdf-organizer": { name: "PDF 정리", description: "PDF 페이지의 순서를 바꾸고, 필요 없는 페이지를 삭제하거나 회전해 새 PDF로 저장합니다. 선택한 파일은 서버로 업로드되지 않습니다.", seoTitle: "PDF 정리 - PDF 페이지 순서 변경, 삭제, 회전", intro: "PDF 페이지 목록에서 순서 변경, 삭제, 90도 회전을 적용해 새 PDF를 만듭니다.", usage: ["PDF 파일을 선택합니다.", "페이지 목록에서 위로, 아래로, 삭제, 회전 버튼을 사용합니다.", "새 PDF 만들기 버튼을 누릅니다.", "정리된 PDF 파일을 다운로드합니다."], examples: ["스캔된 PDF 페이지 순서 바로잡기", "불필요한 페이지 삭제 후 새 파일 만들기", "일부 페이지를 90도씩 회전하기"], faq: [{ question: "페이지 순서를 바꿀 수 있나요?", answer: "네. 페이지 목록에서 순서를 변경할 수 있습니다." }, { question: "페이지를 삭제할 수 있나요?", answer: "네. 필요 없는 페이지를 삭제할 수 있습니다. 단, 최소 1페이지는 남아 있어야 합니다." }, { question: "페이지를 회전할 수 있나요?", answer: "네. 페이지별로 90도씩 회전할 수 있습니다." }, { question: "원본 PDF가 수정되나요?", answer: "아니요. 원본 파일은 변경되지 않고 새 PDF 파일이 생성됩니다." }] },
+  },
+  en: {
+    "pdf-merger": { name: "PDF Merger", description: "Combine multiple PDF files into one PDF in your selected order. Selected files are processed in your browser and are not uploaded to a server.", seoTitle: "PDF Merger - Combine Multiple PDF Files", intro: "Choose multiple PDF files and merge them into one PDF in the order you set.", usage: ["Choose two or more PDF files.", "Check the file order and move items up or down if needed.", "Click the merge button.", "Download the merged PDF file."], examples: ["Combine several contract PDFs into one file", "Merge scanned PDF files in order"], faq: [{ question: "Are my PDF files uploaded to a server?", answer: "No. Selected PDF files are processed only in your browser." }, { question: "Can encrypted PDFs be merged?", answer: "Encrypted PDFs may not be supported in the browser." }] },
+    "pdf-splitter": { name: "PDF Splitter", description: "Split a PDF file by page or page range and save the result as new PDF files. Selected files are not uploaded to a server.", seoTitle: "PDF Splitter - Split PDF Files by Page", intro: "Split a PDF into individual pages or selected page ranges and download the results.", usage: ["Choose a PDF file to split.", "Select split by every page or by page ranges.", "Enter page ranges if needed.", "Click split and download each result file."], examples: ["Split a long PDF into page files", "Create files from ranges such as 1-3 and 4-6"], faq: [{ question: "Do page numbers start from 0?", answer: "No. Page numbers start from 1." }, { question: "Can I download multiple output files at once?", answer: "In this MVP, output files are listed and can be downloaded individually." }] },
+    "pdf-page-extractor": { name: "PDF Page Extractor", description: "Extract selected pages from a PDF file and save them as a new PDF. Selected files are processed in your browser and are not uploaded to a server.", seoTitle: "PDF Page Extractor - Extract Selected Pages from PDF", intro: "Select only the pages you need from a PDF and save them as one new PDF file.", usage: ["Choose a PDF file.", "Enter pages or ranges to extract.", "Click extract pages.", "Download the generated PDF file."], examples: ["Extract needed pages from a report", "Save pages 1, 3, and 5 into a new PDF"], faq: [{ question: "What is the difference from splitting?", answer: "Page extraction saves selected pages into one new PDF." }, { question: "Can I extract multiple pages at once?", answer: "Yes. Use formats such as 1,3,5 or 2-4." }] },
+    "image-to-pdf": { name: "Image to PDF", description: "Convert JPG, PNG, and WebP images into a single PDF file in your selected order. Selected images are processed in your browser and are not uploaded to a server.", seoTitle: "Image to PDF - Convert JPG, PNG, and WebP to PDF", intro: "Place selected images into PDF pages and create a single PDF file in your chosen order.", usage: ["Choose the images to include.", "Check and reorder images if needed.", "Select page size and margin.", "Click create PDF."], examples: ["Create a PDF from scanned images", "Combine JPG photos into one PDF"], faq: [{ question: "Are selected images uploaded to a server?", answer: "No. Selected images are processed only in your browser." }, { question: "Can I create one PDF from multiple images?", answer: "Yes. Multiple images are saved as multiple pages." }] },
+    "pdf-rotate": { name: "PDF Rotator", description: "Rotate all or selected PDF pages by 90, 180, or 270 degrees and save them as a new PDF. Selected files are not uploaded to a server.", seoTitle: "PDF Rotator - Rotate PDF Pages", intro: "Rotate every page or selected pages in a PDF and save the result as a new PDF file.", usage: ["Choose a PDF file.", "Select all pages or specific pages.", "Choose a rotation angle.", "Click rotate and download the result PDF."], examples: ["Fix a scanned PDF with the wrong direction", "Rotate only selected pages by 90 degrees"], faq: [{ question: "Can I rotate all pages at once?", answer: "Yes. Selecting all pages applies the same angle." }, { question: "Is the original PDF modified?", answer: "No. A new PDF file is created." }] },
+    "pdf-page-delete": { name: "PDF Page Delete", description: "Remove unwanted pages from a PDF file and save a new PDF. Selected files are processed in your browser and are not uploaded to a server.", seoTitle: "PDF Page Delete - Remove Unwanted Pages from PDF", intro: "Enter page numbers or ranges to remove pages and save the remaining pages as a new PDF.", usage: ["Choose a PDF file.", "Enter the page numbers or ranges to delete.", "Click the delete pages button.", "Download the new PDF file."], examples: ["Remove blank pages from a scanned PDF", "Delete unnecessary appendix pages from a report", "Delete multiple pages with 1,3,5 or 2-4"], faq: [{ question: "Is the original PDF modified?", answer: "No. The original file is not changed. A new PDF file is created without the selected pages." }, { question: "Can I delete multiple pages at once?", answer: "Yes. You can select pages using formats such as 1,3,5 or 2-4." }, { question: "Can I delete all pages?", answer: "No. At least one page must remain in the PDF." }, { question: "Can encrypted PDFs be processed?", answer: "Encrypted PDFs may not be supported in the browser." }] },
+    "pdf-to-jpg": { name: "PDF to JPG", description: "Convert PDF pages to JPG images and download them. Selected PDF files are processed in your browser and are not uploaded to a server.", seoTitle: "PDF to JPG - Convert PDF Pages to JPG Images", intro: "Convert all pages or selected pages from a PDF into JPG image files.", usage: ["Choose a PDF file.", "Select all pages or enter specific pages.", "Choose JPG quality and scale.", "Click convert to JPG and download the images."], examples: ["Save only the first PDF page as JPG", "Convert every document page into images", "Create sharper JPG images with 2x scale"], faq: [{ question: "Is my PDF file uploaded to a server?", answer: "No. Selected PDF files are processed only in your browser." }, { question: "Can I convert multiple pages to JPG at once?", answer: "Yes. You can convert all pages or selected pages to JPG images." }, { question: "What does JPG quality mean?", answer: "Higher quality can produce clearer images, but the file size may also increase." }, { question: "Does the result remain a selectable-text PDF?", answer: "No. JPG output is an image file." }] },
+    "pdf-watermark": { name: "PDF Watermark", description: "Add a text watermark to a PDF file and save it as a new PDF. Selected files are processed in your browser and are not uploaded to a server.", seoTitle: "PDF Watermark - Add Text Watermark to PDF", intro: "Add a text watermark to every page or selected pages in a PDF and save a new file.", usage: ["Choose a PDF file.", "Set the watermark text, position, size, opacity, rotation, and color.", "Select all pages or specific pages.", "Click add watermark and download the result PDF."], examples: ["Add a CONFIDENTIAL watermark to a document", "Mark a review PDF as draft", "Apply a watermark only to selected pages"], faq: [{ question: "Can I add an image watermark?", answer: "This version focuses on text watermarks." }, { question: "Can I watermark only specific pages?", answer: "Yes. You can select specific pages using page numbers or ranges." }, { question: "Is the original PDF modified?", answer: "No. The original file is not changed. A new PDF file is created." }, { question: "Can I remove the watermark later?", answer: "This tool is for adding watermarks. Watermark removal is not provided." }] },
+    "pdf-page-numbers": { name: "PDF Page Numbers", description: "Add page numbers to a PDF file and save it as a new PDF. Selected files are processed in your browser and are not uploaded to a server.", seoTitle: "PDF Page Numbers - Add Page Numbers to PDF", intro: "Draw page number text at the selected position and save the result as a new PDF.", usage: ["Choose a PDF file.", "Set the page number position, format, and starting number.", "Select all pages or specific pages.", "Click add page numbers and download the result PDF."], examples: ["Add page numbers to the bottom center of a report", "Start numbering from Page 1 on the second page", "Add numbers only to a selected range"], faq: [{ question: "Can I change the starting page number?", answer: "Yes. You can set the starting number to any integer greater than or equal to 0." }, { question: "Can I add page numbers only to specific pages?", answer: "Yes. You can select specific pages using page ranges." }, { question: "Is the original PDF modified?", answer: "No. The original file is not changed. A new PDF file is created." }, { question: "Can I remove existing page numbers?", answer: "No. This tool only adds new page numbers." }] },
+    "pdf-organizer": { name: "PDF Organizer", description: "Reorder, delete, and rotate PDF pages, then save the result as a new PDF. Selected files are not uploaded to a server.", seoTitle: "PDF Organizer - Reorder, Delete, and Rotate PDF Pages", intro: "Use a page-number list to reorder pages, delete pages, and rotate pages by 90 degrees.", usage: ["Choose a PDF file.", "Use up, down, delete, and rotate buttons in the page list.", "Click create new PDF.", "Download the organized PDF file."], examples: ["Fix the order of scanned PDF pages", "Delete unnecessary pages before saving a new file", "Rotate selected pages by 90 degrees"], faq: [{ question: "Can I reorder pages?", answer: "Yes. You can change the page order in the page list." }, { question: "Can I delete pages?", answer: "Yes. You can delete unnecessary pages. At least one page must remain." }, { question: "Can I rotate pages?", answer: "Yes. You can rotate each page by 90 degrees." }, { question: "Is the original PDF modified?", answer: "No. The original file is not changed. A new PDF file is created." }] },
+  },
+} satisfies Record<Lang, Partial<Record<ToolSlug, ToolText>>>;
+
+const pdfToolBasis = {
+  ko: {
+    "pdf-merger": "PDF 합치기는 선택한 여러 PDF 파일의 페이지를 사용자가 지정한 순서대로 하나의 새 PDF 문서에 복사하는 방식으로 처리합니다. 파일은 서버로 업로드되지 않고 브라우저 안에서만 처리됩니다. 암호화되어 있거나 손상된 PDF 파일은 처리할 수 없을 수 있습니다.",
+    "pdf-splitter": "PDF 분할은 선택한 PDF에서 지정한 페이지 또는 페이지 범위를 복사해 새 PDF 파일로 생성하는 방식으로 처리합니다. 페이지 번호는 1부터 시작합니다. 파일은 서버로 업로드되지 않고 브라우저 안에서만 처리됩니다.",
+    "pdf-page-extractor": "PDF 페이지 추출은 선택한 PDF에서 사용자가 지정한 페이지만 복사해 하나의 새 PDF 파일로 만드는 방식으로 처리합니다. 페이지 번호는 1부터 시작합니다. 파일은 서버로 업로드되지 않고 브라우저 안에서만 처리됩니다.",
+    "image-to-pdf": "이미지 PDF 변환은 선택한 JPG, PNG, WebP 이미지를 사용자가 지정한 순서대로 PDF 페이지에 배치해 새 PDF 파일로 만드는 방식으로 처리합니다. 이미지 1장은 PDF 1페이지로 생성됩니다. 선택한 이미지는 서버로 업로드되지 않고 브라우저 안에서만 처리됩니다.",
+    "pdf-rotate": "PDF 회전은 선택한 PDF의 전체 페이지 또는 지정한 페이지에 회전 정보를 적용해 새 PDF 파일로 저장하는 방식으로 처리합니다. 페이지 번호는 1부터 시작합니다. 파일은 서버로 업로드되지 않고 브라우저 안에서만 처리됩니다.",
+    "pdf-page-delete": "PDF 페이지 삭제는 선택한 PDF에서 사용자가 지정한 페이지를 제외하고 나머지 페이지를 새 PDF 파일로 복사하는 방식으로 처리합니다. 페이지 번호는 1부터 시작합니다. 원본 파일은 변경되지 않으며, 새 PDF 파일이 생성됩니다. 파일은 서버로 업로드되지 않고 브라우저 안에서만 처리됩니다.",
+    "pdf-to-jpg": "PDF JPG 변환은 선택한 PDF 페이지를 브라우저에서 캔버스에 렌더링한 뒤 JPG 이미지로 저장하는 방식으로 처리합니다. 배율이 높을수록 이미지가 선명해질 수 있지만 파일 크기와 처리 시간이 증가할 수 있습니다. 파일은 서버로 업로드되지 않고 브라우저 안에서만 처리됩니다.",
+    "pdf-watermark": "PDF 워터마크는 선택한 PDF의 각 페이지 위에 사용자가 입력한 텍스트를 지정한 위치, 투명도, 회전 각도로 그려 넣는 방식으로 처리합니다. 원본 파일은 변경되지 않으며, 워터마크가 적용된 새 PDF 파일이 생성됩니다. 파일은 서버로 업로드되지 않고 브라우저 안에서만 처리됩니다.",
+    "pdf-page-numbers": "PDF 페이지 번호는 선택한 PDF의 지정된 위치에 페이지 번호 텍스트를 그려 넣는 방식으로 처리합니다. 시작 번호, 표시 형식, 위치, 여백을 선택할 수 있으며, 원본 파일은 변경되지 않습니다. 파일은 서버로 업로드되지 않고 브라우저 안에서만 처리됩니다.",
+    "pdf-organizer": "PDF 정리는 선택한 PDF의 페이지를 사용자가 지정한 순서대로 새 PDF에 복사하고, 삭제 또는 회전 설정을 반영하는 방식으로 처리합니다. 원본 파일은 변경되지 않으며, 정리된 새 PDF 파일이 생성됩니다. 파일은 서버로 업로드되지 않고 브라우저 안에서만 처리됩니다.",
+  },
+  en: {
+    "pdf-merger": "PDF merging works by copying pages from the selected PDF files into a new PDF document in the order selected by the user. Files are not uploaded to a server and are processed only in your browser. Encrypted or damaged PDF files may not be supported.",
+    "pdf-splitter": "PDF splitting works by copying selected pages or page ranges from the chosen PDF into new PDF files. Page numbering starts from 1. Files are not uploaded to a server and are processed only in your browser.",
+    "pdf-page-extractor": "PDF page extraction works by copying only the selected pages from the chosen PDF into a new PDF file. Page numbering starts from 1. Files are not uploaded to a server and are processed only in your browser.",
+    "image-to-pdf": "Image to PDF conversion works by placing the selected JPG, PNG, and WebP images into PDF pages in the order selected by the user. Each image becomes one PDF page. Selected images are not uploaded to a server and are processed only in your browser.",
+    "pdf-rotate": "PDF rotation works by applying rotation settings to all pages or selected pages in the chosen PDF and saving the result as a new PDF file. Page numbering starts from 1. Files are not uploaded to a server and are processed only in your browser.",
+    "pdf-page-delete": "PDF page deletion works by copying all pages except the pages selected for deletion into a new PDF file. Page numbering starts from 1. The original file is not changed, and a new PDF file is created. Files are not uploaded to a server and are processed only in your browser.",
+    "pdf-to-jpg": "PDF to JPG conversion works by rendering selected PDF pages to a browser canvas and saving them as JPG images. Higher scale values may produce sharper images, but file size and processing time can increase. Files are not uploaded to a server and are processed only in your browser.",
+    "pdf-watermark": "PDF watermarking works by drawing the user-entered text onto selected PDF pages with the chosen position, opacity, and rotation. The original file is not changed, and a new watermarked PDF file is created. Files are not uploaded to a server and are processed only in your browser.",
+    "pdf-page-numbers": "PDF page numbering works by drawing page number text at the selected position on the chosen PDF pages. You can choose the starting number, display format, position, and margin, and the original file is not changed. Files are not uploaded to a server and are processed only in your browser.",
+    "pdf-organizer": "PDF organization works by copying pages from the selected PDF into a new PDF in the user-defined order while applying delete and rotation settings. The original file is not changed, and a new organized PDF file is created. Files are not uploaded to a server and are processed only in your browser.",
+  },
+} satisfies Record<Lang, Partial<Record<ToolSlug, string>>>;
 
 export function getCategoryItems(lang: Lang) {
   return categorySlugs.map((slug) => ({
@@ -426,7 +492,7 @@ export function getTools(lang: Lang) {
     ...tool,
     category: tool.category as CategorySlug,
     path: `/${lang}/tools/${tool.slug}`,
-    ...i18n[lang].tools[tool.slug],
+    ...(pdfToolText[lang][tool.slug] ?? i18n[lang].tools[tool.slug]),
   }));
 }
 
@@ -469,6 +535,24 @@ export function getRelatedTools(lang: Lang, slug: string, limit = 3) {
       "audio-volume-editor": ["audio-converter", "audio-cutter", "audio-compressor"],
     };
     return (relatedByAudioTool[slug] ?? ["audio-converter", "audio-cutter", "audio-compressor", "audio-volume-editor"])
+      .map((toolSlug) => getTool(lang, toolSlug))
+      .filter((tool): tool is NonNullable<ReturnType<typeof getTool>> => Boolean(tool));
+  }
+
+  if (["pdf-merger", "pdf-splitter", "pdf-page-extractor", "image-to-pdf", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg", "pdf-watermark", "pdf-page-numbers", "pdf-organizer"].includes(slug)) {
+    const relatedByPdfTool: Record<string, string[]> = {
+      "pdf-merger": ["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "image-to-pdf"],
+      "pdf-splitter": ["pdf-merger", "pdf-page-extractor", "pdf-rotate"],
+      "pdf-page-extractor": ["pdf-splitter", "pdf-merger", "pdf-rotate"],
+      "image-to-pdf": ["image-compressor", "image-resizer", "pdf-merger", "pdf-rotate"],
+      "pdf-rotate": ["pdf-merger", "pdf-splitter", "pdf-page-extractor"],
+      "pdf-page-delete": ["pdf-organizer", "pdf-page-extractor", "pdf-splitter", "pdf-rotate"],
+      "pdf-to-jpg": ["image-to-pdf", "pdf-merger", "pdf-page-extractor", "image-compressor"],
+      "pdf-watermark": ["pdf-page-numbers", "pdf-organizer", "pdf-merger", "pdf-rotate"],
+      "pdf-page-numbers": ["pdf-watermark", "pdf-organizer", "pdf-merger"],
+      "pdf-organizer": ["pdf-page-delete", "pdf-rotate", "pdf-page-extractor", "pdf-merger"],
+    };
+    return (relatedByPdfTool[slug] ?? ["pdf-merger", "pdf-splitter", "pdf-page-extractor", "pdf-rotate"])
       .map((toolSlug) => getTool(lang, toolSlug))
       .filter((tool): tool is NonNullable<ReturnType<typeof getTool>> => Boolean(tool));
   }
