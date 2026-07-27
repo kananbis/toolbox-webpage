@@ -3,6 +3,7 @@ import Layout from "./Layout.astro";
 import FAQ from "./FAQ.astro";
 import RelatedTools from "./RelatedTools.astro";
 import AdSlot from "./AdSlot.astro";
+import BookmarkPrompt from "./BookmarkPrompt.astro";
 import ToolRunner from "./ToolRunner.astro";
 import { getRelatedTools, getToolBasis, i18n, type Lang, type ToolSlug } from "@/i18n/translations";
 
@@ -61,12 +62,14 @@ const privacyNote = isImageTool
     <h1 class="mt-2 text-3xl font-bold tracking-normal md:text-4xl">{tool.name}</h1>
     <p class="mt-4 max-w-3xl text-lg leading-8 text-slate-700">{tool.intro}</p>
 
-    <AdSlot lang={lang} placement="toolTop" />
-
     <section class="mt-8">
       <ToolRunner slug={tool.slug} lang={lang} />
       {tool.privacy && <p class="mt-3 text-sm text-slate-600">{privacyNote}</p>}
     </section>
+
+    <BookmarkPrompt lang={lang} />
+
+    <AdSlot lang={lang} placement="toolTop" />
 
     <section class="prose-lite">
       <h2>{t.common.usage}</h2>

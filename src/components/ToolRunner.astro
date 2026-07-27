@@ -316,6 +316,56 @@ const ui = {
     units: { length: "Length", weight: "Weight", temperature: "Temperature", C: "Celsius (°C)", F: "Fahrenheit (°F)", K: "Kelvin (K)" },
   },
 }[lang];
+
+const timeZoneOptions = [
+  { value: "Asia/Seoul", ko: "한국 서울 (KST)", en: "Seoul, Korea" },
+  { value: "Asia/Tokyo", ko: "일본 도쿄", en: "Tokyo, Japan" },
+  { value: "Asia/Shanghai", ko: "중국 상하이", en: "Shanghai, China" },
+  { value: "Asia/Singapore", ko: "싱가포르", en: "Singapore" },
+  { value: "Asia/Hong_Kong", ko: "홍콩", en: "Hong Kong" },
+  { value: "Asia/Taipei", ko: "대만 타이베이", en: "Taipei, Taiwan" },
+  { value: "Asia/Bangkok", ko: "태국 방콕", en: "Bangkok, Thailand" },
+  { value: "Asia/Jakarta", ko: "인도네시아 자카르타", en: "Jakarta, Indonesia" },
+  { value: "Asia/Manila", ko: "필리핀 마닐라", en: "Manila, Philippines" },
+  { value: "Asia/Kuala_Lumpur", ko: "말레이시아 쿠알라룸푸르", en: "Kuala Lumpur, Malaysia" },
+  { value: "Asia/Ho_Chi_Minh", ko: "베트남 호찌민", en: "Ho Chi Minh City, Vietnam" },
+  { value: "Asia/Dubai", ko: "아랍에미리트 두바이", en: "Dubai, United Arab Emirates" },
+  { value: "Asia/Kolkata", ko: "인도 뭄바이/델리", en: "Mumbai / Delhi, India" },
+  { value: "America/New_York", ko: "미국 뉴욕", en: "New York, United States" },
+  { value: "America/Los_Angeles", ko: "미국 로스앤젤레스", en: "Los Angeles, United States" },
+  { value: "America/Chicago", ko: "미국 시카고", en: "Chicago, United States" },
+  { value: "America/Denver", ko: "미국 덴버", en: "Denver, United States" },
+  { value: "America/Toronto", ko: "캐나다 토론토", en: "Toronto, Canada" },
+  { value: "America/Vancouver", ko: "캐나다 밴쿠버", en: "Vancouver, Canada" },
+  { value: "America/Mexico_City", ko: "멕시코 멕시코시티", en: "Mexico City, Mexico" },
+  { value: "America/Sao_Paulo", ko: "브라질 상파울루", en: "Sao Paulo, Brazil" },
+  { value: "America/Argentina/Buenos_Aires", ko: "아르헨티나 부에노스아이레스", en: "Buenos Aires, Argentina" },
+  { value: "Europe/London", ko: "영국 런던", en: "London, United Kingdom" },
+  { value: "Europe/Paris", ko: "프랑스 파리", en: "Paris, France" },
+  { value: "Europe/Berlin", ko: "독일 베를린", en: "Berlin, Germany" },
+  { value: "Europe/Madrid", ko: "스페인 마드리드", en: "Madrid, Spain" },
+  { value: "Europe/Rome", ko: "이탈리아 로마", en: "Rome, Italy" },
+  { value: "Europe/Amsterdam", ko: "네덜란드 암스테르담", en: "Amsterdam, Netherlands" },
+  { value: "Europe/Zurich", ko: "스위스 취리히", en: "Zurich, Switzerland" },
+  { value: "Europe/Stockholm", ko: "스웨덴 스톡홀름", en: "Stockholm, Sweden" },
+  { value: "Europe/Istanbul", ko: "튀르키예 이스탄불", en: "Istanbul, Turkiye" },
+  { value: "Australia/Sydney", ko: "호주 시드니", en: "Sydney, Australia" },
+  { value: "Australia/Melbourne", ko: "호주 멜버른", en: "Melbourne, Australia" },
+  { value: "Pacific/Auckland", ko: "뉴질랜드 오클랜드", en: "Auckland, New Zealand" },
+  { value: "Africa/Cairo", ko: "이집트 카이로", en: "Cairo, Egypt" },
+  { value: "Africa/Johannesburg", ko: "남아공 요하네스버그", en: "Johannesburg, South Africa" },
+  { value: "UTC", ko: "UTC", en: "UTC" },
+];
+
+const defaultTargetTimeZones = ["America/New_York", "America/Los_Angeles", "UTC", "Asia/Tokyo"];
+
+const timeZonePresets = [
+  { source: "Asia/Seoul", targets: "America/New_York", ko: "한국 → 뉴욕", en: "Seoul → New York" },
+  { source: "Asia/Seoul", targets: "America/Los_Angeles", ko: "한국 → LA", en: "Seoul → Los Angeles" },
+  { source: "Asia/Seoul", targets: "Europe/London", ko: "한국 → 런던", en: "Seoul → London" },
+  { source: "Asia/Seoul", targets: "Asia/Tokyo", ko: "한국 → 도쿄", en: "Seoul → Tokyo" },
+  { source: "UTC", targets: "Asia/Seoul", ko: "UTC → 한국", en: "UTC → Seoul" },
+];
 ---
 
 <div class="tool-panel" data-tool={slug} data-lang={lang}>
@@ -942,6 +992,57 @@ const ui = {
       </div>
       <pre class="result-box whitespace-pre-wrap" id="result">{ui.result}</pre>
       <a id="download-link" class="btn-primary hidden w-fit" download>{lang === "ko" ? "다운로드" : "Download"}</a>
+    </div>
+  )}
+
+  {slug === "time-zone-converter" && (
+    <div class="grid gap-4">
+      <div class="grid gap-4 md:grid-cols-3">
+        <label>{lang === "ko" ? "기준 날짜" : "Source Date"}<input id="tz-date" type="date" /></label>
+        <label>{lang === "ko" ? "기준 시간" : "Source Time"}<input id="tz-time" type="time" step="60" /></label>
+        <label>{lang === "ko" ? "기준 시간대" : "Source Time Zone"}
+          <select id="tz-source">
+            {timeZoneOptions.map((zone) => <option value={zone.value} selected={zone.value === "Asia/Seoul"}>{lang === "ko" ? zone.ko : zone.en}</option>)}
+          </select>
+        </label>
+      </div>
+      <div class="grid gap-4 md:grid-cols-2">
+        <label>{lang === "ko" ? "시간 표시 형식" : "Time Format"}
+          <select id="tz-hour-format">
+            <option value="24">{lang === "ko" ? "24시간제" : "24-hour"}</option>
+            <option value="12">{lang === "ko" ? "12시간제" : "12-hour"}</option>
+          </select>
+        </label>
+        <div>
+          <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "빠른 변환" : "Quick Presets"}</p>
+          <div class="mt-2 flex flex-wrap gap-2">
+            {timeZonePresets.map((preset) => (
+              <button class="btn-secondary" type="button" data-action="timezone-preset" data-source={preset.source} data-targets={preset.targets}>{lang === "ko" ? preset.ko : preset.en}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+      <fieldset class="rounded-md border border-line p-4">
+        <legend class="px-1 text-sm font-semibold text-slate-600">{lang === "ko" ? "변환 대상 시간대" : "Target Time Zones"}</legend>
+        <div class="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {timeZoneOptions.map((zone) => (
+            <label class={`flex items-center gap-2 text-sm ${defaultTargetTimeZones.includes(zone.value) ? "" : "hidden"}`} data-timezone-extra={defaultTargetTimeZones.includes(zone.value) ? "false" : "true"}>
+              <input class="w-auto" type="checkbox" name="tz-target" value={zone.value} checked={defaultTargetTimeZones.includes(zone.value)} />
+              <span>{lang === "ko" ? zone.ko : zone.en}</span>
+            </label>
+          ))}
+        </div>
+        <button class="btn-secondary mt-4" type="button" data-action="timezone-toggle-targets" data-expanded="false">{lang === "ko" ? "주요 도시 더 보기" : "Show More Cities"}</button>
+      </fieldset>
+      <div class="flex flex-wrap gap-2">
+        <button class="btn-secondary" type="button" data-action="timezone-now">{lang === "ko" ? "현재 시간으로 설정" : "Use Current Time"}</button>
+        <button class="btn-primary" type="button" data-action="run">{ui.convert}</button>
+        <button class="btn-secondary" type="button" data-action="copy">{ui.copyResult}</button>
+        <button class="btn-secondary" type="button" data-action="reset">{ui.reset}</button>
+      </div>
+      <p id="timezone-copy-status" class="text-sm text-slate-600"></p>
+      <div id="timezone-result-table" class="overflow-x-auto"></div>
+      <pre class="result-box whitespace-pre-wrap" id="result">{ui.result}</pre>
     </div>
   )}
 
@@ -2969,7 +3070,278 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
   };
   const copyResult = async (root) => {
     const result = root.querySelector("#result")?.textContent ?? "";
-    await navigator.clipboard?.writeText(result);
+    try {
+      await navigator.clipboard?.writeText(result);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  const timeZoneLabels = {
+    ko: {
+      "Asia/Seoul": "한국 서울",
+      "Asia/Tokyo": "일본 도쿄",
+      "Asia/Shanghai": "중국 상하이",
+      "Asia/Singapore": "싱가포르",
+      "Asia/Hong_Kong": "홍콩",
+      "Asia/Taipei": "대만 타이베이",
+      "Asia/Bangkok": "태국 방콕",
+      "Asia/Jakarta": "인도네시아 자카르타",
+      "Asia/Manila": "필리핀 마닐라",
+      "Asia/Kuala_Lumpur": "말레이시아 쿠알라룸푸르",
+      "Asia/Ho_Chi_Minh": "베트남 호찌민",
+      "Asia/Dubai": "아랍에미리트 두바이",
+      "Asia/Kolkata": "인도 뭄바이/델리",
+      "America/New_York": "미국 뉴욕",
+      "America/Los_Angeles": "미국 로스앤젤레스",
+      "America/Chicago": "미국 시카고",
+      "America/Denver": "미국 덴버",
+      "America/Toronto": "캐나다 토론토",
+      "America/Vancouver": "캐나다 밴쿠버",
+      "America/Mexico_City": "멕시코 멕시코시티",
+      "America/Sao_Paulo": "브라질 상파울루",
+      "America/Argentina/Buenos_Aires": "아르헨티나 부에노스아이레스",
+      "Europe/London": "영국 런던",
+      "Europe/Paris": "프랑스 파리",
+      "Europe/Berlin": "독일 베를린",
+      "Europe/Madrid": "스페인 마드리드",
+      "Europe/Rome": "이탈리아 로마",
+      "Europe/Amsterdam": "네덜란드 암스테르담",
+      "Europe/Zurich": "스위스 취리히",
+      "Europe/Stockholm": "스웨덴 스톡홀름",
+      "Europe/Istanbul": "튀르키예 이스탄불",
+      "Australia/Sydney": "호주 시드니",
+      "Australia/Melbourne": "호주 멜버른",
+      "Pacific/Auckland": "뉴질랜드 오클랜드",
+      "Africa/Cairo": "이집트 카이로",
+      "Africa/Johannesburg": "남아공 요하네스버그",
+      UTC: "UTC",
+    },
+    en: {
+      "Asia/Seoul": "Seoul, Korea",
+      "Asia/Tokyo": "Tokyo, Japan",
+      "Asia/Shanghai": "Shanghai, China",
+      "Asia/Singapore": "Singapore",
+      "Asia/Hong_Kong": "Hong Kong",
+      "Asia/Taipei": "Taipei, Taiwan",
+      "Asia/Bangkok": "Bangkok, Thailand",
+      "Asia/Jakarta": "Jakarta, Indonesia",
+      "Asia/Manila": "Manila, Philippines",
+      "Asia/Kuala_Lumpur": "Kuala Lumpur, Malaysia",
+      "Asia/Ho_Chi_Minh": "Ho Chi Minh City, Vietnam",
+      "Asia/Dubai": "Dubai, United Arab Emirates",
+      "Asia/Kolkata": "Mumbai / Delhi, India",
+      "America/New_York": "New York, United States",
+      "America/Los_Angeles": "Los Angeles, United States",
+      "America/Chicago": "Chicago, United States",
+      "America/Denver": "Denver, United States",
+      "America/Toronto": "Toronto, Canada",
+      "America/Vancouver": "Vancouver, Canada",
+      "America/Mexico_City": "Mexico City, Mexico",
+      "America/Sao_Paulo": "Sao Paulo, Brazil",
+      "America/Argentina/Buenos_Aires": "Buenos Aires, Argentina",
+      "Europe/London": "London, United Kingdom",
+      "Europe/Paris": "Paris, France",
+      "Europe/Berlin": "Berlin, Germany",
+      "Europe/Madrid": "Madrid, Spain",
+      "Europe/Rome": "Rome, Italy",
+      "Europe/Amsterdam": "Amsterdam, Netherlands",
+      "Europe/Zurich": "Zurich, Switzerland",
+      "Europe/Stockholm": "Stockholm, Sweden",
+      "Europe/Istanbul": "Istanbul, Turkiye",
+      "Australia/Sydney": "Sydney, Australia",
+      "Australia/Melbourne": "Melbourne, Australia",
+      "Pacific/Auckland": "Auckland, New Zealand",
+      "Africa/Cairo": "Cairo, Egypt",
+      "Africa/Johannesburg": "Johannesburg, South Africa",
+      UTC: "UTC",
+    },
+  };
+  const supportedTimeZones = Object.keys(timeZoneLabels.en);
+  const timeZoneText = (lang, key) => ({
+    ko: {
+      invalidDateTime: "날짜와 시간을 올바르게 입력해주세요.",
+      chooseTarget: "변환할 대상 시간대를 하나 이상 선택해주세요.",
+      unsupported: "이 브라우저에서는 선택한 시간대를 지원하지 않을 수 있습니다.",
+      sameDay: "같은 날",
+      city: "도시/시간대",
+      convertedDate: "변환된 날짜",
+      convertedTime: "변환된 시간",
+      offset: "UTC 오프셋",
+      dateDiff: "기준 시간과의 날짜 차이",
+      baseTime: "기준 시간",
+      copied: "결과를 복사했습니다.",
+      copyFailed: "결과 복사에 실패했습니다.",
+      showMore: "주요 도시 더 보기",
+      showLess: "접기",
+    },
+    en: {
+      invalidDateTime: "Please enter a valid date and time.",
+      chooseTarget: "Please select at least one target time zone.",
+      unsupported: "This browser may not support the selected time zone.",
+      sameDay: "Same day",
+      city: "City / Time Zone",
+      convertedDate: "Converted Date",
+      convertedTime: "Converted Time",
+      offset: "UTC Offset",
+      dateDiff: "Date Difference",
+      baseTime: "Base time",
+      copied: "Result copied.",
+      copyFailed: "Failed to copy the result.",
+      showMore: "Show More Cities",
+      showLess: "Show Less",
+    },
+  }[lang]?.[key] ?? key);
+  const assertTimeZoneSupported = (timeZone, lang) => {
+    if (!supportedTimeZones.includes(timeZone)) throw new Error(timeZoneText(lang, "unsupported"));
+    try {
+      new Intl.DateTimeFormat("en-US", { timeZone }).format(new Date());
+    } catch {
+      throw new Error(timeZoneText(lang, "unsupported"));
+    }
+  };
+  const getTimeZoneParts = (date, timeZone) => {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: "h23",
+    }).formatToParts(date);
+    const values = Object.fromEntries(parts.filter((part) => part.type !== "literal").map((part) => [part.type, Number(part.value)]));
+    return values;
+  };
+  const zonedTimeToDate = (dateValue, timeValue, timeZone) => {
+    const [year, month, day] = dateValue.split("-").map(Number);
+    const [hour, minute] = timeValue.split(":").map(Number);
+    if (![year, month, day, hour, minute].every(Number.isFinite)) return null;
+    const targetUtc = Date.UTC(year, month - 1, day, hour, minute, 0);
+    let guess = targetUtc;
+    for (let i = 0; i < 4; i += 1) {
+      const parts = getTimeZoneParts(new Date(guess), timeZone);
+      const zoneAsUtc = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second || 0);
+      guess -= zoneAsUtc - targetUtc;
+    }
+    const result = new Date(guess);
+    return Number.isNaN(result.getTime()) ? null : result;
+  };
+  const formatTimeZoneDateParts = (date, timeZone, lang, hour12) => {
+    const locale = lang === "ko" ? "ko-KR" : "en-US";
+    const dateParts = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).formatToParts(date).filter((part) => part.type !== "literal").map((part) => [part.type, part.value]));
+    const time = new Intl.DateTimeFormat(locale, {
+      timeZone,
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12,
+    }).format(date);
+    return {
+      isoDate: `${dateParts.year}-${dateParts.month}-${dateParts.day}`,
+      time,
+      year: Number(dateParts.year),
+      month: Number(dateParts.month),
+      day: Number(dateParts.day),
+    };
+  };
+  const getTimeZoneOffset = (date, timeZone) => {
+    const parts = getTimeZoneParts(date, timeZone);
+    const zoneAsUtc = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second || 0);
+    const offsetMinutes = Math.round((zoneAsUtc - date.getTime()) / 60000);
+    const sign = offsetMinutes >= 0 ? "+" : "-";
+    const absolute = Math.abs(offsetMinutes);
+    return `UTC${sign}${String(Math.floor(absolute / 60)).padStart(2, "0")}:${String(absolute % 60).padStart(2, "0")}`;
+  };
+  const getDateDifferenceLabel = (baseParts, targetParts, lang) => {
+    const baseDate = Date.UTC(baseParts.year, baseParts.month - 1, baseParts.day);
+    const targetDate = Date.UTC(targetParts.year, targetParts.month - 1, targetParts.day);
+    const diff = Math.round((targetDate - baseDate) / 86400000);
+    if (diff === 0) return timeZoneText(lang, "sameDay");
+    return lang === "ko" ? `${diff > 0 ? "+" : ""}${diff}일` : `${diff > 0 ? "+" : ""}${diff} day${Math.abs(diff) === 1 ? "" : "s"}`;
+  };
+  const setDateTimeForZone = (root, instant = new Date()) => {
+    const lang = root.dataset.lang || "ko";
+    const source = root.querySelector("#tz-source")?.value || "Asia/Seoul";
+    assertTimeZoneSupported(source, lang);
+    const parts = formatTimeZoneDateParts(instant, source, lang, false);
+    const zoneParts = getTimeZoneParts(instant, source);
+    root.querySelector("#tz-date").value = parts.isoDate;
+    root.querySelector("#tz-time").value = `${String(zoneParts.hour).padStart(2, "0")}:${String(zoneParts.minute).padStart(2, "0")}`;
+  };
+  const setTimeZoneTargets = (root, targets) => {
+    root.querySelectorAll('input[name="tz-target"]').forEach((checkbox) => {
+      checkbox.checked = targets.includes(checkbox.value);
+    });
+  };
+  const toggleTimeZoneTargetList = (root, button) => {
+    const lang = root.dataset.lang || "ko";
+    const expanded = button.dataset.expanded === "true";
+    root.querySelectorAll('[data-timezone-extra="true"]').forEach((item) => item.classList.toggle("hidden", expanded));
+    button.dataset.expanded = expanded ? "false" : "true";
+    button.textContent = timeZoneText(lang, expanded ? "showMore" : "showLess");
+  };
+  const initTimeZoneConverter = (root) => {
+    if (root.dataset.tool !== "time-zone-converter") return;
+    if (!root.querySelector("#tz-date")?.value || !root.querySelector("#tz-time")?.value) {
+      setDateTimeForZone(root);
+    }
+  };
+  const runTimeZoneConverter = (root) => {
+    const lang = root.dataset.lang || "ko";
+    const source = root.querySelector("#tz-source")?.value;
+    const dateValue = root.querySelector("#tz-date")?.value;
+    const timeValue = root.querySelector("#tz-time")?.value;
+    const hour12 = root.querySelector("#tz-hour-format")?.value === "12";
+    const table = root.querySelector("#timezone-result-table");
+    if (!source || !dateValue || !timeValue) throw new Error(timeZoneText(lang, "invalidDateTime"));
+    assertTimeZoneSupported(source, lang);
+    const targets = Array.from(root.querySelectorAll('input[name="tz-target"]:checked')).map((input) => input.value).filter((zone) => zone !== source);
+    if (!targets.length) throw new Error(timeZoneText(lang, "chooseTarget"));
+    targets.forEach((zone) => assertTimeZoneSupported(zone, lang));
+    const instant = zonedTimeToDate(dateValue, timeValue, source);
+    if (!instant) throw new Error(timeZoneText(lang, "invalidDateTime"));
+    const baseParts = formatTimeZoneDateParts(instant, source, lang, hour12);
+    const rows = targets.map((zone) => {
+      const parts = formatTimeZoneDateParts(instant, zone, lang, hour12);
+      return {
+        zone,
+        label: timeZoneLabels[lang][zone] || zone,
+        date: parts.isoDate,
+        time: parts.time,
+        offset: getTimeZoneOffset(instant, zone),
+        diff: getDateDifferenceLabel(baseParts, parts, lang),
+      };
+    });
+    if (table) {
+      table.innerHTML = `<table class="min-w-full border-separate border-spacing-0 overflow-hidden rounded-md border border-line text-sm">
+        <thead class="bg-slate-50 text-left text-slate-600">
+          <tr>
+            <th class="border-b border-line px-3 py-2">${timeZoneText(lang, "city")}</th>
+            <th class="border-b border-line px-3 py-2">${timeZoneText(lang, "convertedDate")}</th>
+            <th class="border-b border-line px-3 py-2">${timeZoneText(lang, "convertedTime")}</th>
+            <th class="border-b border-line px-3 py-2">${timeZoneText(lang, "offset")}</th>
+            <th class="border-b border-line px-3 py-2">${timeZoneText(lang, "dateDiff")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map((row) => `<tr>
+            <td class="border-b border-line px-3 py-2 font-semibold">${row.label}<br><span class="text-xs font-normal text-slate-500">${row.zone}</span></td>
+            <td class="border-b border-line px-3 py-2">${row.date}</td>
+            <td class="border-b border-line px-3 py-2">${row.time}</td>
+            <td class="border-b border-line px-3 py-2">${row.offset}</td>
+            <td class="border-b border-line px-3 py-2">${row.diff}</td>
+          </tr>`).join("")}
+        </tbody>
+      </table>`;
+    }
+    const baseLabel = timeZoneLabels[lang][source] || source;
+    return `${timeZoneText(lang, "baseTime")}: ${baseParts.isoDate} ${baseParts.time} ${baseLabel}\n${rows.map((row) => `${row.label}: ${row.date} ${row.time} (${row.offset}, ${row.diff})`).join("\n")}`;
   };
   const dateValue = (value) => value ? new Date(`${value}T00:00:00`) : null;
   const daysBetween = (a, b) => Math.round((b.getTime() - a.getTime()) / 86400000);
@@ -3062,6 +3434,7 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
     "url-encoder-decoder",
     "csv-json-converter",
     "text-compare",
+    "time-zone-converter",
     "unix-timestamp-converter",
     "percent-calculator",
     "discount-calculator",
@@ -3147,6 +3520,7 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
       if (slug === "url-encoder-decoder") result.textContent = encodeURIComponent(text);
       if (slug === "csv-json-converter") result.textContent = JSON.stringify(csvToJson(text), null, 2);
       if (slug === "text-compare") result.textContent = compareTexts(root);
+      if (slug === "time-zone-converter") result.textContent = runTimeZoneConverter(root);
       if (pdfToolSlugs.includes(slug)) await runPdfTool(root);
       if (slug === "audio-converter") await convertAudio(root);
       if (slug === "audio-cutter") await trimAudio(root);
@@ -3653,6 +4027,10 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
         result.textContent = Array.from({ length: count }, () => randomChars(chars, length)).join("\n");
       }
     } catch (error) {
+      if (slug === "time-zone-converter") {
+        const table = root.querySelector("#timezone-result-table");
+        if (table) table.innerHTML = "";
+      }
       result.textContent = error instanceof Error ? error.message : m.checkInput;
     }
   }
@@ -3670,8 +4048,27 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
       const button = event.target.closest("button");
       if (!button) return;
       const action = button.dataset.action;
-      if (action === "copy") copyResult(root);
+      if (action === "copy") {
+        copyResult(root).then((copied) => {
+          if (slug === "time-zone-converter") {
+            const status = root.querySelector("#timezone-copy-status");
+            if (status) status.textContent = timeZoneText(root.dataset.lang || "ko", copied ? "copied" : "copyFailed");
+          }
+        });
+      }
       if (action === "reset") {
+        if (slug === "time-zone-converter") {
+          const source = root.querySelector("#tz-source");
+          const hourFormat = root.querySelector("#tz-hour-format");
+          if (source) source.value = "Asia/Seoul";
+          if (hourFormat) hourFormat.value = "24";
+          setTimeZoneTargets(root, ["America/New_York", "America/Los_Angeles", "UTC", "Asia/Tokyo"]);
+          setDateTimeForZone(root);
+          const status = root.querySelector("#timezone-copy-status");
+          if (status) status.textContent = "";
+          run(root);
+          return;
+        }
         root.querySelectorAll("input, textarea").forEach((input) => input.value = "");
         const vatRate = root.querySelector("#vat-rate");
         if (vatRate) vatRate.value = "10";
@@ -3782,6 +4179,19 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
       }
       if (slug === "audio-volume-editor" && action === "volume-preset") {
         syncVolumeInputs(root, button.dataset.volume || "100");
+      }
+      if (slug === "time-zone-converter" && action === "timezone-now") {
+        setDateTimeForZone(root);
+        run(root);
+      }
+      if (slug === "time-zone-converter" && action === "timezone-toggle-targets") {
+        toggleTimeZoneTargetList(root, button);
+      }
+      if (slug === "time-zone-converter" && action === "timezone-preset") {
+        const source = root.querySelector("#tz-source");
+        if (source) source.value = button.dataset.source || "Asia/Seoul";
+        setTimeZoneTargets(root, (button.dataset.targets || "").split(",").filter(Boolean));
+        run(root);
       }
       if (slug === "audio-cutter" && action === "preview-audio-range") {
         previewAudioRange(root).catch((error) => {
@@ -3902,6 +4312,8 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
       });
     }
     syncDynamicInputs(root);
+    initTimeZoneConverter(root);
+    if (slug === "time-zone-converter") run(root);
     if (selectOnlyAutoRunSlugs.has(slug)) autoRun();
   });
 </script>

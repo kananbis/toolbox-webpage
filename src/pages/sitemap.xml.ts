@@ -1,8 +1,8 @@
 import { baseTools, categorySlugs, languages } from "@/i18n/translations";
 import { SITE_CONFIG } from "../../site.config.mjs";
 
-export function GET({ site }: { site?: URL }) {
-  const baseUrl = site?.toString().replace(/\/$/, "") ?? SITE_CONFIG.siteUrl;
+export function GET() {
+  const baseUrl = SITE_CONFIG.siteUrl;
   const normalizePath = (path: string) => (path.endsWith("/") ? path : `${path}/`);
   const paths = languages.flatMap((lang) => [
     `/${lang}`,

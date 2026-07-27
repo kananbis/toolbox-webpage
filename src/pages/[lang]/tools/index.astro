@@ -1,6 +1,7 @@
 ---
 import Layout from "@/components/Layout.astro";
 import AdSlot from "@/components/AdSlot.astro";
+import BookmarkPrompt from "@/components/BookmarkPrompt.astro";
 import ToolCard from "@/components/ToolCard.astro";
 import { categorySlugs, getCategoryItems, getToolsByCategory, i18n, languages, type CategorySlug, type Lang } from "@/i18n/translations";
 
@@ -26,6 +27,8 @@ const otherLang = lang === "ko" ? "en" : "ko";
 >
   <h1 class="text-3xl font-bold tracking-normal md:text-4xl">{t.common.toolsTitle}</h1>
   <p class="mt-4 max-w-3xl text-lg leading-8 text-slate-700">{t.common.toolsDescription}</p>
+
+  <BookmarkPrompt lang={lang} />
 
   <AdSlot lang={lang} placement="homeMiddle" />
 

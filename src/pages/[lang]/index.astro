@@ -1,6 +1,7 @@
 ---
 import Layout from "@/components/Layout.astro";
 import AdSlot from "@/components/AdSlot.astro";
+import BookmarkPrompt from "@/components/BookmarkPrompt.astro";
 import ToolCard from "@/components/ToolCard.astro";
 import { getCategoryItems, getTools, i18n, languages, type Lang } from "@/i18n/translations";
 
@@ -47,6 +48,8 @@ const caseConverterLabel = lang === "ko" ? "\uC601\uBB38 \uB300\uC18C\uBB38\uC79
       </div>
     </div>
   </section>
+
+  <BookmarkPrompt lang={lang} />
 
   <AdSlot lang={lang} placement="homeMiddle" />
 
