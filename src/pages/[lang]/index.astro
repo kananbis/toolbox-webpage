@@ -11,7 +11,26 @@ export function getStaticPaths() {
 
 const lang = Astro.params.lang as Lang;
 const t = i18n[lang];
-const featured = getTools(lang).slice(0, 8);
+const tools = getTools(lang);
+const featuredSlugs = [
+  "audio-compressor",
+  "audio-cutter",
+  "image-color-picker",
+  "iphone-ringtone-maker",
+  "pdf-merger",
+  "image-resizer",
+  "image-compressor",
+  "pdf-to-jpg",
+];
+const frequentSlugs = [
+  "audio-compressor",
+  "audio-cutter",
+  "iphone-ringtone-maker",
+  "pdf-merger",
+  "image-resizer",
+];
+const featured = featuredSlugs.map((slug) => tools.find((tool) => tool.slug === slug)).filter(Boolean);
+const frequent = frequentSlugs.map((slug) => tools.find((tool) => tool.slug === slug)).filter(Boolean);
 const categories = getCategoryItems(lang);
 const otherLang = lang === "ko" ? "en" : "ko";
 const caseConverterLabel = lang === "ko" ? "\uC601\uBB38 \uB300\uC18C\uBB38\uC790 \uBCC0\uD658\uAE30" : null;
@@ -40,7 +59,7 @@ const caseConverterLabel = lang === "ko" ? "\uC601\uBB38 \uB300\uC18C\uBB38\uC79
     <div class="w-full rounded-lg border border-line bg-panel p-5 md:max-w-[340px] md:justify-self-end">
       <h2 class="text-lg font-bold">{t.home.frequent}</h2>
       <div class="mt-4 grid gap-3">
-        {featured.slice(0, 5).map((tool) => (
+        {frequent.map((tool) => (
           <a href={tool.path} class="rounded-md bg-white p-3 text-sm font-semibold text-ink no-underline shadow-sm">
             {tool.slug === "case-converter" && caseConverterLabel ? caseConverterLabel : tool.name}
           </a>

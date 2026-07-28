@@ -1,4 +1,5 @@
 ---
+import ImageColorEditor from "@/components/tools/ImageColorEditor.astro";
 import type { Lang } from "@/i18n/translations";
 
 type Props = { slug: string; lang?: Lang };
@@ -369,6 +370,9 @@ const timeZonePresets = [
 ---
 
 <div class="tool-panel" data-tool={slug} data-lang={lang}>
+  {slug === "image-color-replacer" && <ImageColorEditor mode="replace" lang={lang} />}
+  {slug === "make-color-transparent" && <ImageColorEditor mode="transparent" lang={lang} />}
+
   {["character-counter", "remove-spaces", "case-converter", "json-formatter", "base64-converter", "qr-code-generator", "url-encoder-decoder", "csv-json-converter"].includes(slug) && (
     <div class="grid gap-4">
       <label class="font-semibold" for="text-input">{ui.input}</label>
@@ -995,6 +999,103 @@ const timeZonePresets = [
     </div>
   )}
 
+  {slug === "iphone-ringtone-maker" && (
+    <div class="grid gap-5">
+      <section class="rounded-md border border-line bg-white p-4">
+        <label class="font-semibold" for="ringtone-file">{lang === "ko" ? "오디오 파일 선택" : "Choose Audio File"}</label>
+        <input id="ringtone-file" class="mt-2" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,.mp3,.wav,.ogg" />
+        <p class="mt-2 text-sm text-slate-600">{lang === "ko" ? "선택한 오디오 파일은 서버로 업로드되지 않고 브라우저 안에서만 처리됩니다." : "Selected audio files are not uploaded to a server and are processed only in your browser."}</p>
+        <p class="mt-1 text-sm text-slate-600">{lang === "ko" ? "MP3, WAV, OGG 파일을 지원합니다. 모바일에서는 50MB 이하 파일을 권장합니다." : "MP3, WAV, and OGG files are supported. Files under 50 MB are recommended on mobile devices."}</p>
+      </section>
+
+      <section class="rounded-md border border-line bg-white p-4">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 class="text-lg font-semibold">{lang === "ko" ? "벨소리 구간 선택" : "Select Ringtone Section"}</h2>
+            <p class="mt-1 text-sm text-slate-600">{lang === "ko" ? "파형의 좌우 핸들을 드래그해 시작점과 종료점을 선택하세요. 선택 영역을 드래그하면 구간 전체를 이동할 수 있습니다." : "Drag the left and right waveform handles to choose the start and end points. Drag the selected area to move the whole section."}</p>
+          </div>
+          <p id="ringtone-duration-label" class="text-sm text-slate-600">{lang === "ko" ? "전체 길이: -" : "Total length: -"}</p>
+        </div>
+        <div id="ringtone-waveform" class="ringtone-waveform mt-4" aria-label={lang === "ko" ? "벨소리 구간 선택 파형" : "Ringtone section waveform"} role="application" tabindex="0">
+          <canvas id="ringtone-waveform-canvas"></canvas>
+        </div>
+        <p id="ringtone-range-label" class="mt-3 text-sm text-slate-700">{lang === "ko" ? "오디오 파일을 선택하면 파형이 표시됩니다." : "Choose an audio file to display the waveform."}</p>
+        <p id="ringtone-length-warning" class="mt-1 text-sm text-amber-700"></p>
+        <div class="mt-4 grid gap-3 md:grid-cols-2">
+          <label>{lang === "ko" ? "시작 시간" : "Start time"}
+            <input id="ringtone-start" type="text" inputmode="decimal" value="00:00.0" />
+          </label>
+          <label>{lang === "ko" ? "종료 시간" : "End time"}
+            <input id="ringtone-end" type="text" inputmode="decimal" value="00:30.0" />
+          </label>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button class="btn-secondary" type="button" data-action="ringtone-play-all">{lang === "ko" ? "전체 재생" : "Play Full Audio"}</button>
+          <button class="btn-secondary" type="button" data-action="ringtone-play-range">{lang === "ko" ? "선택 구간 재생" : "Play Selection"}</button>
+          <button class="btn-secondary" type="button" data-action="ringtone-pause">{lang === "ko" ? "일시정지" : "Pause"}</button>
+        </div>
+      </section>
+
+      <section class="rounded-md border border-line bg-white p-4">
+        <h2 class="text-lg font-semibold">{lang === "ko" ? "효과 설정" : "Effects"}</h2>
+        <div class="mt-3 grid gap-4 md:grid-cols-2">
+          <label>{lang === "ko" ? "페이드 인" : "Fade in"}
+            <select id="ringtone-fade-in">
+              <option value="0" selected>{lang === "ko" ? "사용 안 함" : "Off"}</option>
+              <option value="0.5">0.5s</option>
+              <option value="1">1s</option>
+              <option value="2">2s</option>
+              <option value="3">3s</option>
+            </select>
+          </label>
+          <label>{lang === "ko" ? "페이드 아웃" : "Fade out"}
+            <select id="ringtone-fade-out">
+              <option value="0">{lang === "ko" ? "사용 안 함" : "Off"}</option>
+              <option value="0.5">0.5s</option>
+              <option value="1" selected>1s</option>
+              <option value="2">2s</option>
+              <option value="3">3s</option>
+            </select>
+          </label>
+        </div>
+        <p class="mt-3 text-sm text-slate-600">{lang === "ko" ? "벨소리는 30초 이하를 권장하며, 이 도구에서는 최대 40초까지 생성할 수 있습니다." : "Ringtones of 30 seconds or less are recommended. This tool supports clips up to 40 seconds."}</p>
+      </section>
+
+      <section class="rounded-md border border-line bg-white p-4">
+        <h2 class="text-lg font-semibold">{lang === "ko" ? "M4R 생성" : "Create M4R"}</h2>
+        <p class="mt-1 text-sm text-slate-600">{lang === "ko" ? "M4R 생성 시 브라우저에서 AAC 인코딩이 진행되며, 파일 크기와 기기 성능에 따라 시간이 걸릴 수 있습니다." : "AAC encoding runs in your browser when creating M4R, so processing time depends on file size and device performance."}</p>
+        <div class="mt-4">
+          <p id="ringtone-status" class="text-sm text-slate-600">{lang === "ko" ? "오디오 파일을 선택하면 정보가 표시됩니다." : "Choose an audio file to see details."}</p>
+          <progress id="ringtone-progress" class="mt-2 h-2 w-full" max="100" value="0"></progress>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button id="ringtone-create-button" class="btn-primary" data-action="run">{lang === "ko" ? "M4R 만들기" : "Create M4R"}</button>
+          <button class="btn-secondary" data-action="reset">{ui.reset}</button>
+        </div>
+      </section>
+
+      <section class="rounded-md border border-line bg-white p-4">
+        <h2 class="text-lg font-semibold">{lang === "ko" ? "결과 다운로드" : "Result Download"}</h2>
+        <audio id="audio-output-preview" class="mt-3 w-full" controls></audio>
+        <pre class="result-box mt-4 whitespace-pre-wrap" id="result">{ui.result}</pre>
+        <a id="download-link" class="btn-primary mt-3 hidden w-fit" download>{lang === "ko" ? "M4R 벨소리 다운로드" : "Download M4R Ringtone"}</a>
+      </section>
+
+      <section class="rounded-md border border-line bg-white p-4 text-sm leading-6 text-slate-700">
+        <h2 class="text-lg font-semibold text-slate-900">{lang === "ko" ? "만든 M4R 파일을 아이폰 벨소리로 추가하는 방법" : "How to Add the M4R File as an iPhone Ringtone"}</h2>
+        <ol class="mt-3 list-decimal space-y-1 pl-5">
+          <li>{lang === "ko" ? "생성한 M4R 파일을 다운로드합니다." : "Download the generated M4R file."}</li>
+          <li>{lang === "ko" ? "Mac 또는 Windows PC를 이용해 파일을 iPhone으로 전송합니다." : "Use a Mac or Windows PC to transfer the file to your iPhone."}</li>
+          <li>{lang === "ko" ? "기기와 운영체제 버전에 따라 GarageBand 또는 Apple 기기 관리 기능을 이용해 벨소리로 추가합니다." : "Depending on your device and OS version, use GarageBand or Apple device management features to add it as a ringtone."}</li>
+          <li>{lang === "ko" ? "iPhone에서 설정 > 사운드 및 햅틱 > 벨소리로 이동합니다." : "On iPhone, go to Settings > Sounds & Haptics > Ringtone."}</li>
+          <li>{lang === "ko" ? "추가한 벨소리를 선택합니다." : "Choose the ringtone you added."}</li>
+        </ol>
+        <p class="mt-3 text-slate-600">{lang === "ko" ? "다운로드만으로 벨소리가 자동 등록되지는 않으며, 기기와 운영체제 버전에 따라 과정이 달라질 수 있습니다." : "Downloading the file does not automatically install it as a ringtone, and the steps may vary by device and OS version."}</p>
+        <p class="mt-2 text-slate-600">{lang === "ko" ? "이 도구는 Apple Inc.와 제휴하거나 Apple에서 제공하는 서비스가 아닙니다." : "This tool is not affiliated with or provided by Apple Inc."}</p>
+      </section>
+    </div>
+  )}
+
   {slug === "time-zone-converter" && (
     <div class="grid gap-4">
       <div class="grid gap-4 md:grid-cols-3">
@@ -1403,6 +1504,36 @@ const timeZonePresets = [
     cursor: pointer;
     pointer-events: auto;
   }
+
+  .ringtone-waveform {
+    position: relative;
+    width: 100%;
+    min-height: 130px;
+    height: clamp(110px, 20vw, 170px);
+    overflow: hidden;
+    touch-action: none;
+    border: 1px solid #d9e2ef;
+    border-radius: 0.5rem;
+    background: #f8fafc;
+  }
+
+  .ringtone-waveform:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+
+  .ringtone-waveform canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  @media (max-width: 480px) {
+    .ringtone-waveform {
+      min-height: 110px;
+      height: 120px;
+    }
+  }
 </style>
 
 <script>
@@ -1631,8 +1762,8 @@ const timeZonePresets = [
     return `${minutes}:${String(rest).padStart(2, "0")}`;
   };
   const setAudioStatus = (root, text, progress = null) => {
-    const status = root.querySelector("#audio-status") || root.querySelector("#cutter-status") || root.querySelector("#compressor-status") || root.querySelector("#volume-status");
-    const progressEl = root.querySelector("#audio-progress") || root.querySelector("#cutter-progress") || root.querySelector("#compressor-progress") || root.querySelector("#volume-progress");
+    const status = root.querySelector("#audio-status") || root.querySelector("#cutter-status") || root.querySelector("#compressor-status") || root.querySelector("#volume-status") || root.querySelector("#ringtone-status");
+    const progressEl = root.querySelector("#audio-progress") || root.querySelector("#cutter-progress") || root.querySelector("#compressor-progress") || root.querySelector("#volume-progress") || root.querySelector("#ringtone-progress");
     if (status) status.textContent = text;
     if (progressEl && progress !== null) progressEl.value = progress;
   };
@@ -1716,24 +1847,78 @@ const timeZonePresets = [
     return new Blob([buffer], { type: "audio/wav" });
   };
   const ffmpegCoreBaseURL = "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/esm";
+  const ffmpegPackageURL = "https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.15/dist/esm/index.js";
+  const ffmpegPackageBaseURL = "https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.15/dist/esm";
+  const toFFmpegBlobURL = async (url, type) => {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to load ${url}`);
+    }
+    return URL.createObjectURL(new Blob([await response.arrayBuffer()], { type }));
+  };
+  let ffmpegWorkerURLPromise;
+  const getFFmpegWorkerURL = async () => {
+    if (!ffmpegWorkerURLPromise) {
+      ffmpegWorkerURLPromise = fetch(`${ffmpegPackageBaseURL}/worker.js`).then(async (response) => {
+        if (!response.ok) throw new Error(`Failed to load ${ffmpegPackageBaseURL}/worker.js`);
+        const workerSource = await response.text();
+        const bundledWorkerSource = `
+const CORE_URL = "https://unpkg.com/@ffmpeg/core@0.12.9/dist/umd/ffmpeg-core.js";
+var FFMessageType;
+(function (FFMessageType) {
+  FFMessageType["LOAD"] = "LOAD";
+  FFMessageType["EXEC"] = "EXEC";
+  FFMessageType["FFPROBE"] = "FFPROBE";
+  FFMessageType["WRITE_FILE"] = "WRITE_FILE";
+  FFMessageType["READ_FILE"] = "READ_FILE";
+  FFMessageType["DELETE_FILE"] = "DELETE_FILE";
+  FFMessageType["RENAME"] = "RENAME";
+  FFMessageType["CREATE_DIR"] = "CREATE_DIR";
+  FFMessageType["LIST_DIR"] = "LIST_DIR";
+  FFMessageType["DELETE_DIR"] = "DELETE_DIR";
+  FFMessageType["ERROR"] = "ERROR";
+  FFMessageType["DOWNLOAD"] = "DOWNLOAD";
+  FFMessageType["PROGRESS"] = "PROGRESS";
+  FFMessageType["LOG"] = "LOG";
+  FFMessageType["MOUNT"] = "MOUNT";
+  FFMessageType["UNMOUNT"] = "UNMOUNT";
+})(FFMessageType || (FFMessageType = {}));
+const ERROR_UNKNOWN_MESSAGE_TYPE = new Error("unknown message type");
+const ERROR_NOT_LOADED = new Error("ffmpeg is not loaded, call \`await ffmpeg.load()\` first");
+const ERROR_IMPORT_FAILURE = new Error("failed to import ffmpeg-core.js");
+${workerSource
+  .replace(/import\s+\{\s*CORE_URL,\s*FFMessageType\s*\}\s+from\s+["']\.\/const\.js["'];?\s*/, "")
+  .replace(/import\s+\{\s*ERROR_UNKNOWN_MESSAGE_TYPE,\s*ERROR_NOT_LOADED,\s*ERROR_IMPORT_FAILURE,\s*\}\s+from\s+["']\.\/errors\.js["'];?\s*/, "")}
+`;
+        return URL.createObjectURL(new Blob([bundledWorkerSource], { type: "text/javascript" }));
+      });
+    }
+    return ffmpegWorkerURLPromise;
+  };
   let ffmpegCoreURLsPromise;
   const getFFmpegCoreURLs = async () => {
     if (!ffmpegCoreURLsPromise) {
-      ffmpegCoreURLsPromise = import("@ffmpeg/util").then(({ toBlobURL }) =>
-        Promise.all([
-          toBlobURL(`${ffmpegCoreBaseURL}/ffmpeg-core.js`, "text/javascript"),
-          toBlobURL(`${ffmpegCoreBaseURL}/ffmpeg-core.wasm`, "application/wasm"),
-        ]).then(([coreURL, wasmURL]) => ({ coreURL, wasmURL }))
-      );
+      ffmpegCoreURLsPromise = Promise.all([
+        toFFmpegBlobURL(`${ffmpegCoreBaseURL}/ffmpeg-core.js`, "text/javascript"),
+        toFFmpegBlobURL(`${ffmpegCoreBaseURL}/ffmpeg-core.wasm`, "application/wasm"),
+        getFFmpegWorkerURL(),
+      ]).then(([coreURL, wasmURL, classWorkerURL]) => ({ coreURL, wasmURL, classWorkerURL }));
     }
     return ffmpegCoreURLsPromise;
   };
   let ffmpegAudioPromise;
+  let ffmpegClassPromise;
+  const getFFmpegClass = async () => {
+    if (!ffmpegClassPromise) {
+      ffmpegClassPromise = import(/* @vite-ignore */ ffmpegPackageURL).then((module) => module.FFmpeg);
+    }
+    return ffmpegClassPromise;
+  };
   const getAudioFFmpeg = async (root) => {
     const lang = root.dataset.lang || "ko";
     if (!ffmpegAudioPromise) {
       ffmpegAudioPromise = (async () => {
-        const [{ FFmpeg }, coreURLs] = await Promise.all([import("@ffmpeg/ffmpeg"), getFFmpegCoreURLs()]);
+        const [FFmpeg, coreURLs] = await Promise.all([getFFmpegClass(), getFFmpegCoreURLs()]);
         const ffmpeg = new FFmpeg();
         ffmpeg.on("progress", ({ progress }) => {
           const safeProgress = Number.isFinite(progress) ? Math.max(0, Math.min(1, progress)) : 0;
@@ -2256,6 +2441,350 @@ ${lang === "ko" ? "적용된 볼륨" : "Applied volume"}: ${format(settings.volu
 ${lang === "ko" ? "페이드 인 설정" : "Fade in setting"}: ${fadeInLabel}
 ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabel}${clipNote}`;
     setAudioStatus(root, lang === "ko" ? "처리가 완료되었습니다." : "Processing complete.", 100);
+  };
+  const formatRingtoneTime = (seconds, precise = true) => {
+    if (!Number.isFinite(seconds)) return precise ? "00:00.0" : "00:00";
+    const safe = Math.max(0, seconds);
+    const minutes = Math.floor(safe / 60);
+    const rest = safe - minutes * 60;
+    if (!precise) return `${String(minutes).padStart(2, "0")}:${String(Math.floor(rest)).padStart(2, "0")}`;
+    return `${String(minutes).padStart(2, "0")}:${rest.toFixed(1).padStart(4, "0")}`;
+  };
+  const getRingtoneSelection = (root) => {
+    const state = root._ringtoneState;
+    if (!state?.audioBuffer) throw new Error(root.dataset.lang === "ko" ? "오디오 파일을 선택해주세요." : "Choose an audio file.");
+    const start = Math.max(0, Math.min(state.duration, Number(state.start) || 0));
+    const end = Math.max(0, Math.min(state.duration, Number(state.end) || 0));
+    const duration = end - start;
+    if (duration < 1) throw new Error(root.dataset.lang === "ko" ? "선택 구간은 최소 1초 이상이어야 합니다." : "The selected section must be at least 1 second.");
+    if (duration > 40) throw new Error(root.dataset.lang === "ko" ? "M4R은 최대 40초까지 생성할 수 있습니다." : "M4R clips can be up to 40 seconds.");
+    return { start, end, duration };
+  };
+  const clampRingtoneSelection = (root, nextStart, nextEnd) => {
+    const state = root._ringtoneState;
+    if (!state) return;
+    const duration = state.duration || 0;
+    let start = Math.max(0, Math.min(duration, nextStart));
+    let end = Math.max(0, Math.min(duration, nextEnd));
+    if (end < start) [start, end] = [end, start];
+    if (end - start < 0.1) {
+      if (state.dragMode === "start") start = Math.max(0, end - 0.1);
+      else end = Math.min(duration, start + 0.1);
+    }
+    state.start = start;
+    state.end = end;
+  };
+  const summarizeWaveform = async (audioBuffer, points = 1200) => {
+    const length = audioBuffer.length;
+    const channels = audioBuffer.numberOfChannels;
+    const bucketSize = Math.max(1, Math.floor(length / points));
+    const peaks = [];
+    for (let bucket = 0; bucket < points; bucket += 1) {
+      const start = bucket * bucketSize;
+      const end = Math.min(length, start + bucketSize);
+      let min = 0;
+      let max = 0;
+      for (let i = start; i < end; i += 1) {
+        let value = 0;
+        for (let channel = 0; channel < channels; channel += 1) value += audioBuffer.getChannelData(channel)[i] || 0;
+        value /= channels;
+        if (value < min) min = value;
+        if (value > max) max = value;
+      }
+      peaks.push({ min, max });
+      if (bucket % 150 === 0) await new Promise((resolve) => setTimeout(resolve, 0));
+    }
+    return peaks;
+  };
+  const drawRingtoneWaveform = (root) => {
+    const state = root._ringtoneState;
+    const canvas = root.querySelector("#ringtone-waveform-canvas");
+    const wrapper = root.querySelector("#ringtone-waveform");
+    if (!state || !canvas || !wrapper) return;
+    const rect = wrapper.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const width = Math.max(1, Math.round(rect.width));
+    const height = Math.max(1, Math.round(rect.height));
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    context.clearRect(0, 0, width, height);
+    context.fillStyle = "#f8fafc";
+    context.fillRect(0, 0, width, height);
+    const center = height / 2;
+    const peaks = state.peaks || [];
+    context.strokeStyle = "#64748b";
+    context.lineWidth = 1;
+    for (let x = 0; x < width; x += 1) {
+      const peak = peaks[Math.min(peaks.length - 1, Math.floor(x / width * peaks.length))] || { min: 0, max: 0 };
+      context.beginPath();
+      context.moveTo(x + 0.5, center + peak.min * center * 0.86);
+      context.lineTo(x + 0.5, center + peak.max * center * 0.86);
+      context.stroke();
+    }
+    const duration = state.duration || 1;
+    const startX = state.start / duration * width;
+    const endX = state.end / duration * width;
+    context.fillStyle = "rgba(15, 23, 42, 0.18)";
+    context.fillRect(0, 0, startX, height);
+    context.fillRect(endX, 0, width - endX, height);
+    context.fillStyle = "rgba(37, 99, 235, 0.16)";
+    context.fillRect(startX, 0, Math.max(0, endX - startX), height);
+    context.fillStyle = "#2563eb";
+    context.fillRect(startX - 2, 0, 4, height);
+    context.fillRect(endX - 2, 0, 4, height);
+    if (Number.isFinite(state.playhead)) {
+      const playheadX = state.playhead / duration * width;
+      context.fillStyle = "#ef4444";
+      context.fillRect(playheadX - 1, 0, 2, height);
+    }
+  };
+  const requestRingtoneDraw = (root) => {
+    const state = root._ringtoneState;
+    if (!state || state.drawRaf) return;
+    state.drawRaf = requestAnimationFrame(() => {
+      state.drawRaf = 0;
+      drawRingtoneWaveform(root);
+    });
+  };
+  const updateRingtoneUi = (root, writeInputs = true) => {
+    const lang = root.dataset.lang || "ko";
+    const state = root._ringtoneState;
+    const createButton = root.querySelector("#ringtone-create-button");
+    if (!state?.audioBuffer) {
+      if (createButton) createButton.disabled = true;
+      return;
+    }
+    const clipDuration = Math.max(0, state.end - state.start);
+    if (writeInputs) {
+      const startInput = root.querySelector("#ringtone-start");
+      const endInput = root.querySelector("#ringtone-end");
+      if (startInput) startInput.value = formatRingtoneTime(state.start);
+      if (endInput) endInput.value = formatRingtoneTime(state.end);
+    }
+    const durationLabel = root.querySelector("#ringtone-duration-label");
+    const rangeLabel = root.querySelector("#ringtone-range-label");
+    const warning = root.querySelector("#ringtone-length-warning");
+    if (durationLabel) durationLabel.textContent = lang === "ko" ? `전체 길이: ${formatRingtoneTime(state.duration, false)}` : `Total length: ${formatRingtoneTime(state.duration, false)}`;
+    if (rangeLabel) rangeLabel.textContent = lang === "ko"
+      ? `선택 구간: ${formatRingtoneTime(state.start)} ~ ${formatRingtoneTime(state.end)} / 길이: ${formatRingtoneTime(clipDuration)}`
+      : `Selected range: ${formatRingtoneTime(state.start)} to ${formatRingtoneTime(state.end)} / Duration: ${formatRingtoneTime(clipDuration)}`;
+    if (warning) warning.textContent = clipDuration > 40
+      ? (lang === "ko" ? "40초를 초과해 M4R을 생성할 수 없습니다." : "Clips longer than 40 seconds cannot be created.")
+      : clipDuration > 30
+        ? (lang === "ko" ? "벨소리는 30초 이하를 권장합니다." : "Ringtones of 30 seconds or less are recommended.")
+        : "";
+    if (createButton) createButton.disabled = clipDuration < 1 || clipDuration > 40 || state.processing;
+    requestRingtoneDraw(root);
+  };
+  const stopRingtonePlayback = (root) => {
+    const state = root._ringtoneState;
+    if (!state) return;
+    state.playToken = (state.playToken || 0) + 1;
+    try { state.source?.stop?.(); } catch {}
+    state.source = null;
+    state.playing = false;
+    if (state.playRaf) cancelAnimationFrame(state.playRaf);
+    state.playRaf = 0;
+    state.playhead = state.start || 0;
+    requestRingtoneDraw(root);
+  };
+  const playRingtone = async (root, mode) => {
+    const lang = root.dataset.lang || "ko";
+    const state = root._ringtoneState;
+    if (!state?.audioBuffer) throw new Error(lang === "ko" ? "오디오 파일을 선택해주세요." : "Choose an audio file.");
+    stopRingtonePlayback(root);
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) throw new Error(lang === "ko" ? "이 브라우저에서는 오디오 재생을 사용할 수 없습니다." : "Audio playback is not available in this browser.");
+    const audioContext = state.previewContext || new AudioContextClass();
+    state.previewContext = audioContext;
+    await audioContext.resume?.();
+    const source = audioContext.createBufferSource();
+    source.buffer = state.audioBuffer;
+    source.connect(audioContext.destination);
+    const start = mode === "all" ? 0 : state.start;
+    const duration = mode === "all" ? state.duration : Math.max(0.1, state.end - state.start);
+    state.source = source;
+    state.playing = true;
+    const playToken = (state.playToken || 0) + 1;
+    state.playToken = playToken;
+    state.playStartTime = audioContext.currentTime;
+    state.playOffset = start;
+    state.playDuration = duration;
+    state.playhead = start;
+    source.onended = () => {
+      if (state.playToken !== playToken) return;
+      state.playing = false;
+      state.playhead = mode === "all" ? 0 : state.start;
+      requestRingtoneDraw(root);
+    };
+    source.start(0, start, duration);
+    const tick = () => {
+      if (!state.playing || state.playToken !== playToken) return;
+      state.playhead = Math.min(start + duration, state.playOffset + (audioContext.currentTime - state.playStartTime));
+      requestRingtoneDraw(root);
+      state.playRaf = requestAnimationFrame(tick);
+    };
+    tick();
+  };
+  const handleRingtoneTimeInput = (root) => {
+    const state = root._ringtoneState;
+    if (!state?.audioBuffer) return;
+    const start = parseAudioTime(root.querySelector("#ringtone-start")?.value);
+    const end = parseAudioTime(root.querySelector("#ringtone-end")?.value);
+    if (Number.isFinite(start) && Number.isFinite(end)) {
+      stopRingtonePlayback(root);
+      clampRingtoneSelection(root, start, end);
+      updateRingtoneUi(root, false);
+    }
+  };
+  const initRingtonePointerEvents = (root) => {
+    const canvas = root.querySelector("#ringtone-waveform-canvas");
+    const wrapper = root.querySelector("#ringtone-waveform");
+    if (!canvas || !wrapper || wrapper.dataset.pointerReady === "true") return;
+    wrapper.dataset.pointerReady = "true";
+    const timeFromEvent = (event) => {
+      const state = root._ringtoneState;
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
+      return rect.width && state?.duration ? x / rect.width * state.duration : 0;
+    };
+    canvas.addEventListener("pointerdown", (event) => {
+      const state = root._ringtoneState;
+      if (!state?.audioBuffer) return;
+      event.preventDefault();
+      stopRingtonePlayback(root);
+      canvas.setPointerCapture?.(event.pointerId);
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
+      const startX = state.start / state.duration * rect.width;
+      const endX = state.end / state.duration * rect.width;
+      const hit = 32;
+      state.dragMode = Math.abs(x - startX) <= hit ? "start" : Math.abs(x - endX) <= hit ? "end" : x > startX && x < endX ? "move" : (x < startX ? "start" : "end");
+      state.dragStartTime = timeFromEvent(event);
+      state.dragInitialStart = state.start;
+      state.dragInitialEnd = state.end;
+    });
+    canvas.addEventListener("pointermove", (event) => {
+      const state = root._ringtoneState;
+      if (!state?.dragMode) return;
+      event.preventDefault();
+      const time = timeFromEvent(event);
+      if (state.dragMode === "start") clampRingtoneSelection(root, time, state.end);
+      if (state.dragMode === "end") clampRingtoneSelection(root, state.start, time);
+      if (state.dragMode === "move") {
+        const delta = time - state.dragStartTime;
+        const length = state.dragInitialEnd - state.dragInitialStart;
+        let start = state.dragInitialStart + delta;
+        start = Math.max(0, Math.min(state.duration - length, start));
+        clampRingtoneSelection(root, start, start + length);
+      }
+      updateRingtoneUi(root);
+    });
+    ["pointerup", "pointercancel", "pointerleave"].forEach((eventName) => {
+      canvas.addEventListener(eventName, () => {
+        const state = root._ringtoneState;
+        if (state) state.dragMode = "";
+      });
+    });
+  };
+  const loadRingtoneInfo = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const m = messages[lang];
+    const file = root.querySelector("#ringtone-file")?.files?.[0];
+    const result = root.querySelector("#result");
+    assertSupportedAudioFile(file, lang);
+    if (file.size > 157286400) throw new Error(lang === "ko" ? "150MB를 초과하는 파일은 브라우저에서 처리하지 않습니다." : "Files over 150 MB are not processed in the browser.");
+    revokeAudioUrls(root);
+    stopRingtonePlayback(root);
+    setAudioStatus(root, lang === "ko" ? "오디오 파일을 분석하는 중입니다." : "Analyzing audio file.", 10);
+    const startedAt = performance.now();
+    const audioBuffer = await loadAudioBuffer(file, lang);
+    const peaks = await summarizeWaveform(audioBuffer);
+    root._ringtoneState = { file, audioBuffer, peaks, duration: audioBuffer.duration, start: 0, end: Math.min(audioBuffer.duration, 30), playhead: 0, processing: false, waveformMs: performance.now() - startedAt };
+    initRingtonePointerEvents(root);
+    const largeNote = file.size >= 52428800
+      ? `\n${lang === "ko" ? "큰 오디오 파일은 브라우저 메모리를 많이 사용하며 처리 시간이 길어질 수 있습니다. 모바일에서는 50MB 이하 파일을 권장합니다." : "Large audio files may use significant browser memory and take longer to process. Files under 50 MB are recommended on mobile devices."}`
+      : "";
+    if (result) result.textContent = `${m.originalFileName}: ${file.name}
+${m.originalSize}: ${formatBytes(file.size, lang)}
+${lang === "ko" ? "원본 형식" : "Original format"}: ${file.type || fileExtension(file.name) || "audio"}
+${lang === "ko" ? "오디오 길이" : "Audio duration"}: ${formatDuration(audioBuffer.duration, lang)}
+${lang === "ko" ? "샘플레이트" : "Sample rate"}: ${format(audioBuffer.sampleRate, lang)} Hz
+${lang === "ko" ? "채널 수" : "Channels"}: ${audioBuffer.numberOfChannels}
+${lang === "ko" ? "파형 생성 시간" : "Waveform generation time"}: ${Math.round(root._ringtoneState.waveformMs)} ms
+${lang === "ko" ? "파형 데이터 포인트" : "Waveform data points"}: ${peaks.length}${largeNote}`;
+    setAudioStatus(root, lang === "ko" ? "파형에서 벨소리 구간을 선택하세요." : "Select a ringtone section on the waveform.", 30);
+    updateRingtoneUi(root);
+    setTimeout(() => drawRingtoneWaveform(root), 0);
+  };
+  const getRingtoneFadeSettings = (root, duration) => {
+    const lang = root.dataset.lang || "ko";
+    const fadeIn = Number(root.querySelector("#ringtone-fade-in")?.value || "0");
+    const fadeOut = Number(root.querySelector("#ringtone-fade-out")?.value || "0");
+    if (!Number.isFinite(fadeIn) || !Number.isFinite(fadeOut) || fadeIn < 0 || fadeOut < 0) throw new Error(lang === "ko" ? "페이드 설정을 확인해주세요." : "Check the fade settings.");
+    if (fadeIn + fadeOut > duration) throw new Error(lang === "ko" ? "페이드 인과 페이드 아웃 길이의 합이 선택 구간보다 길 수 없습니다." : "The total fade in and fade out duration cannot be longer than the selected section.");
+    return { fadeIn, fadeOut };
+  };
+  const createIphoneRingtone = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const m = messages[lang];
+    if (!root._ringtoneState?.audioBuffer) await loadRingtoneInfo(root);
+    const state = root._ringtoneState;
+    const { file } = state;
+    const selection = getRingtoneSelection(root);
+    const fade = getRingtoneFadeSettings(root, selection.duration);
+    state.processing = true;
+    updateRingtoneUi(root);
+    setAudioStatus(root, lang === "ko" ? "M4R 생성 준비 중입니다." : "Preparing M4R creation.", 35);
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    let ffmpeg;
+    try {
+      ffmpeg = await getAudioFFmpeg(root);
+    } catch (error) {
+      ffmpegAudioPromise = null;
+      const detail = error?.message || String(error || "");
+      throw new Error(lang === "ko" ? `변환 라이브러리 로딩에 실패했습니다.${detail ? ` (${detail})` : ""}` : `Conversion library loading failed.${detail ? ` (${detail})` : ""}`);
+    }
+    const inputExt = fileExtension(file.name) || "audio";
+    const safeId = Date.now();
+    const inputName = `ringtone-input-${safeId}.${inputExt}`;
+    const outputName = `ringtone-output-${safeId}.m4r`;
+    try {
+      await ffmpeg.writeFile(inputName, new Uint8Array(await file.arrayBuffer()));
+      setAudioStatus(root, lang === "ko" ? "AAC 기반 M4R을 생성하는 중입니다." : "Creating AAC-based M4R.", 55);
+      const args = ["-ss", String(selection.start), "-t", String(selection.duration), "-i", inputName, "-vn"];
+      const filters = [];
+      if (fade.fadeIn > 0) filters.push(`afade=t=in:st=0:d=${fade.fadeIn}`);
+      if (fade.fadeOut > 0) filters.push(`afade=t=out:st=${Math.max(0, selection.duration - fade.fadeOut)}:d=${fade.fadeOut}`);
+      if (filters.length) args.push("-af", filters.join(","));
+      args.push("-c:a", "aac", "-b:a", "192k", "-f", "ipod", outputName);
+      const exitCode = await ffmpeg.exec(args);
+      if (exitCode !== 0) throw new Error(lang === "ko" ? "FFmpeg가 M4R 생성을 완료하지 못했습니다." : "FFmpeg could not create the M4R file.");
+      const data = await ffmpeg.readFile(outputName);
+      const bytes = data instanceof Uint8Array ? data : new Uint8Array(data);
+      const blob = new Blob([bytes], { type: "audio/mp4" });
+      const baseName = file.name.replace(/\.[^.]+$/, "") || "audio";
+      setAudioDownload(root, blob, `${baseName}-iphone-ringtone.m4r`);
+      root.querySelector("#result").textContent = `${m.originalFileName}: ${file.name}
+${lang === "ko" ? "시작 시간" : "Start time"}: ${formatRingtoneTime(selection.start)}
+${lang === "ko" ? "종료 시간" : "End time"}: ${formatRingtoneTime(selection.end)}
+${lang === "ko" ? "길이" : "Duration"}: ${formatRingtoneTime(selection.duration)}
+${m.outputFormat}: M4R
+${lang === "ko" ? "코덱" : "Codec"}: AAC
+${lang === "ko" ? "비트레이트" : "Bitrate"}: 192 kbps
+${m.outputSize}: ${formatBytes(blob.size, lang)}
+${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
+      setAudioStatus(root, lang === "ko" ? "M4R 생성이 완료되었습니다." : "M4R creation complete.", 100);
+    } catch (error) {
+      throw new Error(lang === "ko" ? `M4R 생성에 실패했습니다. 현재 FFmpeg 코어가 AAC 인코딩 또는 MP4/M4R muxing을 지원하지 않을 수 있습니다. (${error?.message || error})` : `M4R creation failed. The current FFmpeg core may not support AAC encoding or MP4/M4R muxing. (${error?.message || error})`);
+    } finally {
+      await Promise.allSettled([ffmpeg.deleteFile(inputName), ffmpeg.deleteFile(outputName)]);
+      state.processing = false;
+      updateRingtoneUi(root);
+    }
   };
   const requireFinite = (value, message) => {
     if (!Number.isFinite(value)) throw new Error(message);
@@ -3526,6 +4055,7 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
       if (slug === "audio-cutter") await trimAudio(root);
       if (slug === "audio-compressor") await compressAudio(root);
       if (slug === "audio-volume-editor") await editAudioVolume(root);
+      if (slug === "iphone-ringtone-maker") await createIphoneRingtone(root);
       if (slug === "qr-code-generator") {
         if (!text) throw new Error(m.enterQr);
         await QRCode.toCanvas(root.querySelector("#qr-canvas"), text, { width: 192, margin: 2 });
@@ -4079,9 +4609,11 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
         root.dataset.rotation = "0";
         root.dataset.flipX = "false";
         root.dataset.flipY = "false";
+        stopRingtonePlayback(root);
         delete root._cutterState;
         delete root._compressorState;
         delete root._volumeState;
+        delete root._ringtoneState;
         delete root._pdfFiles;
         delete root._pdfOrganizerPages;
         delete root.dataset.cutterDuration;
@@ -4199,6 +4731,17 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
           setAudioStatus(root, root.dataset.lang === "ko" ? "선택 구간 미리 듣기에 실패했습니다." : "Range preview failed.", 0);
         });
       }
+      if (slug === "iphone-ringtone-maker" && action === "ringtone-play-all") {
+        playRingtone(root, "all").catch((error) => {
+          root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+        });
+      }
+      if (slug === "iphone-ringtone-maker" && action === "ringtone-play-range") {
+        playRingtone(root, "range").catch((error) => {
+          root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+        });
+      }
+      if (slug === "iphone-ringtone-maker" && action === "ringtone-pause") stopRingtonePlayback(root);
       if (action === "run") run(root);
     });
     root.querySelectorAll("input, textarea, select").forEach((control) => {
@@ -4259,6 +4802,19 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
           if (control.id === "fade-in-duration") markFadePresetCustom(root, "in");
           if (control.id === "fade-out-duration") markFadePresetCustom(root, "out");
         }
+        if (slug === "iphone-ringtone-maker") {
+          if (control.id === "ringtone-file") {
+            loadRingtoneInfo(root).catch((error) => {
+              root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+              setAudioStatus(root, root.dataset.lang === "ko" ? "오디오 파일을 읽을 수 없습니다." : "Audio file could not be read.", 0);
+            });
+          }
+          if (control.id === "ringtone-start" || control.id === "ringtone-end") handleRingtoneTimeInput(root);
+          if (control.id === "ringtone-fade-in" || control.id === "ringtone-fade-out") {
+            const state = root._ringtoneState;
+            if (state?.audioBuffer) updateRingtoneUi(root);
+          }
+        }
         autoRun();
       });
     });
@@ -4313,6 +4869,15 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
     }
     syncDynamicInputs(root);
     initTimeZoneConverter(root);
+    if (slug === "iphone-ringtone-maker") {
+      initRingtonePointerEvents(root);
+      let resizeTimer = 0;
+      window.addEventListener("resize", () => {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(() => requestRingtoneDraw(root), 120);
+      });
+      updateRingtoneUi(root);
+    }
     if (slug === "time-zone-converter") run(root);
     if (selectOnlyAutoRunSlugs.has(slug)) autoRun();
   });

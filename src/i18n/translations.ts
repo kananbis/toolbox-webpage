@@ -22,6 +22,7 @@ export const baseTools = [
   { slug: "audio-cutter", category: "audio", privacy: true },
   { slug: "audio-compressor", category: "audio", privacy: true },
   { slug: "audio-volume-editor", category: "audio", privacy: true },
+  { slug: "iphone-ringtone-maker", category: "audio", privacy: true },
   { slug: "pdf-merger", category: "pdf", privacy: true },
   { slug: "pdf-splitter", category: "pdf", privacy: true },
   { slug: "pdf-page-extractor", category: "pdf", privacy: true },
@@ -71,6 +72,8 @@ export const baseTools = [
   { slug: "image-watermark", category: "image", privacy: true },
   { slug: "remove-image-metadata", category: "image", privacy: true },
   { slug: "image-color-picker", category: "image", privacy: true },
+  { slug: "image-color-replacer", category: "image", privacy: true },
+  { slug: "make-color-transparent", category: "image", privacy: true },
   { slug: "text-compare", category: "text", privacy: true },
 ] as const;
 
@@ -116,11 +119,11 @@ export const i18n = {
     },
     home: {
       title: "Toolbox - 무료 웹 도구 모음",
-      description: "글자수 세기, 퍼센트 계산기, 날짜 계산기, 비밀번호 생성기 등 자주 쓰는 온라인 도구를 설치 없이 사용할 수 있습니다.",
+      description: "오디오 압축, 오디오 자르기, 아이폰 벨소리 만들기, PDF 합치기, 이미지 리사이즈 같은 브라우저 기반 무료 도구를 사용할 수 있습니다.",
       label: "무료 온라인 도구",
       h1: "무료 웹 도구 모음",
-      body1: "글자수 세기, 퍼센트 계산기, 날짜 계산기, 비밀번호 생성기 등 자주 쓰는 온라인 도구를 설치 없이 사용할 수 있습니다.",
-      body2: "입력한 내용은 서버로 전송하지 않고 현재 브라우저에서 처리합니다.",
+      body1: "오디오 편집, PDF 정리, 이미지 처리, 계산기, 변환기, 텍스트 도구를 설치 없이 사용할 수 있습니다.",
+      body2: "선택한 파일과 입력 내용은 가능한 범위에서 서버로 업로드하지 않고 현재 브라우저 안에서 처리합니다.",
       button: "모든 도구 보기",
       frequent: "자주 쓰는 도구",
       categories: "도구 카테고리",
@@ -210,19 +213,21 @@ export const i18n = {
       "image-watermark": { name: "이미지 워터마크 넣기", description: "이미지에 텍스트 워터마크를 넣고 위치, 회전, 투명도를 조정해 다운로드합니다.", seoTitle: "이미지 워터마크 넣기 - 온라인 워터마크 도구", intro: "JPG, PNG, WebP 이미지에 원하는 문구를 워터마크로 추가합니다.", usage: ["이미지 파일을 선택합니다.", "워터마크 텍스트와 위치, 크기, 색상, 회전, 투명도를 설정합니다.", "미리보기를 확인합니다.", "워터마크가 들어간 이미지를 다운로드합니다."], examples: ["블로그 이미지에 사이트명 넣기", "상품 이미지에 저작권 문구 추가"], faq: [{ question: "이미지가 서버로 업로드되나요?", answer: "아니요. 브라우저 안에서만 처리됩니다." }, { question: "워터마크 위치를 바꿀 수 있나요?", answer: "네. 좌상단, 우상단, 중앙, 좌하단, 우하단 중 선택할 수 있습니다." }, { question: "투명도와 회전을 조절할 수 있나요?", answer: "네. 투명도와 회전 각도를 직접 설정할 수 있습니다." }] },
       "remove-image-metadata": { name: "EXIF 정보 제거기", description: "이미지를 브라우저 canvas로 다시 저장해 EXIF 등 메타데이터를 줄입니다.", seoTitle: "EXIF 정보 제거기 - 이미지 메타데이터 제거", intro: "사진을 다시 인코딩해 위치 정보나 촬영 정보 같은 메타데이터를 제거하는 데 도움을 줍니다.", usage: ["이미지 파일을 선택합니다.", "원본 파일명, 크기, 용량을 확인합니다.", "브라우저에서 다시 저장된 이미지를 다운로드합니다."], examples: ["사진 공유 전 EXIF 정보 제거", "업로드용 이미지에서 메타데이터 줄이기"], faq: [{ question: "모든 메타데이터가 제거되나요?", answer: "대부분 제거되지만 모든 형식의 메타데이터 제거를 보장하지는 않습니다." }, { question: "이미지가 서버로 업로드되나요?", answer: "아니요. 브라우저 안에서 다시 인코딩합니다." }, { question: "화질이 달라질 수 있나요?", answer: "다시 저장하는 과정에서 형식과 브라우저에 따라 달라질 수 있습니다." }] },
       "image-color-picker": { name: "이미지 색상 추출기", description: "이미지를 클릭해 픽셀 색상을 HEX, RGB, HSL 값으로 확인합니다.", seoTitle: "이미지 색상 추출기 - 이미지 컬러 피커", intro: "이미지에서 원하는 위치를 클릭해 해당 픽셀의 색상 값을 추출합니다.", usage: ["이미지 파일을 선택합니다.", "미리보기 이미지에서 색상을 알고 싶은 지점을 클릭합니다.", "HEX, RGB, HSL 값을 확인하고 복사합니다."], examples: ["로고 이미지에서 대표 색상 확인", "사진 속 특정 색상의 HEX 값 추출"], faq: [{ question: "색상은 어떻게 추출하나요?", answer: "브라우저 canvas에서 클릭한 픽셀의 RGB 값을 읽습니다." }, { question: "최근 색상 목록이 남나요?", answer: "현재 페이지 안에서 최근 선택한 색상을 표시합니다." }, { question: "이미지가 서버로 업로드되나요?", answer: "아니요. 선택한 이미지는 브라우저에서만 처리됩니다." }] },
+      "image-color-replacer": { name: "이미지 색상 대체", description: "JPG, PNG, WebP 이미지에서 특정 색상을 선택하고 비슷한 색상 영역을 원하는 색상으로 한 번에 변경합니다. 이미지는 서버로 업로드되지 않고 브라우저에서 처리됩니다.", seoTitle: "이미지 색상 대체 - 특정 색상을 다른 색으로 한 번에 변경", intro: "이미지 색상 대체 도구는 이미지에서 선택한 색상과 비슷한 픽셀을 찾아 원하는 색상으로 바꿉니다. 로고, 아이콘, 단색 일러스트처럼 색상 영역이 분명한 이미지에 적합합니다.", usage: ["이미지를 선택합니다.", "이미지에서 바꿀 색상을 클릭하거나 HEX 값을 입력합니다.", "새 색상을 선택합니다.", "유사 색상 범위를 조절합니다.", "결과를 확인하고 다운로드합니다."], examples: ["로고의 대표 색상을 다른 브랜드 색상으로 바꾸기", "단색 아이콘의 색상 변경", "PNG 일러스트의 특정 색상 교체", "배경이나 그래픽 요소의 색상을 한 번에 바꾸기"], faq: [{ question: "사진 속 옷이나 제품 색상도 자연스럽게 바꿀 수 있나요?", answer: "이 도구는 단순 픽셀 색상 기준이라 로고와 아이콘에는 적합하지만, 그림자와 반사가 많은 복잡한 사진에서는 자연스럽지 않을 수 있습니다." }, { question: "비슷한 색상도 함께 변경되나요?", answer: "유사 색상 범위를 높이면 선택한 색상과 가까운 픽셀까지 함께 변경됩니다." }, { question: "원본 투명 영역은 유지되나요?", answer: "네. PNG와 WebP의 기존 투명 영역은 유지되며 완전 투명 픽셀은 변경하지 않습니다." }, { question: "이미지가 서버에 업로드되나요?", answer: "아니요. 선택한 이미지는 서버로 업로드되지 않고 브라우저 안에서만 처리됩니다." }] },
+      "make-color-transparent": { name: "특정 색상 투명하게", description: "JPG, PNG, WebP 이미지에서 특정 색상과 비슷한 영역을 투명하게 만들고 PNG 또는 WebP로 저장합니다. 이미지는 서버로 업로드되지 않습니다.", seoTitle: "특정 색상 투명하게 - 이미지 배경색 제거 및 PNG 저장", intro: "특정 색상 투명화 도구는 이미지에서 선택한 색상과 비슷한 픽셀을 찾아 투명하게 만듭니다. 흰색 또는 단색 배경을 투명하게 만들거나, 로고와 아이콘의 특정 색상을 제거할 때 사용할 수 있습니다.", usage: ["이미지를 선택합니다.", "투명하게 만들 색상을 이미지에서 클릭하거나 HEX로 입력합니다.", "유사 색상 범위를 조절합니다.", "완전 투명 또는 부드럽게 투명을 선택합니다.", "체크무늬 배경에서 결과를 확인합니다.", "PNG 또는 WebP로 다운로드합니다."], examples: ["흰색 배경을 투명하게 만들기", "단색 배경이 있는 로고를 PNG로 만들기", "아이콘의 특정 배경색 제거", "특정 색상 영역만 투명하게 만들기"], faq: [{ question: "흰색 배경을 투명하게 만들 수 있나요?", answer: "네. 흰색을 선택하고 유사 색상 범위를 조절하면 흰색 배경과 비슷한 픽셀을 투명하게 만들 수 있습니다." }, { question: "JPG로 저장할 수 없는 이유는 무엇인가요?", answer: "JPG는 투명도를 지원하지 않기 때문에 이 도구에서는 PNG와 WebP 출력만 제공합니다." }, { question: "배경 제거 도구와 무엇이 다른가요?", answer: "이 도구는 객체를 인식하지 않고 선택한 색상과 유사한 픽셀을 투명하게 처리합니다. AI 배경 제거 기능은 아닙니다." }, { question: "가장자리에 흰 테두리가 남는 이유는 무엇인가요?", answer: "안티앨리어싱과 배경색이 섞인 가장자리 픽셀 때문입니다. 부드럽게 투명과 가장자리 색상 번짐 줄이기 옵션을 함께 사용해보세요." }, { question: "이미지가 서버에 업로드되나요?", answer: "아니요. 선택한 이미지는 서버로 업로드되지 않고 브라우저 안에서만 처리됩니다." }] },
       "text-compare": { name: "텍스트 비교 도구", description: "두 텍스트를 줄 단위로 비교해 추가, 삭제, 변경된 줄을 확인합니다.", seoTitle: "텍스트 비교 도구 - 온라인 문장 차이 비교", intro: "원본 텍스트와 비교 텍스트를 입력해 줄 단위 차이를 빠르게 확인합니다.", usage: ["원본 텍스트와 비교할 텍스트를 각각 입력합니다.", "필요하면 공백 무시 또는 대소문자 무시 옵션을 선택합니다.", "추가, 삭제, 변경된 줄과 요약을 확인합니다."], examples: ["문서 수정 전후 차이 확인", "설정 파일 두 버전 비교"], faq: [{ question: "입력한 텍스트가 서버로 전송되나요?", answer: "아니요. 텍스트 비교는 브라우저 안에서만 처리됩니다." }, { question: "공백 차이를 무시할 수 있나요?", answer: "네. 공백 무시 옵션을 사용할 수 있습니다." }, { question: "줄 단위로 비교하나요?", answer: "네. 현재 버전은 줄 단위 차이를 보여줍니다." }] },
-    } satisfies Record<ToolSlug, ToolText>,
+    } satisfies Partial<Record<ToolSlug, ToolText>>,
   },
   en: {
     siteName: "Toolbox",
     nav: { all: "All", text: "Text", calculator: "Calculators", converter: "Converters", audio: "Audio", generator: "Generators", developer: "Developer", electronics: "Electronics", image: "Images", languageSwitch: "KO" },
     home: {
       title: "Toolbox - Free Web Tools",
-      description: "Use everyday tools like a character counter, percentage calculator, date calculator, and password generator directly in your browser.",
+      description: "Use browser-based tools for audio compression, audio trimming, iPhone ringtones, PDF merging, image resizing, and more.",
       label: "Free Online Tools",
-      h1: "Free Web Tools",
-      body1: "Use everyday tools like a character counter, percentage calculator, date calculator, and password generator directly in your browser.",
-      body2: "Your input stays in your browser and is not uploaded or stored.",
+      h1: "Free Web Tools That Run in Your Browser",
+      body1: "Edit audio, organize PDFs, process images, calculate values, convert formats, and handle text tasks without installing software.",
+      body2: "Your files and input are processed in your browser whenever possible and are not uploaded to a server.",
       button: "View All Tools",
       frequent: "Common Tools",
       categories: "Tool Categories",
@@ -310,10 +315,64 @@ export const i18n = {
       "image-watermark": { name: "Image Watermark Tool", description: "Add a text watermark to an image, adjust position, rotation, and opacity, then download it.", seoTitle: "Image Watermark Tool - Add Watermark Online", intro: "Add a custom text watermark to a JPG, PNG, or WebP image.", usage: ["Select an image file.", "Enter watermark text and choose position, size, color, rotation, and opacity.", "Review the preview.", "Download the watermarked image."], examples: ["Add a site name to blog images", "Add a copyright note to product images"], faq: [{ question: "Is my image uploaded to a server?", answer: "No. It is processed only in your browser." }, { question: "Can I change the watermark position?", answer: "Yes. Choose top-left, top-right, center, bottom-left, or bottom-right." }, { question: "Can I adjust opacity and rotation?", answer: "Yes. Use the opacity and rotation settings." }] },
       "remove-image-metadata": { name: "Remove Image Metadata", description: "Re-save an image through browser canvas to remove most EXIF and metadata fields.", seoTitle: "Remove Image Metadata - Remove EXIF Online", intro: "Re-encode a photo in your browser to help remove location, camera, and other embedded metadata.", usage: ["Select an image file.", "Check the original file name, dimensions, and size.", "Download the re-saved image."], examples: ["Remove EXIF before sharing a photo", "Reduce metadata from an upload image"], faq: [{ question: "Is every metadata field removed?", answer: "Most metadata is removed, but removal of every field is not guaranteed." }, { question: "Is my image uploaded to a server?", answer: "No. It is re-encoded in your browser." }, { question: "Can image quality change?", answer: "Yes. Re-saving can change quality depending on the format and browser." }] },
       "image-color-picker": { name: "Image Color Picker", description: "Click an image to read pixel colors as HEX, RGB, and HSL.", seoTitle: "Image Color Picker - Extract Colors from an Image", intro: "Pick a point on an image and get the exact color value from that pixel.", usage: ["Select an image file.", "Click a point in the preview.", "Review and copy HEX, RGB, and HSL values."], examples: ["Get a brand color from a logo", "Extract the HEX value of a color in a photo"], faq: [{ question: "How are colors picked?", answer: "The tool reads the clicked pixel from a browser canvas." }, { question: "Are recent colors shown?", answer: "Yes. Recent picks are shown on the current page." }, { question: "Is my image uploaded to a server?", answer: "No. The selected image is processed only in your browser." }] },
+      "image-color-replacer": { name: "Image Color Replacer", description: "Select a color in a JPG, PNG, or WebP image and replace similar color areas with another color directly in your browser. Images are not uploaded to a server.", seoTitle: "Image Color Replacer - Replace Colors in an Image", intro: "Image Color Replacer finds pixels similar to the selected color and changes them to a new color. It works best for logos, icons, and flat illustrations with clear color areas.", usage: ["Choose an image.", "Click the color to replace or enter a HEX value.", "Choose the new color.", "Adjust the color tolerance.", "Check the result and download it."], examples: ["Change a logo color to another brand color", "Change the color of a flat icon", "Replace a specific color in a PNG illustration", "Change a background or graphic element color at once"], faq: [{ question: "Can it naturally change clothing or product colors in photos?", answer: "This tool works by pixel color, so it is useful for logos and icons. Complex photos with shadows and reflections may not look natural." }, { question: "Are similar colors replaced too?", answer: "Yes. Increasing the color tolerance includes more pixels with similar colors." }, { question: "Are existing transparent areas preserved?", answer: "Yes. Existing transparency in PNG and WebP images is preserved, and fully transparent pixels are not changed." }, { question: "Is my image uploaded to a server?", answer: "No. The selected image is processed only in your browser." }] },
+      "make-color-transparent": { name: "Make a Color Transparent", description: "Make a selected color and similar areas in JPG, PNG, or WebP images transparent, then save the result as PNG or WebP. Images are processed in your browser.", seoTitle: "Make a Color Transparent - Remove a Selected Image Color", intro: "Make a Color Transparent finds pixels similar to the selected color and makes them transparent. Use it to make a white or solid background transparent, or to remove a specific color from logos and icons.", usage: ["Choose an image.", "Click the color to make transparent or enter a HEX value.", "Adjust the color tolerance.", "Choose fully transparent or soft transparency.", "Check the result on the checkerboard background.", "Download as PNG or WebP."], examples: ["Make a white background transparent", "Turn a logo with a solid background into a PNG", "Remove a specific background color from an icon", "Make only one color area transparent"], faq: [{ question: "Can I make a white background transparent?", answer: "Yes. Select the white color and adjust the tolerance to include similar white pixels." }, { question: "Why can't I save as JPG?", answer: "JPG does not support transparency, so this tool only provides PNG and WebP output." }, { question: "How is this different from a background remover?", answer: "This tool does not detect objects. It makes pixels transparent based on the selected color. It is not an AI background remover." }, { question: "Why is there a white edge left around the object?", answer: "It is usually caused by anti-aliased edge pixels mixed with the original background color. Try soft transparency and the reduce color fringe option." }, { question: "Is my image uploaded to a server?", answer: "No. The selected image is processed only in your browser." }] },
       "text-compare": { name: "Text Compare Tool", description: "Compare two texts line by line and find added, removed, or changed lines.", seoTitle: "Text Compare Tool - Compare Text Differences Online", intro: "Paste original and changed text to quickly review line-by-line differences.", usage: ["Enter the original text and comparison text.", "Choose ignore whitespace or ignore case if needed.", "Review added, removed, changed lines, and the summary."], examples: ["Compare two document versions", "Check differences between two config files"], faq: [{ question: "Is my text sent to a server?", answer: "No. Text comparison runs only in your browser." }, { question: "Can I ignore whitespace?", answer: "Yes. Use the ignore whitespace option." }, { question: "Does it compare line by line?", answer: "Yes. This version shows line-level differences." }] },
-    } satisfies Record<ToolSlug, ToolText>,
+    } satisfies Partial<Record<ToolSlug, ToolText>>,
   },
 } as const;
+
+const audioToolText = {
+  ko: {
+    "iphone-ringtone-maker": {
+      name: "아이폰 벨소리 만들기",
+      description: "MP3, WAV, OGG 오디오 파일에서 원하는 구간을 파형으로 선택하고 아이폰 벨소리용 M4R 파일로 변환합니다. 파일은 브라우저에서 처리됩니다.",
+      seoTitle: "아이폰 벨소리 만들기 - MP3를 M4R 벨소리로 변환",
+      intro: "오디오 파일에서 벨소리로 사용할 구간을 파형에서 직접 선택하세요. 시작점과 종료점을 드래그한 뒤 아이폰용 M4R 파일로 만들 수 있습니다.",
+      usage: ["오디오 파일을 선택합니다.", "파형의 좌우 핸들을 드래그해 벨소리 구간을 선택합니다.", "필요하면 시작 시간과 종료 시간을 직접 입력해 정밀 조정합니다.", "페이드 인 또는 페이드 아웃을 설정합니다.", "M4R 만들기 버튼을 누릅니다.", "결과를 미리 듣고 M4R 파일을 다운로드합니다."],
+      examples: ["MP3 파일에서 30초 이하 벨소리 만들기", "WAV 녹음 파일에서 원하는 구간만 잘라 M4R로 저장하기", "OGG 효과음에 페이드 아웃을 넣어 아이폰 벨소리로 만들기"],
+      faq: [
+        { question: "파형에서 어떻게 구간을 선택하나요?", answer: "좌우 핸들로 시작점과 종료점을 조절하고, 선택 영역을 드래그하면 구간 전체를 이동할 수 있습니다." },
+        { question: "파형을 움직일 때마다 파일이 다시 변환되나요?", answer: "아니요. 파형 조절은 시간 정보만 변경하며 실제 M4R 변환은 생성 버튼을 눌렀을 때 한 번만 실행됩니다." },
+        { question: "M4R 파일이 무엇인가요?", answer: "아이폰 벨소리에 사용되는 오디오 형식이며 일반적으로 AAC 오디오가 포함된 MP4 계열 컨테이너입니다." },
+        { question: "벨소리 길이는 몇 초가 적당한가요?", answer: "30초 이하를 권장하며 이 도구는 최대 40초까지 지원합니다." },
+        { question: "만든 파일이 자동으로 아이폰에 등록되나요?", answer: "아니요. 다운로드 후 기기 전송이나 GarageBand 같은 추가 과정이 필요할 수 있습니다." },
+        { question: "파일이 서버에 업로드되나요?", answer: "사용자 파일은 브라우저에서 처리되며 서버나 외부 CDN으로 전송되지 않습니다. FFmpeg 실행 파일만 외부 CDN에서 다운로드될 수 있습니다." },
+        { question: "변환이 오래 걸리는 이유는 무엇인가요?", answer: "브라우저에서 직접 AAC 인코딩하기 때문에 파일 크기와 기기 성능에 따라 시간이 달라집니다." },
+        { question: "모바일에서도 파형을 조절할 수 있나요?", answer: "터치로 시작점과 종료점을 이동할 수 있으며, 정밀 조정을 위해 시간 입력도 제공합니다." },
+      ],
+    },
+  },
+  en: {
+    "iphone-ringtone-maker": {
+      name: "iPhone Ringtone Maker",
+      description: "Select a section from an MP3, WAV, or OGG waveform and convert it to an M4R ringtone for iPhone. Files are processed in your browser.",
+      seoTitle: "iPhone Ringtone Maker - Convert Audio to M4R",
+      intro: "Select the part you want to use as a ringtone directly on the waveform, then create an M4R file for iPhone.",
+      usage: ["Choose an audio file.", "Drag the left and right waveform handles to select a ringtone section.", "Fine-tune the start and end times if needed.", "Set fade in or fade out options.", "Click create M4R.", "Preview the result and download the M4R file."],
+      examples: ["Create a ringtone under 30 seconds from an MP3 file", "Trim a WAV recording and save it as M4R", "Add fade out to an OGG sound effect and make an iPhone ringtone"],
+      faq: [
+        { question: "How do I select a section on the waveform?", answer: "Drag the left and right handles to adjust the start and end points. Drag the selected area to move the whole section." },
+        { question: "Is the file converted every time I move the waveform?", answer: "No. Waveform editing only changes time values. M4R conversion runs once when you click the create button." },
+        { question: "What is an M4R file?", answer: "M4R is an audio file format used for iPhone ringtones. It is usually an MP4-family container with AAC audio." },
+        { question: "How long should a ringtone be?", answer: "30 seconds or less is recommended. This tool supports clips up to 40 seconds." },
+        { question: "Is the ringtone added to my iPhone automatically?", answer: "No. You need to transfer the downloaded file to your device or use a tool such as GarageBand depending on your device and OS version." },
+        { question: "Is my file uploaded to a server?", answer: "No. Your audio file is processed in the browser and is not sent to a server or external CDN. Only the FFmpeg runtime files may be downloaded from a CDN." },
+        { question: "Why can conversion take a while?", answer: "AAC encoding runs directly in your browser, so processing time depends on file size and device performance." },
+        { question: "Can I adjust the waveform on mobile?", answer: "Yes. The handles support touch input, and time fields are available for precise adjustment." },
+      ],
+    },
+  },
+} satisfies Record<Lang, Partial<Record<ToolSlug, ToolText>>>;
+
+const audioToolBasis = {
+  ko: {
+    "iphone-ringtone-maker": "아이폰 벨소리 만들기는 선택한 오디오 파일을 브라우저에서 한 번 디코딩해 파형을 표시하고, 사용자가 선택한 시작 시간과 종료 시간을 기준으로 FFmpeg WASM에서 AAC 오디오가 포함된 M4R 파일을 생성합니다. 파형 조절과 미리듣기는 Web Audio API로 처리하며, 실제 인코딩은 M4R 만들기 버튼을 눌렀을 때만 실행됩니다. 벨소리는 30초 이하를 권장하며 이 도구는 최대 40초까지 생성할 수 있습니다. 선택한 파일은 서버로 업로드되지 않고 현재 브라우저 안에서만 처리됩니다.",
+  },
+  en: {
+    "iphone-ringtone-maker": "The iPhone ringtone maker decodes the selected audio file once in the browser, renders a waveform, and uses the selected start and end times to create an M4R file with AAC audio through FFmpeg WASM. Waveform selection and preview use the Web Audio API, while encoding runs only when the create M4R button is clicked. Ringtones of 30 seconds or less are recommended, and this tool supports clips up to 40 seconds. Selected files are not uploaded to a server and are processed only in your browser.",
+  },
+} satisfies Record<Lang, Partial<Record<ToolSlug, string>>>;
 
 const toolBasis = {
   ko: {
@@ -366,6 +425,8 @@ const toolBasis = {
     "image-watermark": "이미지 워터마크는 원본 이미지를 브라우저 canvas에 그린 뒤 선택한 위치에 텍스트를 합성하는 방식으로 처리합니다. 글자 크기, 색상, 회전 각도, 투명도는 canvas에 그릴 때 적용됩니다. 선택한 이미지는 서버로 업로드되지 않습니다.",
     "remove-image-metadata": "브라우저 canvas로 다시 저장하는 방식은 대부분의 이미지 메타데이터를 제거하지만, 모든 형식의 메타데이터 제거를 보장하지는 않습니다.",
     "image-color-picker": "이미지 색상 추출은 브라우저 canvas에 그린 이미지에서 사용자가 클릭한 좌표의 픽셀 데이터를 읽어 HEX, RGB, HSL 값으로 변환합니다.",
+    "image-color-replacer": "이미지 색상 대체는 선택한 기준 색상과 각 픽셀 사이의 RGB 색상 차이를 계산한 뒤, 허용 범위 안에 있는 픽셀만 새 색상으로 변경합니다. 완전 투명 픽셀은 변경하지 않으며, 원본 명암 유지 옵션을 켜면 HSL 기준으로 새 색상의 색조와 채도를 적용하고 원본 픽셀의 밝기를 최대한 유지합니다. 이 도구는 AI가 사람이나 물체를 인식해 색상을 바꾸는 기능이 아니며, 선택한 이미지는 서버로 업로드되지 않고 브라우저 안에서만 처리됩니다.",
+    "make-color-transparent": "특정 색상 투명화는 선택한 기준 색상과 유사한 픽셀의 alpha 값을 변경하는 방식으로 처리합니다. 완전 투명 모드는 허용 범위 안의 픽셀 alpha를 0으로 설정하고, 부드러운 투명 모드는 색상 거리에 따라 alpha를 단계적으로 조정합니다. JPG는 투명도를 지원하지 않아 출력 형식에서 제외됩니다. 이 도구는 AI 배경 제거 기능이 아니며, 선택한 이미지는 서버로 업로드되지 않고 브라우저 안에서만 처리됩니다.",
     "text-compare": "텍스트 비교는 원본 텍스트와 비교 텍스트를 줄 단위로 나누어 같은 위치의 줄을 비교합니다. 공백 무시 옵션은 모든 공백을 제거한 값으로 비교하고, 대소문자 무시 옵션은 소문자로 변환한 값으로 비교합니다.",
   },
   en: {
@@ -418,12 +479,17 @@ const toolBasis = {
     "image-watermark": "Image watermarking draws the source image onto a browser canvas and composites text at the selected position. Font size, color, rotation, and opacity are applied while drawing on the canvas. Selected images are not uploaded to a server.",
     "remove-image-metadata": "Re-saving through a browser canvas removes most image metadata, but it may not guarantee removal of every metadata field.",
     "image-color-picker": "Image color picking reads pixel data from the clicked canvas coordinate and converts it to HEX, RGB, and HSL values.",
+    "image-color-replacer": "Image color replacement calculates the RGB color distance between the selected target color and each pixel, then changes only pixels within the selected tolerance. Fully transparent pixels are not changed. When Preserve original shading is enabled, the tool applies the new hue and saturation in HSL while keeping the original pixel lightness as much as possible. This is not an AI object-aware recoloring tool, and selected images are processed only in your browser.",
+    "make-color-transparent": "Making a color transparent works by changing the alpha value of pixels similar to the selected target color. Fully transparent mode sets matching pixels to alpha 0, while soft transparency adjusts alpha gradually based on color distance. JPG is excluded because it does not support transparency. This is not an AI background remover, and selected images are processed only in your browser.",
     "text-compare": "Text comparison splits the original and comparison text into lines and compares lines at the same positions. Ignore whitespace compares values after removing whitespace, and ignore case compares lowercased values.",
   },
 } satisfies Record<Lang, Partial<Record<ToolSlug, string>>>;
 
 export function getToolBasis(lang: Lang, slug: ToolSlug) {
-  return pdfToolBasis[lang][slug] ?? toolBasis[lang][slug];
+  const localizedPdfBasis = pdfToolBasis[lang] as Partial<Record<ToolSlug, string>>;
+  const localizedAudioBasis = audioToolBasis[lang] as Partial<Record<ToolSlug, string>>;
+  const localizedToolBasis = toolBasis[lang] as Partial<Record<ToolSlug, string>>;
+  return localizedPdfBasis[slug] ?? localizedAudioBasis[slug] ?? localizedToolBasis[slug];
 }
 
 export function isLang(value: string | undefined): value is Lang {
@@ -493,11 +559,14 @@ export function getCategoryItems(lang: Lang) {
 }
 
 export function getTools(lang: Lang) {
+  const localizedPdfToolText = pdfToolText[lang] as Partial<Record<ToolSlug, ToolText>>;
+  const localizedAudioToolText = audioToolText[lang] as Partial<Record<ToolSlug, ToolText>>;
+  const localizedToolText = i18n[lang].tools as Partial<Record<ToolSlug, ToolText>>;
   return baseTools.map((tool) => ({
     ...tool,
     category: tool.category as CategorySlug,
     path: `/${lang}/tools/${tool.slug}`,
-    ...(pdfToolText[lang][tool.slug] ?? i18n[lang].tools[tool.slug]),
+    ...(localizedPdfToolText[tool.slug] ?? localizedAudioToolText[tool.slug] ?? localizedToolText[tool.slug]),
   }));
 }
 
@@ -510,7 +579,7 @@ export function getTool(lang: Lang, slug: string) {
 }
 
 export function getRelatedTools(lang: Lang, slug: string, limit = 3) {
-  if (["image-resizer", "image-compressor", "webp-converter", "image-cropper", "image-rotate-flip", "image-format-converter", "image-mosaic", "image-watermark", "remove-image-metadata", "image-color-picker"].includes(slug)) {
+  if (["image-resizer", "image-compressor", "webp-converter", "image-cropper", "image-rotate-flip", "image-format-converter", "image-mosaic", "image-watermark", "remove-image-metadata", "image-color-picker", "image-color-replacer", "make-color-transparent"].includes(slug)) {
     const relatedByImageTool: Record<string, string[]> = {
       "image-cropper": ["image-resizer", "image-compressor", "webp-converter"],
       "image-rotate-flip": ["image-resizer", "image-cropper", "webp-converter"],
@@ -519,6 +588,8 @@ export function getRelatedTools(lang: Lang, slug: string, limit = 3) {
       "image-watermark": ["image-resizer", "image-compressor", "image-format-converter"],
       "remove-image-metadata": ["image-compressor", "image-format-converter", "webp-converter"],
       "image-color-picker": ["image-cropper", "image-resizer", "image-format-converter"],
+      "image-color-replacer": ["image-color-picker", "make-color-transparent", "image-format-converter", "image-compressor", "image-resizer"],
+      "make-color-transparent": ["image-color-replacer", "image-color-picker", "image-format-converter", "image-compressor", "image-resizer"],
     };
     return (relatedByImageTool[slug] ?? ["image-resizer", "image-compressor", "webp-converter"])
       .filter((toolSlug) => toolSlug !== slug)
@@ -538,14 +609,15 @@ export function getRelatedTools(lang: Lang, slug: string, limit = 3) {
       .filter((tool): tool is NonNullable<ReturnType<typeof getTool>> => Boolean(tool));
   }
 
-  if (["audio-converter", "audio-cutter", "audio-compressor", "audio-volume-editor"].includes(slug)) {
+  if (["audio-converter", "audio-cutter", "audio-compressor", "audio-volume-editor", "iphone-ringtone-maker"].includes(slug)) {
     const relatedByAudioTool: Record<string, string[]> = {
-      "audio-converter": ["audio-cutter", "audio-compressor", "audio-volume-editor"],
-      "audio-cutter": ["audio-converter", "audio-compressor", "audio-volume-editor"],
-      "audio-compressor": ["audio-converter", "audio-cutter", "audio-volume-editor"],
-      "audio-volume-editor": ["audio-converter", "audio-cutter", "audio-compressor"],
+      "audio-converter": ["audio-cutter", "iphone-ringtone-maker", "audio-compressor", "audio-volume-editor"],
+      "audio-cutter": ["iphone-ringtone-maker", "audio-converter", "audio-compressor", "audio-volume-editor"],
+      "audio-compressor": ["audio-converter", "audio-cutter", "iphone-ringtone-maker", "audio-volume-editor"],
+      "audio-volume-editor": ["audio-converter", "audio-cutter", "iphone-ringtone-maker", "audio-compressor"],
+      "iphone-ringtone-maker": ["audio-cutter", "audio-converter", "audio-compressor", "audio-volume-editor"],
     };
-    return (relatedByAudioTool[slug] ?? ["audio-converter", "audio-cutter", "audio-compressor", "audio-volume-editor"])
+    return (relatedByAudioTool[slug] ?? ["audio-converter", "audio-cutter", "audio-compressor", "audio-volume-editor", "iphone-ringtone-maker"])
       .map((toolSlug) => getTool(lang, toolSlug))
       .filter((tool): tool is NonNullable<ReturnType<typeof getTool>> => Boolean(tool));
   }
