@@ -23,6 +23,7 @@ export const baseTools = [
   { slug: "audio-compressor", category: "audio", privacy: true },
   { slug: "audio-volume-editor", category: "audio", privacy: true },
   { slug: "iphone-ringtone-maker", category: "audio", privacy: true },
+  { slug: "audio-merger", category: "audio", privacy: true },
   { slug: "pdf-merger", category: "pdf", privacy: true },
   { slug: "pdf-splitter", category: "pdf", privacy: true },
   { slug: "pdf-page-extractor", category: "pdf", privacy: true },
@@ -342,6 +343,24 @@ const audioToolText = {
         { question: "모바일에서도 파형을 조절할 수 있나요?", answer: "터치로 시작점과 종료점을 이동할 수 있으며, 정밀 조정을 위해 시간 입력도 제공합니다." },
       ],
     },
+    "audio-merger": {
+      name: "오디오 합치기",
+      description: "여러 MP3, WAV, OGG 파일을 원하는 순서로 정렬하고 필요한 구간만 잘라 하나의 오디오 파일로 합칩니다. 파일은 브라우저에서 처리됩니다.",
+      seoTitle: "오디오 합치기 - MP3, WAV, OGG 파일을 하나로 결합",
+      intro: "여러 음악, 녹음, 효과음 파일을 원하는 순서로 정렬하고 하나의 파일로 결합합니다. 각 파일의 필요한 구간만 선택하고 볼륨, 무음, 크로스페이드 효과를 조절할 수 있습니다.",
+      usage: ["합칠 오디오 파일을 여러 개 선택합니다.", "파일을 원하는 순서로 정렬합니다.", "각 파일의 파형에서 사용할 구간을 선택합니다.", "필요하면 파일별 볼륨과 파일 사이 전환을 설정합니다.", "전체 결과를 미리 듣습니다.", "출력 형식을 선택하고 오디오를 합칩니다.", "완성된 파일을 다운로드합니다."],
+      examples: ["여러 녹음 파일을 하나로 연결", "음악과 효과음을 순서대로 연결", "강의나 인터뷰 파일 결합", "여러 MP3 파일을 하나로 합치기", "앞뒤 불필요한 구간을 제거하면서 결합", "파일 사이에 무음 또는 부드러운 전환 추가"],
+      faq: [
+        { question: "서로 다른 형식의 오디오 파일도 합칠 수 있나요?", answer: "지원되는 MP3, WAV, OGG 파일은 공통 출력 조건으로 렌더링한 뒤 하나의 파일로 합칠 수 있습니다." },
+        { question: "파일 사이에 무음을 넣을 수 있나요?", answer: "네. 각 파일 사이에서 무음 삽입을 선택하고 길이를 설정할 수 있습니다." },
+        { question: "크로스페이드가 무엇인가요?", answer: "앞 파일의 끝과 다음 파일의 시작을 겹쳐 자연스럽게 이어지는 효과입니다." },
+        { question: "각 파일의 일부만 사용할 수 있나요?", answer: "네. 파일별 파형에서 시작점과 종료점을 지정해 필요한 구간만 사용할 수 있습니다." },
+        { question: "파일마다 음량이 다른 경우 조절할 수 있나요?", answer: "파일별 볼륨 슬라이더와 음소거 버튼을 제공하며, 전체 렌더링에도 같은 설정이 반영됩니다." },
+        { question: "파일이 서버에 업로드되나요?", answer: "아니요. 사용자 파일은 브라우저 안에서 처리되며 서버나 외부 CDN으로 전송하지 않습니다. FFmpeg 실행 파일만 외부 CDN에서 다운로드될 수 있습니다." },
+        { question: "합치기에 시간이 오래 걸리는 이유는 무엇인가요?", answer: "브라우저 안에서 디코딩, 구간 렌더링, 전환 처리, 재인코딩을 수행하기 때문에 파일 크기와 기기 성능에 따라 시간이 달라집니다." },
+        { question: "오디오 믹싱과 합치기는 같은 기능인가요?", answer: "이 도구는 파일을 순서대로 이어 붙이는 도구입니다. 여러 소리를 동시에 겹쳐 재생하는 멀티트랙 믹서는 아닙니다." },
+      ],
+    },
   },
   en: {
     "iphone-ringtone-maker": {
@@ -362,15 +381,35 @@ const audioToolText = {
         { question: "Can I adjust the waveform on mobile?", answer: "Yes. The handles support touch input, and time fields are available for precise adjustment." },
       ],
     },
+    "audio-merger": {
+      name: "Audio Merger",
+      description: "Arrange, trim, and combine multiple MP3, WAV, and OGG files into one audio file. Files are processed in your browser.",
+      seoTitle: "Audio Merger - Combine MP3, WAV and OGG Files Online",
+      intro: "Arrange multiple music, recording, or sound effect files in the order you want and combine them into one file. You can trim each file, adjust volume, add silence, and apply crossfade transitions.",
+      usage: ["Choose multiple audio files to merge.", "Arrange the files in the order you want.", "Select the section to use from each waveform.", "Adjust per-file volume and transitions if needed.", "Preview the full result.", "Choose an output format and merge the audio.", "Download the finished file."],
+      examples: ["Combine several recording files into one", "Join music and sound effects in sequence", "Merge lecture or interview files", "Combine multiple MP3 files into one", "Remove unnecessary start and end parts while merging", "Add silence or smooth transitions between files"],
+      faq: [
+        { question: "Can I merge audio files with different formats?", answer: "Supported MP3, WAV, and OGG files can be rendered to common output settings and combined into one file." },
+        { question: "Can I add silence between files?", answer: "Yes. You can choose silence insertion between adjacent files and set its duration." },
+        { question: "What is crossfade?", answer: "Crossfade overlaps the end of one file with the beginning of the next file for a smoother transition." },
+        { question: "Can I use only part of each file?", answer: "Yes. Each file has a waveform where you can set start and end points." },
+        { question: "Can I adjust files with different volume levels?", answer: "Each file has a volume slider and mute button, and the same settings are used in the final output." },
+        { question: "Are my files uploaded to a server?", answer: "No. Your files are processed in the browser and are not sent to a server or external CDN. Only the FFmpeg runtime files may be downloaded from a CDN." },
+        { question: "Why can merging take a while?", answer: "The browser decodes, trims, renders transitions, and re-encodes the audio locally. Time depends on file size and device performance." },
+        { question: "Is this the same as audio mixing?", answer: "No. This tool joins files in sequence. It is not a multitrack mixer that layers sounds at the same time." },
+      ],
+    },
   },
 } satisfies Record<Lang, Partial<Record<ToolSlug, ToolText>>>;
 
 const audioToolBasis = {
   ko: {
     "iphone-ringtone-maker": "아이폰 벨소리 만들기는 선택한 오디오 파일을 브라우저에서 한 번 디코딩해 파형을 표시하고, 사용자가 선택한 시작 시간과 종료 시간을 기준으로 FFmpeg WASM에서 AAC 오디오가 포함된 M4R 파일을 생성합니다. 파형 조절과 미리듣기는 Web Audio API로 처리하며, 실제 인코딩은 M4R 만들기 버튼을 눌렀을 때만 실행됩니다. 벨소리는 30초 이하를 권장하며 이 도구는 최대 40초까지 생성할 수 있습니다. 선택한 파일은 서버로 업로드되지 않고 현재 브라우저 안에서만 처리됩니다.",
+    "audio-merger": "오디오 합치기는 선택한 여러 오디오 파일을 브라우저에서 디코딩한 뒤, 파일별 선택 구간과 볼륨 설정을 적용해 하나의 타임라인으로 렌더링하는 방식으로 처리합니다. 파일 사이에는 무음 삽입 또는 크로스페이드를 적용할 수 있으며, 최종 결과는 선택한 MP3, WAV, OGG 형식으로 저장됩니다. MP3와 OGG 출력은 브라우저 안에서 FFmpeg WASM을 사용해 인코딩합니다. 선택한 파일은 서버로 업로드되지 않고 현재 브라우저 안에서만 처리됩니다.",
   },
   en: {
     "iphone-ringtone-maker": "The iPhone ringtone maker decodes the selected audio file once in the browser, renders a waveform, and uses the selected start and end times to create an M4R file with AAC audio through FFmpeg WASM. Waveform selection and preview use the Web Audio API, while encoding runs only when the create M4R button is clicked. Ringtones of 30 seconds or less are recommended, and this tool supports clips up to 40 seconds. Selected files are not uploaded to a server and are processed only in your browser.",
+    "audio-merger": "Audio merging works by decoding the selected audio files in the browser, applying each file's selected range and volume settings, and rendering them into one timeline. Silence or crossfade transitions can be applied between files, and the final result is saved as MP3, WAV, or OGG. MP3 and OGG output are encoded in the browser using FFmpeg WASM. Selected files are not uploaded to a server and are processed only in your browser.",
   },
 } satisfies Record<Lang, Partial<Record<ToolSlug, string>>>;
 
@@ -609,15 +648,16 @@ export function getRelatedTools(lang: Lang, slug: string, limit = 3) {
       .filter((tool): tool is NonNullable<ReturnType<typeof getTool>> => Boolean(tool));
   }
 
-  if (["audio-converter", "audio-cutter", "audio-compressor", "audio-volume-editor", "iphone-ringtone-maker"].includes(slug)) {
+  if (["audio-converter", "audio-cutter", "audio-compressor", "audio-volume-editor", "iphone-ringtone-maker", "audio-merger"].includes(slug)) {
     const relatedByAudioTool: Record<string, string[]> = {
-      "audio-converter": ["audio-cutter", "iphone-ringtone-maker", "audio-compressor", "audio-volume-editor"],
-      "audio-cutter": ["iphone-ringtone-maker", "audio-converter", "audio-compressor", "audio-volume-editor"],
-      "audio-compressor": ["audio-converter", "audio-cutter", "iphone-ringtone-maker", "audio-volume-editor"],
-      "audio-volume-editor": ["audio-converter", "audio-cutter", "iphone-ringtone-maker", "audio-compressor"],
-      "iphone-ringtone-maker": ["audio-cutter", "audio-converter", "audio-compressor", "audio-volume-editor"],
+      "audio-converter": ["audio-cutter", "audio-merger", "iphone-ringtone-maker", "audio-compressor", "audio-volume-editor"],
+      "audio-cutter": ["audio-merger", "iphone-ringtone-maker", "audio-converter", "audio-compressor", "audio-volume-editor"],
+      "audio-compressor": ["audio-converter", "audio-merger", "audio-cutter", "iphone-ringtone-maker", "audio-volume-editor"],
+      "audio-volume-editor": ["audio-converter", "audio-merger", "audio-cutter", "iphone-ringtone-maker", "audio-compressor"],
+      "iphone-ringtone-maker": ["audio-cutter", "audio-merger", "audio-converter", "audio-compressor", "audio-volume-editor"],
+      "audio-merger": ["audio-cutter", "iphone-ringtone-maker", "audio-converter", "audio-compressor", "audio-volume-editor"],
     };
-    return (relatedByAudioTool[slug] ?? ["audio-converter", "audio-cutter", "audio-compressor", "audio-volume-editor", "iphone-ringtone-maker"])
+    return (relatedByAudioTool[slug] ?? ["audio-converter", "audio-cutter", "audio-compressor", "audio-volume-editor", "iphone-ringtone-maker", "audio-merger"])
       .map((toolSlug) => getTool(lang, toolSlug))
       .filter((tool): tool is NonNullable<ReturnType<typeof getTool>> => Boolean(tool));
   }

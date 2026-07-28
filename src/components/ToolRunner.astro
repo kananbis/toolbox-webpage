@@ -809,10 +809,27 @@ const timeZonePresets = [
       </div>
       <div class="grid gap-2">
         <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "자를 구간" : "Trim range"}</p>
-        <div class="audio-range-picker">
+        <div class="audio-range-picker hidden">
           <div id="cutter-range-fill" class="audio-range-fill"></div>
           <input id="cutter-start-range" aria-label={lang === "ko" ? "시작 위치" : "Start position"} type="range" min="0" max="0" step="0.1" value="0" />
           <input id="cutter-end-range" aria-label={lang === "ko" ? "종료 위치" : "End position"} type="range" min="0" max="0" step="0.1" value="0" />
+        </div>
+      </div>
+      <div class="rounded-md border border-line bg-white p-4">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p class="text-sm font-semibold text-slate-700">{lang === "ko" ? "파형으로 구간 선택" : "Waveform selection"}</p>
+            <p class="mt-1 text-sm text-slate-600">{lang === "ko" ? "좌우 핸들을 드래그해 시작점과 종료점을 선택하세요. 선택 영역을 드래그하면 구간 전체를 이동할 수 있습니다." : "Drag the left and right handles to choose the start and end points. Drag the selected area to move the whole section."}</p>
+          </div>
+          <p id="ringtone-duration-label" class="text-sm text-slate-600">{lang === "ko" ? "전체 길이: -" : "Total length: -"}</p>
+        </div>
+        <div id="ringtone-waveform" class="ringtone-waveform mt-4" aria-label={lang === "ko" ? "오디오 자르기 구간 선택 파형" : "Audio trim range waveform"} role="application" tabindex="0">
+          <canvas id="ringtone-waveform-canvas"></canvas>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button class="btn-secondary" type="button" data-action="cutter-play-all">{lang === "ko" ? "전체 재생" : "Play Full Audio"}</button>
+          <button class="btn-secondary" type="button" data-action="cutter-play-range">{lang === "ko" ? "선택 구간 재생" : "Play Selection"}</button>
+          <button class="btn-secondary" type="button" data-action="cutter-pause">{lang === "ko" ? "일시정지" : "Pause"}</button>
         </div>
       </div>
       <p id="cutter-range-label" class="text-sm text-slate-600">{lang === "ko" ? "오디오 파일을 선택하면 선택 구간이 표시됩니다." : "Choose an audio file to see the selected range."}</p>
@@ -996,6 +1013,111 @@ const timeZonePresets = [
       </div>
       <pre class="result-box whitespace-pre-wrap" id="result">{ui.result}</pre>
       <a id="download-link" class="btn-primary hidden w-fit" download>{lang === "ko" ? "다운로드" : "Download"}</a>
+    </div>
+  )}
+
+  {slug === "audio-merger" && (
+    <div class="grid gap-5">
+      <section id="merger-drop-zone" class="rounded-md border border-dashed border-line bg-white p-4">
+        <label class="font-semibold" for="merger-files">{lang === "ko" ? "오디오 파일 선택" : "Choose Audio Files"}</label>
+        <input id="merger-files" class="mt-2" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,.mp3,.wav,.ogg" multiple />
+        <p class="mt-2 text-sm text-slate-600">{lang === "ko" ? "MP3, WAV, OGG 파일을 최대 10개까지 선택하거나 이 영역에 끌어다 놓으세요. 선택한 파일은 서버로 업로드되지 않습니다." : "Choose up to 10 MP3, WAV, or OGG files, or drop them here. Selected files are not uploaded to a server."}</p>
+        <p id="merger-file-warning" class="mt-2 text-sm text-amber-700"></p>
+      </section>
+
+      <section class="rounded-md border border-line bg-white p-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-lg font-semibold">{lang === "ko" ? "파일 편집 및 순서 정렬" : "Edit and Arrange Files"}</h2>
+            <p class="mt-1 text-sm text-slate-600">{lang === "ko" ? "파일별 파형에서 사용할 구간을 고르고, 볼륨과 순서를 조정합니다." : "Select a section from each waveform, then adjust volume and order."}</p>
+          </div>
+          <p id="merger-count-label" class="text-sm text-slate-600">{lang === "ko" ? "파일 0개" : "0 files"}</p>
+        </div>
+        <div id="merger-file-list" class="mt-4 grid gap-4"></div>
+      </section>
+
+      <section class="rounded-md border border-line bg-white p-4">
+        <h2 class="text-lg font-semibold">{lang === "ko" ? "파일 사이 전환 설정" : "Transitions Between Files"}</h2>
+        <p class="mt-1 text-sm text-slate-600">{lang === "ko" ? "각 파일 사이에 무음을 넣거나 크로스페이드로 부드럽게 연결할 수 있습니다." : "Add silence between files or use crossfade for smoother transitions."}</p>
+        <div id="merger-transition-list" class="mt-4 grid gap-3"></div>
+      </section>
+
+      <section class="rounded-md border border-line bg-white p-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-lg font-semibold">{lang === "ko" ? "전체 미리듣기" : "Full Preview"}</h2>
+            <p id="merger-total-label" class="mt-1 text-sm text-slate-600">{lang === "ko" ? "예상 재생 시간: -" : "Estimated duration: -"}</p>
+          </div>
+          <p id="merger-preview-label" class="text-sm text-slate-600">{lang === "ko" ? "대기 중" : "Ready"}</p>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button class="btn-secondary" type="button" data-action="merger-play-all">{lang === "ko" ? "전체 재생" : "Play Full Preview"}</button>
+          <button class="btn-secondary" type="button" data-action="merger-pause">{lang === "ko" ? "일시정지" : "Pause"}</button>
+          <button class="btn-secondary" type="button" data-action="merger-restart">{lang === "ko" ? "처음부터" : "From Start"}</button>
+        </div>
+      </section>
+
+      <section class="rounded-md border border-line bg-white p-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-lg font-semibold">{lang === "ko" ? "출력 설정" : "Output Settings"}</h2>
+          <label class="flex items-center gap-2 text-sm"><input id="merger-normalize" class="w-auto" type="checkbox" />{lang === "ko" ? "파일 간 음량 차이 줄이기" : "Reduce volume differences"}</label>
+        </div>
+        <p class="mt-2 text-sm text-slate-600">{lang === "ko" ? "음량 차이 줄이기는 브라우저 렌더링 과정에서 가벼운 압축 처리를 적용하며 처리 시간이 늘어날 수 있습니다." : "Reducing volume differences applies light compression during browser rendering and may take longer."}</p>
+        <details class="mt-4 rounded-md border border-line p-4" open>
+          <summary class="cursor-pointer font-semibold">{lang === "ko" ? "고급 출력 설정" : "Advanced output settings"}</summary>
+          <div class="mt-4 grid gap-4 md:grid-cols-2">
+            <label>{lang === "ko" ? "출력 형식" : "Output format"}
+              <select id="merger-output-format">
+                <option value="mp3" selected>MP3</option>
+                <option value="wav">WAV</option>
+                <option value="ogg">OGG</option>
+              </select>
+            </label>
+            <label>{lang === "ko" ? "비트레이트" : "Bitrate"}
+              <select id="merger-bitrate">
+                <option value="128">128 kbps</option>
+                <option value="192" selected>192 kbps</option>
+                <option value="256">256 kbps</option>
+                <option value="320">320 kbps</option>
+              </select>
+            </label>
+            <label>{lang === "ko" ? "샘플레이트" : "Sample rate"}
+              <select id="merger-sample-rate">
+                <option value="44100" selected>44.1 kHz</option>
+                <option value="48000">48 kHz</option>
+              </select>
+            </label>
+            <label>{lang === "ko" ? "채널" : "Channels"}
+              <select id="merger-channels">
+                <option value="2" selected>{lang === "ko" ? "스테레오" : "Stereo"}</option>
+                <option value="1">{lang === "ko" ? "모노" : "Mono"}</option>
+              </select>
+            </label>
+          </div>
+        </details>
+      </section>
+
+      <section class="rounded-md border border-line bg-white p-4">
+        <h2 class="text-lg font-semibold">{lang === "ko" ? "오디오 합치기" : "Merge Audio"}</h2>
+        <div class="mt-4">
+          <p id="merger-status" class="text-sm text-slate-600">{lang === "ko" ? "오디오 파일을 선택하세요." : "Choose audio files."}</p>
+          <progress id="merger-progress" class="mt-2 h-2 w-full" max="100" value="0"></progress>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button id="merger-run-button" class="btn-primary" type="button" data-action="run">{lang === "ko" ? "합치기" : "Merge"}</button>
+          <button class="btn-secondary" type="button" data-action="reset">{ui.reset}</button>
+        </div>
+      </section>
+
+      <section class="rounded-md border border-line bg-white p-4">
+        <h2 class="text-lg font-semibold">{lang === "ko" ? "결과 다운로드" : "Result Download"}</h2>
+        <div class="result-waveform mt-3 hidden" id="merger-result-waveform-wrap">
+          <canvas id="merger-result-waveform" width="1200" height="120" aria-label={lang === "ko" ? "합쳐진 오디오 파형" : "Merged audio waveform"}></canvas>
+        </div>
+        <audio id="audio-output-preview" class="mt-3 w-full" controls></audio>
+        <pre class="result-box mt-4 whitespace-pre-wrap" id="result">{ui.result}</pre>
+        <a id="download-link" class="btn-primary mt-3 hidden w-fit" download>{lang === "ko" ? "합친 오디오 다운로드" : "Download Merged Audio"}</a>
+      </section>
     </div>
   )}
 
@@ -1528,6 +1650,46 @@ const timeZonePresets = [
     height: 100%;
   }
 
+  .merger-file-card[draggable="true"] {
+    cursor: grab;
+  }
+
+  .merger-file-card.is-playing {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 1px rgb(37 99 235 / 0.25);
+  }
+
+  .merger-waveform {
+    height: 112px;
+    min-height: 112px;
+    max-height: 112px;
+    line-height: 0;
+    contain: layout paint;
+  }
+
+  .merger-waveform canvas {
+    height: 112px;
+    min-height: 112px;
+    max-height: 112px;
+  }
+
+  .result-waveform {
+    height: 120px;
+    min-height: 120px;
+    max-height: 120px;
+    overflow: hidden;
+    border: 1px solid #d9e2ef;
+    border-radius: 0.5rem;
+    background: #f8fafc;
+    line-height: 0;
+  }
+
+  .result-waveform canvas {
+    display: block;
+    width: 100%;
+    height: 120px;
+  }
+
   @media (max-width: 480px) {
     .ringtone-waveform {
       min-height: 110px;
@@ -1762,8 +1924,8 @@ const timeZonePresets = [
     return `${minutes}:${String(rest).padStart(2, "0")}`;
   };
   const setAudioStatus = (root, text, progress = null) => {
-    const status = root.querySelector("#audio-status") || root.querySelector("#cutter-status") || root.querySelector("#compressor-status") || root.querySelector("#volume-status") || root.querySelector("#ringtone-status");
-    const progressEl = root.querySelector("#audio-progress") || root.querySelector("#cutter-progress") || root.querySelector("#compressor-progress") || root.querySelector("#volume-progress") || root.querySelector("#ringtone-progress");
+    const status = root.querySelector("#audio-status") || root.querySelector("#cutter-status") || root.querySelector("#compressor-status") || root.querySelector("#volume-status") || root.querySelector("#ringtone-status") || root.querySelector("#merger-status");
+    const progressEl = root.querySelector("#audio-progress") || root.querySelector("#cutter-progress") || root.querySelector("#compressor-progress") || root.querySelector("#volume-progress") || root.querySelector("#ringtone-progress") || root.querySelector("#merger-progress");
     if (status) status.textContent = text;
     if (progressEl && progress !== null) progressEl.value = progress;
   };
@@ -1944,7 +2106,7 @@ ${workerSource
     const inputExt = fileExtension(file.name) || "audio";
     const inputName = `input-${Date.now()}.${inputExt}`;
     const outputName = `output-${Date.now()}.${outputFormat}`;
-    const bitrate = root.querySelector("#audio-bitrate")?.value || root.querySelector("#compressor-bitrate")?.value || "128";
+    const bitrate = root.querySelector("#audio-bitrate")?.value || root.querySelector("#compressor-bitrate")?.value || root.querySelector("#merger-bitrate")?.value || "128";
     await ffmpeg.writeFile(inputName, new Uint8Array(await file.arrayBuffer()));
     setAudioStatus(root, lang === "ko" ? "변환 중입니다." : "Converting.", 50);
     const argsByFormat = {
@@ -2146,19 +2308,26 @@ ${lang === "ko" ? "원본 대비 용량 변화" : "Size change compared with the
     const result = root.querySelector("#result");
     assertSupportedAudioFile(file, lang);
     revokeAudioUrls(root);
+    stopRingtonePlayback(root);
     setAudioStatus(root, lang === "ko" ? "오디오 파일을 불러오는 중입니다." : "Loading audio file.", 10);
     const originalUrl = URL.createObjectURL(file);
     root.dataset.audioOriginalUrl = originalUrl;
     const originalPreview = root.querySelector("#audio-original-preview");
     if (originalPreview) originalPreview.src = originalUrl;
     const audioBuffer = await loadAudioBuffer(file, lang);
+    const startedAt = performance.now();
+    const peaks = await summarizeWaveform(audioBuffer);
     root._cutterState = { file, audioBuffer };
+    root._ringtoneState = { file, audioBuffer, peaks, duration: audioBuffer.duration, start: 0, end: Math.min(audioBuffer.duration, 30), playhead: 0, processing: false, waveformMs: performance.now() - startedAt };
+    initRingtonePointerEvents(root);
     root.dataset.cutterDuration = String(audioBuffer.duration);
     const outputSelect = root.querySelector("#cutter-output-format");
     if (outputSelect) outputSelect.value = "source";
     const endInput = root.querySelector("#cutter-end");
     if (endInput && !endInput.value) endInput.value = String(Math.round(audioBuffer.duration * 10) / 10);
     syncCutterRanges(root);
+    updateRingtoneUi(root);
+    setTimeout(() => drawRingtoneWaveform(root), 0);
     const largeNote = file.size >= 52428800
       ? (lang === "ko" ? "\n이 파일은 50MB 이상이라 모바일 브라우저에서 실패할 수 있습니다." : "\nThis file is over 50 MB and may fail in a mobile browser.")
       : file.size >= 20971520
@@ -2229,6 +2398,600 @@ ${m.outputSize}: ${formatBytes(blob.size, lang)}
 ${lang === "ko" ? "선택 구간" : "Selected range"}: ${formatSecondsLabel(trimmed.start, lang)} ~ ${formatSecondsLabel(trimmed.end, lang)}
 ${lang === "ko" ? "구간 길이" : "Trimmed duration"}: ${formatSecondsLabel(trimmed.duration, lang)}`;
     setAudioStatus(root, lang === "ko" ? "자르기가 완료되었습니다." : "Trim complete.", 100);
+  };
+  const getMergerState = (root) => {
+    if (!root._audioMergerState) {
+      root._audioMergerState = {
+        items: [],
+        transitions: [],
+        playContext: null,
+        playSources: [],
+        previewTimer: 0,
+        playing: false,
+        resultBlob: null,
+        processing: false,
+      };
+    }
+    return root._audioMergerState;
+  };
+  const mergerText = (lang, key) => {
+    const texts = {
+      ko: {
+        noFiles: "합칠 오디오 파일을 2개 이상 선택하세요.",
+        tooMany: "오디오 파일은 최대 10개까지 선택할 수 있습니다.",
+        fileTooLarge: "개별 파일은 100MB 이하만 처리합니다.",
+        totalTooLarge: "전체 파일 크기는 200MB 이하만 처리합니다.",
+        largeWarning: "전체 용량이 80MB를 초과합니다. 처리 시간이 길어질 수 있으며 모바일에서는 80MB 이하를 권장합니다.",
+        analyzing: "파일 분석 중입니다.",
+        waveform: "파형 생성 중입니다.",
+        ready: "파일별 구간과 전환 설정을 조정하세요.",
+        invalidCrossfade: "크로스페이드 길이는 앞 파일과 다음 파일의 선택 구간보다 짧아야 합니다.",
+        rendering: "오디오 타임라인을 렌더링하는 중입니다.",
+        encoding: "출력 파일을 생성하는 중입니다.",
+        done: "오디오 합치기가 완료되었습니다.",
+        failed: "오디오 합치기에 실패했습니다. 더 작은 파일이나 다른 설정으로 다시 시도해보세요.",
+        unsupported: "MP3, WAV, OGG 파일만 선택할 수 있습니다.",
+      },
+      en: {
+        noFiles: "Choose at least two audio files to merge.",
+        tooMany: "You can choose up to 10 audio files.",
+        fileTooLarge: "Each file must be 100 MB or smaller.",
+        totalTooLarge: "Total file size must be 200 MB or smaller.",
+        largeWarning: "Total size is over 80 MB. Processing may take longer, and files under 80 MB are recommended on mobile.",
+        analyzing: "Analyzing files.",
+        waveform: "Generating waveforms.",
+        ready: "Adjust each range and transition settings.",
+        invalidCrossfade: "Crossfade duration must be shorter than both adjacent selected clips.",
+        rendering: "Rendering audio timeline.",
+        encoding: "Creating output file.",
+        done: "Audio merge complete.",
+        failed: "Audio merging failed. Try smaller files or different settings.",
+        unsupported: "Only MP3, WAV, and OGG files can be selected.",
+      },
+    };
+    return texts[lang]?.[key] || texts.en[key] || key;
+  };
+  const setMergerStatus = (root, text, progress = null) => {
+    const status = root.querySelector("#merger-status");
+    const progressEl = root.querySelector("#merger-progress");
+    if (status) status.textContent = text;
+    if (progressEl && progress !== null) progressEl.value = progress;
+  };
+  const stopMergerPreview = (root) => {
+    const state = getMergerState(root);
+    state.playSources?.forEach((source) => {
+      try { source.onended = null; } catch {}
+      try { source.stop?.(); } catch {}
+    });
+    try { state.playContext?.close?.(); } catch {}
+    state.playContext = null;
+    state.playSources = [];
+    state.playing = false;
+    state.playingItemId = "";
+    if (state.previewTimer) window.clearInterval(state.previewTimer);
+    state.previewTimer = 0;
+    const label = root.querySelector("#merger-preview-label");
+    if (label) label.textContent = root.dataset.lang === "ko" ? "대기 중" : "Ready";
+    clearMergerPlayheads(root);
+    updateMergerPlaybackUi(root);
+  };
+  const getMergerTransitions = (root) => {
+    const state = getMergerState(root);
+    const count = Math.max(0, state.items.length - 1);
+    while (state.transitions.length < count) state.transitions.push({ mode: "none", duration: 1 });
+    state.transitions = state.transitions.slice(0, count);
+    return state.transitions;
+  };
+  const mergerClipDuration = (item) => Math.max(0, Number(item.end || 0) - Number(item.start || 0));
+  const getMergerTimeline = (root) => {
+    const state = getMergerState(root);
+    const transitions = getMergerTransitions(root);
+    let total = 0;
+    state.items.forEach((item, index) => {
+      total += mergerClipDuration(item);
+      const transition = transitions[index];
+      if (transition?.mode === "silence") total += Number(transition.duration || 0);
+      if (transition?.mode === "crossfade") total -= Number(transition.duration || 0);
+    });
+    return Math.max(0, total);
+  };
+  const updateMergerSummary = (root) => {
+    const lang = root.dataset.lang || "ko";
+    const state = getMergerState(root);
+    const totalBytes = state.items.reduce((sum, item) => sum + item.file.size, 0);
+    const countLabel = root.querySelector("#merger-count-label");
+    const totalLabel = root.querySelector("#merger-total-label");
+    const warning = root.querySelector("#merger-file-warning");
+    if (countLabel) countLabel.textContent = lang === "ko" ? `파일 ${state.items.length}개` : `${state.items.length} files`;
+    if (totalLabel) totalLabel.textContent = lang === "ko" ? `예상 재생 시간: ${formatDuration(getMergerTimeline(root), lang)}` : `Estimated duration: ${formatDuration(getMergerTimeline(root), lang)}`;
+    if (warning) warning.textContent = totalBytes > 83886080 ? mergerText(lang, "largeWarning") : "";
+  };
+  const updateMergerPlaybackUi = (root) => {
+    const state = getMergerState(root);
+    root.querySelectorAll(".merger-file-card").forEach((card) => {
+      card.classList.toggle("is-playing", card.dataset.mergerId === state.playingItemId);
+    });
+  };
+  const clearMergerPlayheads = (root) => {
+    const state = getMergerState(root);
+    state.items.forEach((item) => {
+      item.playhead = NaN;
+      drawMergerWaveform(root, item);
+    });
+  };
+  const drawMergerWaveform = (root, item) => {
+    const canvas = root.querySelector(`canvas[data-merger-waveform="${item.id}"]`);
+    if (!canvas) return;
+    canvas.style.display = "block";
+    canvas.style.width = "100%";
+    canvas.style.height = "112px";
+    canvas.style.minHeight = "112px";
+    canvas.style.maxHeight = "112px";
+    const wrapper = canvas.closest(".merger-waveform") || canvas;
+    wrapper.style.height = "112px";
+    wrapper.style.minHeight = "112px";
+    wrapper.style.maxHeight = "112px";
+    const rect = wrapper.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const width = Math.max(1, Math.round(rect.width));
+    const height = Math.max(1, Math.round(rect.height));
+    const targetWidth = Math.round(width * dpr);
+    const targetHeight = Math.round(height * dpr);
+    if (canvas.width !== targetWidth) canvas.width = targetWidth;
+    if (canvas.height !== targetHeight) canvas.height = targetHeight;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    context.clearRect(0, 0, width, height);
+    context.fillStyle = "#f8fafc";
+    context.fillRect(0, 0, width, height);
+    const center = height / 2;
+    context.strokeStyle = "#64748b";
+    context.lineWidth = 1;
+    for (let x = 0; x < width; x += 1) {
+      const peak = item.peaks[Math.min(item.peaks.length - 1, Math.floor(x / width * item.peaks.length))] || { min: 0, max: 0 };
+      context.beginPath();
+      context.moveTo(x + 0.5, center + peak.min * center * 0.84);
+      context.lineTo(x + 0.5, center + peak.max * center * 0.84);
+      context.stroke();
+    }
+    const startX = item.start / item.duration * width;
+    const endX = item.end / item.duration * width;
+    context.fillStyle = "rgba(15, 23, 42, 0.18)";
+    context.fillRect(0, 0, startX, height);
+    context.fillRect(endX, 0, width - endX, height);
+    context.fillStyle = "rgba(37, 99, 235, 0.16)";
+    context.fillRect(startX, 0, Math.max(0, endX - startX), height);
+    context.fillStyle = "#2563eb";
+    context.fillRect(startX - 2, 0, 4, height);
+    context.fillRect(endX - 2, 0, 4, height);
+    if (Number.isFinite(item.playhead)) {
+      const x = item.playhead / item.duration * width;
+      context.fillStyle = "#ef4444";
+      context.fillRect(x - 1, 0, 2, height);
+    }
+  };
+  const renderMergerWaveforms = (root) => {
+    const state = getMergerState(root);
+    state.items.forEach((item) => drawMergerWaveform(root, item));
+  };
+  const renderAudioMerger = (root) => {
+    const lang = root.dataset.lang || "ko";
+    const state = getMergerState(root);
+    const list = root.querySelector("#merger-file-list");
+    const transitionsEl = root.querySelector("#merger-transition-list");
+    if (list) {
+      list.innerHTML = state.items.length ? state.items.map((item, index) => `
+        <article class="merger-file-card rounded-md border border-line p-4 ${state.playingItemId === item.id ? "is-playing" : ""}" draggable="true" data-merger-id="${item.id}">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p class="font-semibold">${index + 1}. ${item.file.name}</p>
+              <p class="mt-1 text-sm text-slate-600">${fileExtension(item.file.name).toUpperCase()} · ${formatBytes(item.file.size, lang)} · ${formatDuration(item.duration, lang)} · ${lang === "ko" ? "사용 구간" : "Selected"} ${formatDuration(mergerClipDuration(item), lang)}</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button class="btn-secondary" type="button" data-action="merger-item-play" data-id="${item.id}">${lang === "ko" ? "재생" : "Play"}</button>
+              <button class="btn-secondary" type="button" data-action="merger-item-pause" data-id="${item.id}">${lang === "ko" ? "일시정지" : "Pause"}</button>
+              <button class="btn-secondary" type="button" data-action="merger-up" data-id="${item.id}" ${index === 0 ? "disabled" : ""}>${lang === "ko" ? "위로" : "Up"}</button>
+              <button class="btn-secondary" type="button" data-action="merger-down" data-id="${item.id}" ${index === state.items.length - 1 ? "disabled" : ""}>${lang === "ko" ? "아래로" : "Down"}</button>
+              <button class="btn-secondary" type="button" data-action="merger-remove" data-id="${item.id}">${lang === "ko" ? "삭제" : "Remove"}</button>
+            </div>
+          </div>
+          <div class="ringtone-waveform merger-waveform mt-4" role="application" tabindex="0">
+            <canvas data-merger-waveform="${item.id}" width="900" height="112" style="display:block;width:100%;height:112px;min-height:112px;max-height:112px;" aria-label="${lang === "ko" ? "파일별 파형" : "File waveform"}"></canvas>
+          </div>
+          <div class="mt-4 grid gap-3 md:grid-cols-3">
+            <label>${lang === "ko" ? "시작 시간" : "Start time"}<input data-merger-input="start" data-id="${item.id}" type="text" inputmode="decimal" value="${formatRingtoneTime(item.start)}" /></label>
+            <label>${lang === "ko" ? "종료 시간" : "End time"}<input data-merger-input="end" data-id="${item.id}" type="text" inputmode="decimal" value="${formatRingtoneTime(item.end)}" /></label>
+            <label>${lang === "ko" ? "볼륨" : "Volume"}<div class="mt-2 flex items-center gap-2"><input data-merger-input="volume" data-id="${item.id}" type="range" min="0" max="200" step="1" value="${item.volume}" /><span class="text-sm text-slate-600">${item.volume}%</span></div></label>
+          </div>
+          <div class="mt-3 flex flex-wrap items-center gap-3">
+            <label class="flex items-center gap-2 text-sm"><input class="w-auto" data-merger-input="muted" data-id="${item.id}" type="checkbox" ${item.muted ? "checked" : ""} />${lang === "ko" ? "음소거" : "Mute"}</label>
+            <p class="text-sm text-slate-600">${lang === "ko" ? "선택 길이" : "Selected duration"}: ${formatSecondsLabel(mergerClipDuration(item), lang)}</p>
+          </div>
+        </article>
+      `).join("") : `<p class="rounded-md border border-line bg-slate-50 p-4 text-sm text-slate-600">${lang === "ko" ? "오디오 파일을 선택하면 파일별 편집 카드가 표시됩니다." : "Choose audio files to show editing cards."}</p>`;
+    }
+    const transitions = getMergerTransitions(root);
+    if (transitionsEl) {
+      transitionsEl.innerHTML = transitions.length ? transitions.map((transition, index) => `
+        <div class="rounded-md border border-line p-3">
+          <p class="text-sm font-semibold text-slate-700">${index + 1} → ${index + 2}</p>
+          <div class="mt-2 grid gap-3 md:grid-cols-2">
+            <label>${lang === "ko" ? "전환 방식" : "Transition"}
+              <select data-merger-transition="mode" data-index="${index}">
+                <option value="none" ${transition.mode === "none" ? "selected" : ""}>${lang === "ko" ? "전환 없음" : "None"}</option>
+                <option value="silence" ${transition.mode === "silence" ? "selected" : ""}>${lang === "ko" ? "무음 삽입" : "Add silence"}</option>
+                <option value="crossfade" ${transition.mode === "crossfade" ? "selected" : ""}>${lang === "ko" ? "크로스페이드" : "Crossfade"}</option>
+              </select>
+            </label>
+            <label>${lang === "ko" ? "길이(초)" : "Duration (s)"}
+              <input data-merger-transition="duration" data-index="${index}" type="number" min="0" step="0.1" value="${transition.duration}" />
+            </label>
+          </div>
+        </div>
+      `).join("") : `<p class="text-sm text-slate-600">${lang === "ko" ? "파일을 2개 이상 선택하면 전환 설정이 표시됩니다." : "Choose at least two files to show transition settings."}</p>`;
+    }
+    updateMergerSummary(root);
+    setTimeout(() => {
+      initMergerDynamicControls(root);
+      renderMergerWaveforms(root);
+    }, 0);
+  };
+  const validateMergerFiles = (files, lang) => {
+    if (!files.length) throw new Error(mergerText(lang, "noFiles"));
+    if (files.length > 10) throw new Error(mergerText(lang, "tooMany"));
+    let total = 0;
+    files.forEach((file) => {
+      assertSupportedAudioFile(file, lang);
+      if (file.size > 104857600) throw new Error(mergerText(lang, "fileTooLarge"));
+      total += file.size;
+    });
+    if (total > 209715200) throw new Error(mergerText(lang, "totalTooLarge"));
+  };
+  const loadAudioMergerFiles = async (root, fileList = null) => {
+    const lang = root.dataset.lang || "ko";
+    const state = getMergerState(root);
+    stopMergerPreview(root);
+    revokeAudioUrls(root);
+    const files = Array.from(fileList || root.querySelector("#merger-files")?.files || []);
+    validateMergerFiles(files, lang);
+    setMergerStatus(root, mergerText(lang, "analyzing"), 10);
+    const items = [];
+    for (let index = 0; index < files.length; index += 1) {
+      const file = files[index];
+      setMergerStatus(root, `${mergerText(lang, "analyzing")} (${index + 1}/${files.length})`, 10 + Math.round(index / files.length * 30));
+      const audioBuffer = await loadAudioBuffer(file, lang);
+      setMergerStatus(root, `${mergerText(lang, "waveform")} (${index + 1}/${files.length})`, 40 + Math.round(index / files.length * 30));
+      const peaks = await summarizeWaveform(audioBuffer, 900);
+      items.push({ id: `${Date.now()}-${index}-${Math.random().toString(36).slice(2)}`, file, audioBuffer, peaks, duration: audioBuffer.duration, start: 0, end: audioBuffer.duration, volume: 100, muted: false, playhead: NaN });
+    }
+    state.items = items;
+    state.transitions = [];
+    renderAudioMerger(root);
+    setMergerStatus(root, mergerText(lang, "ready"), 75);
+  };
+  const getMergerItem = (root, id) => getMergerState(root).items.find((item) => item.id === id);
+  const clampMergerRange = (item, nextStart, nextEnd, dragMode = "") => {
+    let start = Math.max(0, Math.min(item.duration, nextStart));
+    let end = Math.max(0, Math.min(item.duration, nextEnd));
+    if (end < start) [start, end] = [end, start];
+    if (end - start < 0.1) {
+      if (dragMode === "start") start = Math.max(0, end - 0.1);
+      else end = Math.min(item.duration, start + 0.1);
+    }
+    item.start = start;
+    item.end = end;
+  };
+  const initMergerWaveformPointer = (root, canvas) => {
+    if (canvas.dataset.pointerReady === "true") return;
+    canvas.dataset.pointerReady = "true";
+    const timeFromEvent = (event, item) => {
+      const rect = (canvas.closest(".merger-waveform") || canvas).getBoundingClientRect();
+      const x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
+      return rect.width ? x / rect.width * item.duration : 0;
+    };
+    canvas.addEventListener("pointerdown", (event) => {
+      const item = getMergerItem(root, canvas.dataset.mergerWaveform);
+      if (!item) return;
+      event.preventDefault();
+      stopMergerPreview(root);
+      canvas.setPointerCapture?.(event.pointerId);
+      const rect = (canvas.closest(".merger-waveform") || canvas).getBoundingClientRect();
+      const x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
+      const startX = item.start / item.duration * rect.width;
+      const endX = item.end / item.duration * rect.width;
+      const hit = 32;
+      item.dragMode = Math.abs(x - startX) <= hit ? "start" : Math.abs(x - endX) <= hit ? "end" : x > startX && x < endX ? "move" : (x < startX ? "start" : "end");
+      item.dragStartTime = timeFromEvent(event, item);
+      item.dragInitialStart = item.start;
+      item.dragInitialEnd = item.end;
+    });
+    canvas.addEventListener("pointermove", (event) => {
+      const item = getMergerItem(root, canvas.dataset.mergerWaveform);
+      if (!item?.dragMode) return;
+      event.preventDefault();
+      const time = timeFromEvent(event, item);
+      if (item.dragMode === "start") clampMergerRange(item, time, item.end, "start");
+      if (item.dragMode === "end") clampMergerRange(item, item.start, time, "end");
+      if (item.dragMode === "move") {
+        const delta = time - item.dragStartTime;
+        const length = item.dragInitialEnd - item.dragInitialStart;
+        const start = Math.max(0, Math.min(item.duration - length, item.dragInitialStart + delta));
+        clampMergerRange(item, start, start + length, "move");
+      }
+      const startInput = root.querySelector(`input[data-merger-input="start"][data-id="${item.id}"]`);
+      const endInput = root.querySelector(`input[data-merger-input="end"][data-id="${item.id}"]`);
+      if (startInput) startInput.value = formatRingtoneTime(item.start);
+      if (endInput) endInput.value = formatRingtoneTime(item.end);
+      updateMergerSummary(root);
+      drawMergerWaveform(root, item);
+    });
+    ["pointerup", "pointercancel", "pointerleave"].forEach((eventName) => {
+      canvas.addEventListener(eventName, () => {
+        const item = getMergerItem(root, canvas.dataset.mergerWaveform);
+        if (item) item.dragMode = "";
+        if (item) drawMergerWaveform(root, item);
+      });
+    });
+  };
+  const initMergerDynamicControls = (root) => {
+    root.querySelectorAll("canvas[data-merger-waveform]").forEach((canvas) => initMergerWaveformPointer(root, canvas));
+  };
+  const playMergerItem = async (root, item) => {
+    const lang = root.dataset.lang || "ko";
+    stopMergerPreview(root);
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) throw new Error(lang === "ko" ? "이 브라우저에서는 오디오 재생을 사용할 수 없습니다." : "Audio playback is not available in this browser.");
+    const state = getMergerState(root);
+    const context = new AudioContextClass();
+    state.playContext = context;
+    await context.resume?.();
+    const source = context.createBufferSource();
+    const gain = context.createGain();
+    source.buffer = item.audioBuffer;
+    gain.gain.value = item.muted ? 0 : item.volume / 100;
+    source.connect(gain).connect(context.destination);
+    state.playSources = [source];
+    state.playing = true;
+    state.playingItemId = item.id;
+    const startedAt = context.currentTime;
+    const duration = mergerClipDuration(item);
+    source.onended = () => stopMergerPreview(root);
+    source.start(0, item.start, duration);
+    state.previewTimer = window.setInterval(() => {
+      item.playhead = Math.min(item.end, item.start + context.currentTime - startedAt);
+      drawMergerWaveform(root, item);
+    }, 60);
+    updateMergerPlaybackUi(root);
+  };
+  const validateMergerTransitions = (root) => {
+    const lang = root.dataset.lang || "ko";
+    const state = getMergerState(root);
+    const transitions = getMergerTransitions(root);
+    transitions.forEach((transition, index) => {
+      if (transition.mode === "crossfade") {
+        const duration = Number(transition.duration || 0);
+        if (duration <= 0 || duration >= mergerClipDuration(state.items[index]) || duration >= mergerClipDuration(state.items[index + 1])) {
+          throw new Error(mergerText(lang, "invalidCrossfade"));
+        }
+      }
+    });
+  };
+  const scheduleMergerSources = (context, root, destination) => {
+    const state = getMergerState(root);
+    const transitions = getMergerTransitions(root);
+    let cursor = 0;
+    const sources = [];
+    state.items.forEach((item, index) => {
+      const duration = mergerClipDuration(item);
+      const source = context.createBufferSource();
+      const gain = context.createGain();
+      source.buffer = item.audioBuffer;
+      const volume = item.muted ? 0 : item.volume / 100;
+      gain.gain.setValueAtTime(volume, cursor);
+      const prev = transitions[index - 1];
+      if (prev?.mode === "crossfade") {
+        const fade = Number(prev.duration || 0);
+        gain.gain.setValueAtTime(0, cursor);
+        gain.gain.linearRampToValueAtTime(volume, cursor + fade);
+      }
+      const next = transitions[index];
+      if (next?.mode === "crossfade") {
+        const fade = Number(next.duration || 0);
+        gain.gain.setValueAtTime(volume, Math.max(cursor, cursor + duration - fade));
+        gain.gain.linearRampToValueAtTime(0, cursor + duration);
+      }
+      source.connect(gain).connect(destination);
+      source.start(cursor, item.start, duration);
+      sources.push(source);
+      if (next?.mode === "crossfade") cursor += duration - Number(next.duration || 0);
+      else if (next?.mode === "silence") cursor += duration + Number(next.duration || 0);
+      else cursor += duration;
+    });
+    return sources;
+  };
+  const playMergerTimeline = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const state = getMergerState(root);
+    if (state.items.length < 2) throw new Error(mergerText(lang, "noFiles"));
+    validateMergerTransitions(root);
+    stopMergerPreview(root);
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) throw new Error(lang === "ko" ? "이 브라우저에서는 오디오 재생을 사용할 수 없습니다." : "Audio playback is not available in this browser.");
+    const context = new AudioContextClass();
+    state.playContext = context;
+    await context.resume?.();
+    state.playSources = scheduleMergerSources(context, root, context.destination);
+    state.playing = true;
+    const total = getMergerTimeline(root);
+    const startedAt = context.currentTime;
+    const label = root.querySelector("#merger-preview-label");
+    state.previewTimer = window.setInterval(() => {
+      const elapsed = Math.min(total, context.currentTime - startedAt);
+      if (label) label.textContent = lang === "ko" ? `${formatDuration(elapsed, lang)} / ${formatDuration(total, lang)}` : `${formatDuration(elapsed, lang)} / ${formatDuration(total, lang)}`;
+      if (elapsed >= total) stopMergerPreview(root);
+    }, 100);
+  };
+  const renderMergedAudioBuffer = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const state = getMergerState(root);
+    if (state.items.length < 2) throw new Error(mergerText(lang, "noFiles"));
+    validateMergerTransitions(root);
+    const sampleRate = Number(root.querySelector("#merger-sample-rate")?.value || "44100");
+    const channels = Number(root.querySelector("#merger-channels")?.value || "2");
+    const totalDuration = getMergerTimeline(root);
+    const offline = new OfflineAudioContext(channels, Math.max(1, Math.ceil(totalDuration * sampleRate)), sampleRate);
+    const normalize = root.querySelector("#merger-normalize")?.checked;
+    const destination = normalize ? offline.createDynamicsCompressor() : offline.destination;
+    if (normalize) {
+      destination.threshold.value = -18;
+      destination.knee.value = 24;
+      destination.ratio.value = 3;
+      destination.attack.value = 0.003;
+      destination.release.value = 0.25;
+      destination.connect(offline.destination);
+    }
+    scheduleMergerSources(offline, root, destination);
+    return await offline.startRendering();
+  };
+  const drawMergerResultWaveform = async (root, audioBuffer) => {
+    const wrap = root.querySelector("#merger-result-waveform-wrap");
+    const canvas = root.querySelector("#merger-result-waveform");
+    if (!wrap || !canvas || !audioBuffer) return;
+    wrap.classList.remove("hidden");
+    const rect = wrap.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const width = Math.max(1, Math.round(rect.width));
+    const height = 120;
+    const targetWidth = Math.round(width * dpr);
+    const targetHeight = Math.round(height * dpr);
+    if (canvas.width !== targetWidth) canvas.width = targetWidth;
+    if (canvas.height !== targetHeight) canvas.height = targetHeight;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    const peaks = await summarizeWaveform(audioBuffer, Math.max(400, Math.min(1600, width * 2)));
+    root._mergerResultWaveform = { peaks, duration: audioBuffer.duration, width, height };
+    drawMergerResultWaveformFrame(root);
+  };
+  const drawMergerResultWaveformFrame = (root) => {
+    const state = root._mergerResultWaveform;
+    const wrap = root.querySelector("#merger-result-waveform-wrap");
+    const canvas = root.querySelector("#merger-result-waveform");
+    if (!state || !wrap || !canvas) return;
+    const rect = wrap.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const width = Math.max(1, Math.round(rect.width));
+    const height = state.height || 120;
+    const targetWidth = Math.round(width * dpr);
+    const targetHeight = Math.round(height * dpr);
+    if (canvas.width !== targetWidth) canvas.width = targetWidth;
+    if (canvas.height !== targetHeight) canvas.height = targetHeight;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    context.clearRect(0, 0, width, height);
+    context.fillStyle = "#f8fafc";
+    context.fillRect(0, 0, width, height);
+    context.strokeStyle = "#2563eb";
+    context.lineWidth = 1;
+    const center = height / 2;
+    for (let x = 0; x < width; x += 1) {
+      const peak = state.peaks[Math.min(state.peaks.length - 1, Math.floor(x / width * state.peaks.length))] || { min: 0, max: 0 };
+      context.beginPath();
+      context.moveTo(x + 0.5, center + peak.min * center * 0.82);
+      context.lineTo(x + 0.5, center + peak.max * center * 0.82);
+      context.stroke();
+    }
+    const audio = root.querySelector("#audio-output-preview");
+    if (audio && Number.isFinite(audio.currentTime) && Number.isFinite(state.duration) && state.duration > 0) {
+      const x = Math.max(0, Math.min(width, audio.currentTime / state.duration * width));
+      context.fillStyle = "#ef4444";
+      context.fillRect(x - 1, 0, 2, height);
+    }
+  };
+  const startMergerResultPlayhead = (root) => {
+    const state = root._mergerResultWaveform;
+    if (!state) return;
+    if (state.raf) cancelAnimationFrame(state.raf);
+    const tick = () => {
+      drawMergerResultWaveformFrame(root);
+      const audio = root.querySelector("#audio-output-preview");
+      if (audio && !audio.paused && !audio.ended) {
+        state.raf = requestAnimationFrame(tick);
+      } else {
+        state.raf = 0;
+      }
+    };
+    tick();
+  };
+  const stopMergerResultPlayhead = (root) => {
+    const state = root._mergerResultWaveform;
+    if (state?.raf) cancelAnimationFrame(state.raf);
+    if (state) state.raf = 0;
+    drawMergerResultWaveformFrame(root);
+  };
+  const mergeAudioFiles = async (root) => {
+    const lang = root.dataset.lang || "ko";
+    const m = messages[lang];
+    const state = getMergerState(root);
+    if (state.processing) return;
+    state.processing = true;
+    const runButton = root.querySelector("#merger-run-button");
+    if (runButton) runButton.disabled = true;
+    try {
+      stopMergerPreview(root);
+      setMergerStatus(root, mergerText(lang, "rendering"), 25);
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      const rendered = await renderMergedAudioBuffer(root);
+      setMergerStatus(root, mergerText(lang, "encoding"), 60);
+      const wavBlob = encodeWav(rendered);
+      const outputFormat = root.querySelector("#merger-output-format")?.value || "mp3";
+      let blob = wavBlob;
+      if (outputFormat !== "wav") {
+        blob = await convertAudioWithFFmpeg(root, new File([wavBlob], "merged-audio-source.wav", { type: "audio/wav" }), outputFormat);
+      }
+      setAudioDownload(root, blob, `merged-audio.${outputFormat}`);
+      await drawMergerResultWaveform(root, rendered);
+      root.querySelector("#result").textContent = `${lang === "ko" ? "출력 파일명" : "Output file"}: merged-audio.${outputFormat}
+${m.outputFormat}: ${outputFormat.toUpperCase()}
+${lang === "ko" ? "재생 시간" : "Duration"}: ${formatDuration(rendered.duration, lang)}
+${m.outputSize}: ${formatBytes(blob.size, lang)}
+${lang === "ko" ? "비트레이트" : "Bitrate"}: ${root.querySelector("#merger-bitrate")?.value || "192"} kbps
+${lang === "ko" ? "샘플레이트" : "Sample rate"}: ${format(rendered.sampleRate, lang)} Hz
+${lang === "ko" ? "채널" : "Channels"}: ${rendered.numberOfChannels}
+${lang === "ko" ? "처리 방식" : "Processing"}: Web Audio timeline render + ${outputFormat === "wav" ? "WAV PCM export" : "FFmpeg WASM encode"}`;
+      setMergerStatus(root, mergerText(lang, "done"), 100);
+    } catch (error) {
+      setMergerStatus(root, `${mergerText(lang, "failed")} (${error?.message || error})`, 0);
+      throw error;
+    } finally {
+      state.processing = false;
+      if (runButton) runButton.disabled = false;
+    }
+  };
+  const resetAudioMerger = (root) => {
+    stopMergerPreview(root);
+    revokeAudioUrls(root);
+    root._audioMergerState = null;
+    const input = root.querySelector("#merger-files");
+    if (input) input.value = "";
+    const audio = root.querySelector("#audio-output-preview");
+    if (audio) audio.removeAttribute("src");
+    const resultWaveformWrap = root.querySelector("#merger-result-waveform-wrap");
+    const resultWaveform = root.querySelector("#merger-result-waveform");
+    stopMergerResultPlayhead(root);
+    root._mergerResultWaveform = null;
+    if (resultWaveformWrap) resultWaveformWrap.classList.add("hidden");
+    if (resultWaveform) {
+      const context = resultWaveform.getContext("2d");
+      if (context) context.clearRect(0, 0, resultWaveform.width, resultWaveform.height);
+    }
+    const link = root.querySelector("#download-link");
+    if (link) link.classList.add("hidden");
+    const result = root.querySelector("#result");
+    if (result) result.textContent = messages[root.dataset.lang || "ko"].checkInput;
+    setMergerStatus(root, root.dataset.lang === "ko" ? "오디오 파일을 선택하세요." : "Choose audio files.", 0);
+    renderAudioMerger(root);
   };
   const applyAudioCompressionPreset = (root) => {
     const preset = root.querySelector("#compressor-preset")?.value || "standard";
@@ -2551,6 +3314,7 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
   };
   const updateRingtoneUi = (root, writeInputs = true) => {
     const lang = root.dataset.lang || "ko";
+    const isCutter = root.dataset.tool === "audio-cutter";
     const state = root._ringtoneState;
     const createButton = root.querySelector("#ringtone-create-button");
     if (!state?.audioBuffer) {
@@ -2559,24 +3323,25 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
     }
     const clipDuration = Math.max(0, state.end - state.start);
     if (writeInputs) {
-      const startInput = root.querySelector("#ringtone-start");
-      const endInput = root.querySelector("#ringtone-end");
-      if (startInput) startInput.value = formatRingtoneTime(state.start);
-      if (endInput) endInput.value = formatRingtoneTime(state.end);
+      const startInput = root.querySelector(isCutter ? "#cutter-start" : "#ringtone-start");
+      const endInput = root.querySelector(isCutter ? "#cutter-end" : "#ringtone-end");
+      if (startInput) startInput.value = isCutter ? String(Math.round(state.start * 10) / 10) : formatRingtoneTime(state.start);
+      if (endInput) endInput.value = isCutter ? String(Math.round(state.end * 10) / 10) : formatRingtoneTime(state.end);
     }
     const durationLabel = root.querySelector("#ringtone-duration-label");
-    const rangeLabel = root.querySelector("#ringtone-range-label");
+    const rangeLabel = root.querySelector(isCutter ? "#cutter-range-label" : "#ringtone-range-label");
     const warning = root.querySelector("#ringtone-length-warning");
     if (durationLabel) durationLabel.textContent = lang === "ko" ? `전체 길이: ${formatRingtoneTime(state.duration, false)}` : `Total length: ${formatRingtoneTime(state.duration, false)}`;
     if (rangeLabel) rangeLabel.textContent = lang === "ko"
       ? `선택 구간: ${formatRingtoneTime(state.start)} ~ ${formatRingtoneTime(state.end)} / 길이: ${formatRingtoneTime(clipDuration)}`
       : `Selected range: ${formatRingtoneTime(state.start)} to ${formatRingtoneTime(state.end)} / Duration: ${formatRingtoneTime(clipDuration)}`;
-    if (warning) warning.textContent = clipDuration > 40
+    if (warning && !isCutter) warning.textContent = clipDuration > 40
       ? (lang === "ko" ? "40초를 초과해 M4R을 생성할 수 없습니다." : "Clips longer than 40 seconds cannot be created.")
       : clipDuration > 30
         ? (lang === "ko" ? "벨소리는 30초 이하를 권장합니다." : "Ringtones of 30 seconds or less are recommended.")
         : "";
-    if (createButton) createButton.disabled = clipDuration < 1 || clipDuration > 40 || state.processing;
+    if (createButton) createButton.disabled = isCutter ? false : clipDuration < 1 || clipDuration > 40 || state.processing;
+    if (isCutter) syncCutterRanges(root);
     requestRingtoneDraw(root);
   };
   const stopRingtonePlayback = (root) => {
@@ -2630,10 +3395,11 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
     tick();
   };
   const handleRingtoneTimeInput = (root) => {
+    const isCutter = root.dataset.tool === "audio-cutter";
     const state = root._ringtoneState;
     if (!state?.audioBuffer) return;
-    const start = parseAudioTime(root.querySelector("#ringtone-start")?.value);
-    const end = parseAudioTime(root.querySelector("#ringtone-end")?.value);
+    const start = parseAudioTime(root.querySelector(isCutter ? "#cutter-start" : "#ringtone-start")?.value);
+    const end = parseAudioTime(root.querySelector(isCutter ? "#cutter-end" : "#ringtone-end")?.value);
     if (Number.isFinite(start) && Number.isFinite(end)) {
       stopRingtonePlayback(root);
       clampRingtoneSelection(root, start, end);
@@ -4056,6 +4822,7 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
       if (slug === "audio-compressor") await compressAudio(root);
       if (slug === "audio-volume-editor") await editAudioVolume(root);
       if (slug === "iphone-ringtone-maker") await createIphoneRingtone(root);
+      if (slug === "audio-merger") await mergeAudioFiles(root);
       if (slug === "qr-code-generator") {
         if (!text) throw new Error(m.enterQr);
         await QRCode.toCanvas(root.querySelector("#qr-canvas"), text, { width: 192, margin: 2 });
@@ -4587,6 +5354,10 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
         });
       }
       if (action === "reset") {
+        if (slug === "audio-merger") {
+          resetAudioMerger(root);
+          return;
+        }
         if (slug === "time-zone-converter") {
           const source = root.querySelector("#tz-source");
           const hourFormat = root.querySelector("#tz-hour-format");
@@ -4712,6 +5483,40 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
       if (slug === "audio-volume-editor" && action === "volume-preset") {
         syncVolumeInputs(root, button.dataset.volume || "100");
       }
+      if (slug === "audio-merger" && action?.startsWith("merger-")) {
+        const state = getMergerState(root);
+        const id = button.dataset.id;
+        const index = state.items.findIndex((item) => item.id === id);
+        if (action === "merger-item-play" && index >= 0) {
+          playMergerItem(root, state.items[index]).catch((error) => {
+            root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+          });
+        }
+        if (action === "merger-item-pause") stopMergerPreview(root);
+        if (action === "merger-up" && index > 0) {
+          stopMergerPreview(root);
+          [state.items[index - 1], state.items[index]] = [state.items[index], state.items[index - 1]];
+          renderAudioMerger(root);
+        }
+        if (action === "merger-down" && index >= 0 && index < state.items.length - 1) {
+          stopMergerPreview(root);
+          [state.items[index + 1], state.items[index]] = [state.items[index], state.items[index + 1]];
+          renderAudioMerger(root);
+        }
+        if (action === "merger-remove" && index >= 0) {
+          stopMergerPreview(root);
+          state.items.splice(index, 1);
+          state.transitions = [];
+          renderAudioMerger(root);
+        }
+        if (action === "merger-play-all" || action === "merger-restart") {
+          playMergerTimeline(root).catch((error) => {
+            root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+            setMergerStatus(root, error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput, 0);
+          });
+        }
+        if (action === "merger-pause") stopMergerPreview(root);
+      }
       if (slug === "time-zone-converter" && action === "timezone-now") {
         setDateTimeForZone(root);
         run(root);
@@ -4731,6 +5536,17 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
           setAudioStatus(root, root.dataset.lang === "ko" ? "선택 구간 미리 듣기에 실패했습니다." : "Range preview failed.", 0);
         });
       }
+      if (slug === "audio-cutter" && action === "cutter-play-all") {
+        playRingtone(root, "all").catch((error) => {
+          root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+        });
+      }
+      if (slug === "audio-cutter" && action === "cutter-play-range") {
+        playRingtone(root, "range").catch((error) => {
+          root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+        });
+      }
+      if (slug === "audio-cutter" && action === "cutter-pause") stopRingtonePlayback(root);
       if (slug === "iphone-ringtone-maker" && action === "ringtone-play-all") {
         playRingtone(root, "all").catch((error) => {
           root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
@@ -4778,6 +5594,7 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
           }
           if (["cutter-start", "cutter-end", "cutter-start-range", "cutter-end-range"].includes(control.id)) {
             syncCutterRanges(root, control.id === "cutter-start-range" ? "start-range" : control.id === "cutter-end-range" ? "end-range" : "");
+            if (control.id === "cutter-start" || control.id === "cutter-end") handleRingtoneTimeInput(root);
           }
         }
         if (slug === "audio-compressor") {
@@ -4802,6 +5619,12 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
           if (control.id === "fade-in-duration") markFadePresetCustom(root, "in");
           if (control.id === "fade-out-duration") markFadePresetCustom(root, "out");
         }
+        if (slug === "audio-merger" && control.id === "merger-files") {
+          loadAudioMergerFiles(root).catch((error) => {
+            root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+            setMergerStatus(root, error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput, 0);
+          });
+        }
         if (slug === "iphone-ringtone-maker") {
           if (control.id === "ringtone-file") {
             loadRingtoneInfo(root).catch((error) => {
@@ -4818,6 +5641,84 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
         autoRun();
       });
     });
+    if (slug === "audio-merger") {
+      root.addEventListener("input", (event) => {
+        const target = event.target;
+        const state = getMergerState(root);
+        if (target?.dataset?.mergerInput) {
+          const item = getMergerItem(root, target.dataset.id);
+          if (!item) return;
+          stopMergerPreview(root);
+          if (target.dataset.mergerInput === "start") {
+            const start = parseAudioTime(target.value);
+            if (Number.isFinite(start)) clampMergerRange(item, start, item.end, "start");
+          }
+          if (target.dataset.mergerInput === "end") {
+            const end = parseAudioTime(target.value);
+            if (Number.isFinite(end)) clampMergerRange(item, item.start, end, "end");
+          }
+          if (target.dataset.mergerInput === "volume") item.volume = Math.max(0, Math.min(200, Number(target.value) || 0));
+          if (target.dataset.mergerInput === "muted") item.muted = target.checked;
+          renderAudioMerger(root);
+        }
+        if (target?.dataset?.mergerTransition) {
+          stopMergerPreview(root);
+          const transitions = getMergerTransitions(root);
+          const index = Number(target.dataset.index);
+          if (transitions[index]) {
+            if (target.dataset.mergerTransition === "mode") transitions[index].mode = target.value;
+            if (target.dataset.mergerTransition === "duration") transitions[index].duration = Math.max(0, Number(target.value) || 0);
+          }
+          updateMergerSummary(root);
+        }
+        if (["merger-output-format", "merger-bitrate", "merger-sample-rate", "merger-channels", "merger-normalize"].includes(target?.id)) {
+          state.resultBlob = null;
+        }
+      });
+      root.addEventListener("dragstart", (event) => {
+        const card = event.target.closest(".merger-file-card");
+        if (card) event.dataTransfer?.setData("text/plain", card.dataset.mergerId || "");
+      });
+      root.addEventListener("dragover", (event) => {
+        if (event.target.closest(".merger-file-card") || event.target.closest("#merger-drop-zone")) event.preventDefault();
+      });
+      root.addEventListener("drop", (event) => {
+        const dropZone = event.target.closest("#merger-drop-zone");
+        if (dropZone) {
+          event.preventDefault();
+          loadAudioMergerFiles(root, event.dataTransfer?.files).catch((error) => {
+            root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+            setMergerStatus(root, error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput, 0);
+          });
+          return;
+        }
+        const targetCard = event.target.closest(".merger-file-card");
+        const sourceId = event.dataTransfer?.getData("text/plain");
+        if (targetCard && sourceId) {
+          event.preventDefault();
+          const state = getMergerState(root);
+          const from = state.items.findIndex((item) => item.id === sourceId);
+          const to = state.items.findIndex((item) => item.id === targetCard.dataset.mergerId);
+          if (from >= 0 && to >= 0 && from !== to) {
+            stopMergerPreview(root);
+            const [item] = state.items.splice(from, 1);
+            state.items.splice(to, 0, item);
+            renderAudioMerger(root);
+          }
+        }
+      });
+      const resultAudio = root.querySelector("#audio-output-preview");
+      if (resultAudio) {
+        resultAudio.addEventListener("play", () => startMergerResultPlayhead(root));
+        resultAudio.addEventListener("pause", () => stopMergerResultPlayhead(root));
+        resultAudio.addEventListener("ended", () => stopMergerResultPlayhead(root));
+        resultAudio.addEventListener("seeked", () => drawMergerResultWaveformFrame(root));
+        resultAudio.addEventListener("timeupdate", () => {
+          if (resultAudio.paused) drawMergerResultWaveformFrame(root);
+        });
+      }
+      renderAudioMerger(root);
+    }
     const mosaicCanvas = root.querySelector("#mosaic-canvas");
     if (mosaicCanvas) {
       let startPoint = null;
@@ -4869,7 +5770,7 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
     }
     syncDynamicInputs(root);
     initTimeZoneConverter(root);
-    if (slug === "iphone-ringtone-maker") {
+    if (slug === "audio-cutter" || slug === "iphone-ringtone-maker") {
       initRingtonePointerEvents(root);
       let resizeTimer = 0;
       window.addEventListener("resize", () => {
