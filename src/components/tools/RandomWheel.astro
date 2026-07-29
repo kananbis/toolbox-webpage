@@ -1,0 +1,372 @@
+---
+import type { Lang } from "@/i18n/translations";
+
+type Props = { lang: Lang };
+const { lang } = Astro.props;
+const t = {
+  ko: {
+    items: "\uD56D\uBAA9 \uC785\uB825",
+    count: "\uD56D\uBAA9 \uC218",
+    itemName: "\uD56D\uBAA9",
+    weight: "\uAC00\uC911\uCE58",
+    help: "\uD56D\uBAA9 \uC218\uB97C \uC815\uD558\uBA74 \uC785\uB825\uCE78\uC774 \uC0DD\uC131\uB429\uB2C8\uB2E4. \uAC00\uC911\uCE58\uB294 \uC22B\uC790\uAC00 \uD074\uC218\uB85D \uB354 \uC790\uC8FC \uBF51\uD799\uB2C8\uB2E4.",
+    load: "\uC608\uC81C \uBD88\uB7EC\uC624\uAE30",
+    clear: "\uBAA8\uB450 \uC9C0\uC6B0\uAE30",
+    dedupe: "\uC911\uBCF5 \uC81C\uAC70",
+    settings: "\uC124\uC815",
+    duration: "\uD68C\uC804 \uC2DC\uAC04",
+    durationHelp: "\uB8F0\uB81B\uC774 \uB3CC\uC544\uAC00\uB294 \uC560\uB2C8\uBA54\uC774\uC158 \uC2DC\uAC04\uC785\uB2C8\uB2E4. \uACB0\uACFC \uD655\uB960\uC5D0\uB294 \uC601\uD5A5\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    slowStop: "\uCC9C\uCC9C\uD788 \uBA48\uCD94\uAE30",
+    remove: "\uC120\uD0DD\uB41C \uD56D\uBAA9 \uC81C\uAC70",
+    weighted: "\uAC00\uC911\uCE58 \uC0AC\uC6A9",
+    weightedHelp: "\uAC00\uC911\uCE58 \uC0AC\uC6A9 \uC2DC \uAC01 \uD56D\uBAA9 \uC624\uB978\uCABD\uC5D0 \uD655\uB960 \uC22B\uC790\uB97C \uC785\uB825\uD569\uB2C8\uB2E4.",
+    spin: "\uB8F0\uB81B \uB3CC\uB9AC\uAE30",
+    result: "\uACB0\uACFC",
+    history: "\uACB0\uACFC \uAE30\uB85D",
+    copy: "\uACB0\uACFC \uBCF5\uC0AC",
+    resetHistory: "\uAE30\uB85D \uC9C0\uC6B0\uAE30",
+    min: "\uD56D\uBAA9\uC744 2\uAC1C \uC774\uC0C1 \uC785\uB825\uD558\uC138\uC694.",
+    tooMany: "\uD56D\uBAA9\uC740 \uCD5C\uB300 100\uAC1C\uAE4C\uC9C0 \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    copied: "\uBCF5\uC0AC\uB418\uC5C8\uC2B5\uB2C8\uB2E4.",
+    note: "\uC77C\uBC18\uC801\uC778 \uB180\uC774\uC640 \uAC04\uB2E8\uD55C \uC120\uD0DD\uC744 \uC704\uD55C \uB3C4\uAD6C\uC774\uBA70, \uACF5\uC2DD \uCD94\uCCA8 \uC99D\uBE59\uC6A9\uC73C\uB85C \uC124\uACC4\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.",
+  },
+  en: {
+    items: "Items",
+    count: "Item count",
+    itemName: "Item",
+    weight: "Weight",
+    help: "Set the item count to create input rows. Larger weights make an item more likely to be selected.",
+    load: "Load Example",
+    clear: "Clear All",
+    dedupe: "Remove Duplicates",
+    settings: "Settings",
+    duration: "Spin duration",
+    durationHelp: "This controls only how long the wheel animation spins. It does not change the result chance.",
+    slowStop: "Slow stop",
+    remove: "Remove selected item",
+    weighted: "Use weights",
+    weightedHelp: "When weights are enabled, enter each chance value in the right-side weight field.",
+    spin: "Spin Wheel",
+    result: "Result",
+    history: "History",
+    copy: "Copy Results",
+    resetHistory: "Clear History",
+    min: "Enter at least two items.",
+    tooMany: "You can use up to 100 items.",
+    copied: "Copied.",
+    note: "This tool is for casual choices and games, not for official audited drawings.",
+  },
+}[lang];
+---
+
+<div class="grid gap-5" data-random-wheel data-lang={lang}>
+  <section class="rounded-md border border-line bg-white p-4">
+    <h2 class="text-base font-semibold text-ink">{t.items}</h2>
+    <div class="mt-3 grid gap-4 md:grid-cols-[180px_1fr]">
+      <label>
+        {t.count}
+        <input data-item-count type="number" min="2" max="100" value="5" />
+      </label>
+      <p class="self-end text-sm text-slate-600">{t.help}</p>
+    </div>
+    <div class="mt-4 grid gap-2" data-item-rows></div>
+    <div class="mt-3 flex flex-wrap gap-2">
+      <button class="btn-secondary" type="button" data-load>{t.load}</button>
+      <button class="btn-secondary" type="button" data-dedupe>{t.dedupe}</button>
+      <button class="btn-secondary" type="button" data-clear>{t.clear}</button>
+    </div>
+  </section>
+
+  <section class="rounded-md border border-line bg-white p-4">
+    <h2 class="text-base font-semibold text-ink">{t.settings}</h2>
+    <div class="mt-4 grid items-start gap-4 md:grid-cols-[minmax(160px,230px)_1fr_1fr_1fr]">
+      <label class="grid gap-1">{t.duration}
+        <select data-duration>
+          <option value="3">3s</option>
+          <option value="4" selected>4s</option>
+          <option value="5">5s</option>
+          <option value="6">6s</option>
+        </select>
+        <span class="mt-1 block text-xs text-slate-500">{t.durationHelp}</span>
+      </label>
+      <label class="flex min-h-[38px] items-center rounded-md border border-line bg-panel px-3 md:mt-6">
+        <span class="flex items-center gap-3">
+          <input class="h-4 w-4" data-slow-stop type="checkbox" />
+          <span class="text-sm font-semibold text-ink">{t.slowStop}</span>
+        </span>
+      </label>
+      <label class="flex min-h-[38px] items-center rounded-md border border-line bg-panel px-3 md:mt-6">
+        <span class="flex items-center gap-3">
+          <input class="h-4 w-4" data-remove-selected type="checkbox" />
+          <span class="grid gap-1">
+            <span class="text-sm font-semibold text-ink">{t.remove}</span>
+          </span>
+        </span>
+      </label>
+      <label class="flex min-h-[38px] items-center rounded-md border border-line bg-panel px-3 md:mt-6">
+        <span class="flex items-center gap-3">
+          <input class="h-4 w-4" data-weighted type="checkbox" />
+          <span class="grid gap-1">
+            <span class="text-sm font-semibold text-ink">{t.weighted}</span>
+          </span>
+        </span>
+      </label>
+    </div>
+  </section>
+
+  <section class="rounded-md border border-line bg-white p-4">
+    <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div class="relative mx-auto w-full max-w-xl">
+        <canvas data-wheel class="aspect-square w-full rounded-full" width="720" height="720" aria-label={lang === "ko" ? "\uB79C\uB364 \uB8F0\uB81B" : "Random wheel"}></canvas>
+        <div class="pointer-events-none absolute left-1/2 top-0 h-0 w-0 -translate-x-1/2 border-x-[14px] border-t-[28px] border-x-transparent border-t-red-600"></div>
+        <button class="btn-primary absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full px-5 py-4" type="button" data-spin>{t.spin}</button>
+      </div>
+      <div>
+        <h3 class="text-base font-semibold">{t.result}</h3>
+        <p class="result-box mt-2 min-h-20 text-xl font-bold" data-result aria-live="polite">-</p>
+        <h3 class="mt-4 text-base font-semibold">{t.history}</h3>
+        <ol class="mt-2 max-h-60 list-decimal overflow-auto pl-5 text-sm" data-history></ol>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <button class="btn-secondary" type="button" data-copy>{t.copy}</button>
+          <button class="btn-secondary" type="button" data-clear-history>{t.resetHistory}</button>
+        </div>
+        <p class="mt-3 text-xs leading-5 text-slate-500">{t.note}</p>
+      </div>
+    </div>
+    <p class="mt-3 text-sm text-slate-600" data-status aria-live="polite"></p>
+  </section>
+</div>
+
+<style is:global>
+  [data-random-wheel]:not(.is-weighted) [data-item-grid] {
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+  }
+
+  [data-random-wheel].is-weighted [data-item-grid] {
+    grid-template-columns: 2.25rem minmax(0, 1fr) 7.5rem;
+  }
+
+  @media (max-width: 420px) {
+    [data-random-wheel].is-weighted [data-item-grid] {
+      grid-template-columns: 1.75rem minmax(0, 1fr) 4.75rem;
+    }
+  }
+</style>
+
+<script>
+  const wheelMessages = {
+    ko: {
+      min: "\uD56D\uBAA9\uC744 2\uAC1C \uC774\uC0C1 \uC785\uB825\uD558\uC138\uC694.",
+      tooMany: "\uD56D\uBAA9\uC740 \uCD5C\uB300 100\uAC1C\uAE4C\uC9C0 \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+      copied: "\uBCF5\uC0AC\uB418\uC5C8\uC2B5\uB2C8\uB2E4.",
+      item: "\uD56D\uBAA9",
+      weight: "\uAC00\uC911\uCE58",
+    },
+    en: {
+      min: "Enter at least two items.",
+      tooMany: "You can use up to 100 items.",
+      copied: "Copied.",
+      item: "Item",
+      weight: "Weight",
+    },
+  };
+  const defaultItems = {
+    ko: ["\uD53C\uC790", "\uCE58\uD0A8", "\uD584\uBC84\uAC70", "\uCD08\uBC25", "\uAD6D\uC218"],
+    en: ["Pizza", "Chicken", "Burger", "Sushi", "Noodles"],
+  };
+  const colors = ["#2563eb", "#16a34a", "#f59e0b", "#dc2626", "#7c3aed", "#0891b2", "#ea580c", "#4f46e5"];
+  const random = () => crypto?.getRandomValues ? crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff : Math.random();
+  const escapeHtml = (value) => String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  const clampCount = (value) => Math.max(2, Math.min(100, Number(value) || 2));
+  const getRows = (root) => [...root.querySelectorAll("[data-item-row]")];
+  const getItems = (root) => {
+    const weighted = root.querySelector("[data-weighted]").checked;
+    return getRows(root)
+      .map((row) => ({
+        label: row.querySelector("[data-item-label]").value.trim().slice(0, 50),
+        weight: weighted ? Math.max(1, Math.min(100, Number(row.querySelector("[data-item-weight]").value) || 1)) : 1,
+      }))
+      .filter((item) => item.label);
+  };
+  const syncWeightVisibility = (root) => {
+    const weighted = root.querySelector("[data-weighted]").checked;
+    root.classList.toggle("is-weighted", weighted);
+    root.querySelectorAll("[data-weight-wrap]").forEach((wrap) => {
+      wrap.hidden = !weighted;
+    });
+  };
+  const renderRows = (root, values = []) => {
+    const lang = root.dataset.lang || "ko";
+    const countInput = root.querySelector("[data-item-count]");
+    const count = clampCount(countInput.value);
+    countInput.value = String(count);
+    const existing = values.length ? values : getRows(root).map((row) => ({
+      label: row.querySelector("[data-item-label]").value,
+      weight: row.querySelector("[data-item-weight]").value,
+    }));
+    const header = `<div class="grid items-end gap-2 text-xs font-semibold text-slate-600" data-item-grid>
+      <span aria-hidden="true"></span>
+      <span class="px-1">${wheelMessages[lang].item}</span>
+      <span class="px-1" data-weight-wrap>${wheelMessages[lang].weight}</span>
+    </div>`;
+    const rows = Array.from({ length: count }, (_, index) => {
+      const item = existing[index] || { label: "", weight: "1" };
+      return `<div class="grid items-center gap-2" data-item-grid data-item-row>
+        <span class="text-center text-sm font-semibold text-slate-500" aria-hidden="true">${index + 1}</span>
+        <input id="wheel-item-${index}" data-item-label type="text" maxlength="50" aria-label="${wheelMessages[lang].item} ${index + 1}" value="${escapeHtml(item.label)}" />
+        <input id="wheel-weight-${index}" data-item-weight data-weight-wrap type="number" min="1" max="100" aria-label="${wheelMessages[lang].weight} ${index + 1}" value="${escapeHtml(item.weight || 1)}" />
+      </div>`;
+    }).join("");
+    root.querySelector("[data-item-rows]").innerHTML = header + rows;
+    syncWeightVisibility(root);
+    root.querySelectorAll("[data-item-label], [data-item-weight]").forEach((field) => {
+      field.addEventListener("input", () => drawWheel(root));
+    });
+    drawWheel(root);
+  };
+  const pickWeighted = (items) => {
+    const total = items.reduce((sum, item) => sum + item.weight, 0);
+    let target = random() * total;
+    for (let index = 0; index < items.length; index += 1) {
+      target -= items[index].weight;
+      if (target <= 0) return index;
+    }
+    return items.length - 1;
+  };
+  const drawWheel = (root, rotation = root._wheelRotation || 0) => {
+    const canvas = root.querySelector("[data-wheel]");
+    const ctx = canvas.getContext("2d");
+    const items = getItems(root);
+    const size = canvas.width;
+    ctx.clearRect(0, 0, size, size);
+    const total = items.reduce((sum, item) => sum + item.weight, 0) || 1;
+    let angle = rotation - Math.PI / 2;
+    items.forEach((item, index) => {
+      const slice = (Math.PI * 2 * item.weight) / total;
+      ctx.beginPath();
+      ctx.moveTo(size / 2, size / 2);
+      ctx.arc(size / 2, size / 2, size / 2 - 8, angle, angle + slice);
+      ctx.closePath();
+      ctx.fillStyle = colors[index % colors.length];
+      ctx.fill();
+      ctx.save();
+      ctx.translate(size / 2, size / 2);
+      ctx.rotate(angle + slice / 2);
+      ctx.fillStyle = "#fff";
+      ctx.font = "700 24px system-ui";
+      ctx.textAlign = "right";
+      ctx.fillText(item.label.length > 14 ? `${item.label.slice(0, 13)}...` : item.label, size / 2 - 24, 8);
+      ctx.restore();
+      angle += slice;
+    });
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, 64, 0, Math.PI * 2);
+    ctx.fillStyle = "#fff";
+    ctx.fill();
+  };
+  const initWheel = (root) => {
+    if (root.dataset.initialized) return;
+    root.dataset.initialized = "true";
+    const lang = root.dataset.lang || "ko";
+    const status = root.querySelector("[data-status]");
+    const history = [];
+    const renderHistory = () => {
+      root.querySelector("[data-history]").innerHTML = history.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+    };
+    renderRows(root, defaultItems[lang].map((label) => ({ label, weight: "1" })));
+    root.querySelector("[data-item-count]").addEventListener("change", () => renderRows(root));
+    root.querySelector("[data-weighted]").addEventListener("change", () => {
+      syncWeightVisibility(root);
+      drawWheel(root);
+    });
+    root.querySelector("[data-load]").addEventListener("click", () => {
+      root.querySelector("[data-item-count]").value = String(defaultItems[lang].length);
+      renderRows(root, defaultItems[lang].map((label) => ({ label, weight: "1" })));
+    });
+    root.querySelector("[data-clear]").addEventListener("click", () => renderRows(root, Array.from({ length: clampCount(root.querySelector("[data-item-count]").value) }, () => ({ label: "", weight: "1" }))));
+    root.querySelector("[data-dedupe]").addEventListener("click", () => {
+      const seen = new Set();
+      const unique = getItems(root).filter((item) => {
+        if (seen.has(item.label)) return false;
+        seen.add(item.label);
+        return true;
+      });
+      root.querySelector("[data-item-count]").value = String(Math.max(2, unique.length));
+      renderRows(root, unique.map((item) => ({ label: item.label, weight: String(item.weight) })));
+    });
+    root.querySelector("[data-spin]").addEventListener("click", () => {
+      const items = getItems(root);
+      if (items.length < 2) {
+        status.textContent = wheelMessages[lang].min;
+        return;
+      }
+      if (items.length > 100) {
+        status.textContent = wheelMessages[lang].tooMany;
+        return;
+      }
+      const spin = root.querySelector("[data-spin]");
+      spin.disabled = true;
+      const winner = pickWeighted(items);
+      const total = items.reduce((sum, item) => sum + item.weight, 0);
+      const before = items.slice(0, winner).reduce((sum, item) => sum + item.weight, 0) / total;
+      const share = items[winner].weight / total;
+      const edgeStop = random() < 0.55;
+      const targetRatio = edgeStop
+        ? (random() < 0.5 ? 0.015 + random() * 0.105 : 0.88 + random() * 0.105)
+        : 0.24 + random() * 0.52;
+      const targetAngle = -(before + share * targetRatio) * Math.PI * 2;
+      const slowStop = root.querySelector("[data-slow-stop]").checked;
+      const duration = (Number(root.querySelector("[data-duration]").value) || 4) * 1000;
+      const animateDuration = duration + (slowStop ? 5000 : 0);
+      const baseTurns = 7 + Math.floor(random() * 3);
+      const turns = slowStop ? Math.max(baseTurns + 3, Math.round(baseTurns * (animateDuration / duration) * 0.75)) : baseTurns;
+      const start = performance.now();
+      const startRotation = root._wheelRotation || 0;
+      const normalizedStart = startRotation % (Math.PI * 2);
+      const finalRotation = startRotation + turns * Math.PI * 2 + targetAngle - normalizedStart;
+      const tick = (now) => {
+        const elapsed = now - start;
+        const progress = Math.min(1, elapsed / animateDuration);
+        const eased = slowStop
+          ? 1 - Math.pow(1 - progress, 3.2)
+          : (() => {
+            const coast = 0.3;
+            const slowPower = 4.5;
+            const baseSpeed = 1 / (coast + (1 - coast) / (slowPower + 1));
+            return progress < coast
+              ? baseSpeed * progress
+              : baseSpeed * coast
+                + (baseSpeed * (1 - coast) * (1 - Math.pow(1 - ((progress - coast) / (1 - coast)), slowPower + 1))) / (slowPower + 1);
+          })();
+        root._wheelRotation = startRotation + (finalRotation - startRotation) * eased;
+        drawWheel(root, root._wheelRotation);
+        if (progress < 1) requestAnimationFrame(tick);
+        else {
+          root._wheelRotation = finalRotation;
+          drawWheel(root, root._wheelRotation);
+          const result = items[winner].label;
+          root.querySelector("[data-result]").textContent = result;
+          history.unshift(`${history.length + 1}. ${result}`);
+          renderHistory();
+          if (root.querySelector("[data-remove-selected]").checked) {
+            const remaining = getItems(root).filter((_, index) => index !== winner);
+            root.querySelector("[data-item-count]").value = String(Math.max(2, remaining.length));
+            renderRows(root, remaining.map((item) => ({ label: item.label, weight: String(item.weight) })));
+          }
+          spin.disabled = false;
+        }
+      };
+      requestAnimationFrame(tick);
+    });
+    root.querySelector("[data-copy]").addEventListener("click", async () => {
+      await navigator.clipboard?.writeText(history.join("\n"));
+      status.textContent = wheelMessages[lang].copied;
+    });
+    root.querySelector("[data-clear-history]").addEventListener("click", () => {
+      history.length = 0;
+      root.querySelector("[data-result]").textContent = "-";
+      renderHistory();
+    });
+  };
+  document.querySelectorAll("[data-random-wheel]").forEach(initWheel);
+</script>

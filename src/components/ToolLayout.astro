@@ -31,7 +31,7 @@ const related = getRelatedTools(lang, tool.slug);
 const otherLang = lang === "ko" ? "en" : "ko";
 const basis = tool.basis ?? getToolBasis(lang, tool.slug) ?? t.common.basisText;
 const formattedBasis = basis.replace(/\. /g, ".\n");
-const isImageTool = ["image-resizer", "image-compressor", "webp-converter", "image-cropper", "image-rotate-flip", "image-format-converter", "image-mosaic", "image-watermark", "remove-image-metadata", "image-color-picker", "image-color-replacer", "make-color-transparent", "image-to-ascii-art"].includes(tool.slug);
+const isImageTool = ["image-resizer", "image-compressor", "webp-converter", "image-cropper", "image-rotate-flip", "image-format-converter", "image-mosaic", "image-watermark", "remove-image-metadata", "image-color-picker", "image-color-replacer", "make-color-transparent", "image-to-ascii-art", "image-to-pixel-art"].includes(tool.slug);
 const isAudioTool = ["audio-converter", "audio-cutter", "audio-compressor", "audio-volume-editor", "iphone-ringtone-maker", "audio-merger"].includes(tool.slug);
 const isPdfTool = ["pdf-merger", "pdf-splitter", "pdf-page-extractor", "image-to-pdf", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg", "pdf-watermark", "pdf-page-numbers", "pdf-organizer"].includes(tool.slug);
 const privacyNote = isImageTool

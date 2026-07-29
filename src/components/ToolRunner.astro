@@ -1,6 +1,9 @@
 ---
 import ImageColorEditor from "@/components/tools/ImageColorEditor.astro";
 import ImageAsciiArtEditor from "@/components/tools/ImageAsciiArtEditor.astro";
+import ImagePixelArtEditor from "@/components/tools/ImagePixelArtEditor.astro";
+import RandomWheel from "@/components/tools/RandomWheel.astro";
+import LadderGame from "@/components/tools/LadderGame.astro";
 import type { Lang } from "@/i18n/translations";
 
 type Props = { slug: string; lang?: Lang };
@@ -374,6 +377,9 @@ const timeZonePresets = [
   {slug === "image-color-replacer" && <ImageColorEditor mode="replace" lang={lang} />}
   {slug === "make-color-transparent" && <ImageColorEditor mode="transparent" lang={lang} />}
   {slug === "image-to-ascii-art" && <ImageAsciiArtEditor lang={lang} />}
+  {slug === "image-to-pixel-art" && <ImagePixelArtEditor lang={lang} />}
+  {slug === "random-wheel" && <RandomWheel lang={lang} />}
+  {slug === "ladder-game" && <LadderGame lang={lang} />}
 
   {["character-counter", "remove-spaces", "case-converter", "json-formatter", "base64-converter", "qr-code-generator", "url-encoder-decoder", "csv-json-converter"].includes(slug) && (
     <div class="grid gap-4">
@@ -742,13 +748,14 @@ const timeZonePresets = [
         <p class="mt-2">{lang === "ko" ? "본인이 소유했거나 변환할 권한이 있는 오디오 파일만 사용하세요. 저작권이 있는 파일을 무단으로 변환하거나 배포해서는 안 됩니다." : "Only use audio files that you own or have the right to convert. Do not convert or distribute copyrighted files without permission."}</p>
       </div>
       <label class="font-semibold" for="audio-file">{lang === "ko" ? "오디오 파일 선택" : "Choose Audio File"}</label>
-      <input id="audio-file" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/mp4,audio/aac,.mp3,.wav,.ogg,.m4a,.aac" />
+      <input id="audio-file" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/flac,audio/x-flac,audio/mp4,audio/aac,.mp3,.wav,.ogg,.flac,.m4a,.aac" />
       <div class="grid gap-4 md:grid-cols-2">
         <label>{lang === "ko" ? "출력 형식" : "Output format"}
           <select id="audio-output-format">
             <option value="mp3">MP3</option>
             <option value="wav">WAV</option>
             <option value="ogg">OGG</option>
+            <option value="flac">FLAC</option>
           </select>
         </label>
         <label>{lang === "ko" ? "비트레이트/품질" : "Bitrate / Quality"}
@@ -760,8 +767,15 @@ const timeZonePresets = [
             <option value="320">320 kbps</option>
           </select>
         </label>
+        <label class="hidden">{lang === "ko" ? "FLAC 압축 수준" : "FLAC compression"}
+          <select id="audio-flac-level">
+            <option value="2">{lang === "ko" ? "빠른 처리" : "Fast"}</option>
+            <option value="5" selected>{lang === "ko" ? "균형" : "Balanced"}</option>
+            <option value="8">{lang === "ko" ? "작은 용량" : "Smaller file"}</option>
+          </select>
+        </label>
       </div>
-      <p class="text-sm text-slate-600">{lang === "ko" ? "MP3와 OGG 변환은 브라우저에서 ffmpeg.wasm을 불러와 처리합니다. WAV는 무압축 형식이라 결과 파일이 커질 수 있습니다." : "MP3 and OGG conversion loads ffmpeg.wasm in the browser when needed. WAV is uncompressed, so the output file may be larger."}</p>
+      <p class="text-sm text-slate-600">{lang === "ko" ? "MP3, OGG, FLAC 변환은 브라우저에서 ffmpeg.wasm을 불러와 처리합니다. FLAC은 무손실 형식이며, 손실 압축 파일을 FLAC으로 바꿔도 손실된 음질은 복원되지 않습니다." : "MP3, OGG, and FLAC conversion load ffmpeg.wasm in the browser when needed. FLAC is lossless, but converting a lossy file to FLAC does not restore lost quality."}</p>
       <div class="grid gap-4 md:grid-cols-2">
         <div>
           <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "원본 미리 듣기" : "Original Preview"}</p>
@@ -792,7 +806,7 @@ const timeZonePresets = [
         <p class="mt-2">{lang === "ko" ? "본인이 소유했거나 편집할 권한이 있는 오디오 파일만 사용하세요. 저작권이 있는 파일을 무단으로 편집하거나 배포해서는 안 됩니다." : "Only use audio files that you own or have the right to edit. Do not edit or distribute copyrighted files without permission."}</p>
       </div>
       <label class="font-semibold" for="cutter-file">{lang === "ko" ? "오디오 파일 선택" : "Choose Audio File"}</label>
-      <input id="cutter-file" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,.mp3,.wav,.ogg" />
+      <input id="cutter-file" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/flac,audio/x-flac,.mp3,.wav,.ogg,.flac" />
       <div class="grid gap-4 md:grid-cols-3">
         <label>{lang === "ko" ? "시작 시간" : "Start time"}
           <input id="cutter-start" type="text" inputmode="decimal" placeholder="0 또는 00:00" value="0" />
@@ -806,6 +820,14 @@ const timeZonePresets = [
             <option value="wav">WAV</option>
             <option value="mp3">MP3</option>
             <option value="ogg">OGG</option>
+            <option value="flac">FLAC</option>
+          </select>
+        </label>
+        <label class="hidden">{lang === "ko" ? "FLAC 압축 수준" : "FLAC compression"}
+          <select id="cutter-flac-level">
+            <option value="2">{lang === "ko" ? "빠른 처리" : "Fast"}</option>
+            <option value="5" selected>{lang === "ko" ? "균형" : "Balanced"}</option>
+            <option value="8">{lang === "ko" ? "작은 용량" : "Smaller file"}</option>
           </select>
         </label>
       </div>
@@ -835,7 +857,7 @@ const timeZonePresets = [
         </div>
       </div>
       <p id="cutter-range-label" class="text-sm text-slate-600">{lang === "ko" ? "오디오 파일을 선택하면 선택 구간이 표시됩니다." : "Choose an audio file to see the selected range."}</p>
-      <p class="text-sm text-slate-600">{lang === "ko" ? "기본값은 원본 형식 저장입니다. 직접 선택할 수 있는 출력은 WAV, MP3, OGG이며, MP3와 OGG는 브라우저에서 ffmpeg.wasm을 불러와 인코딩합니다." : "The default is to save in the original format. You can manually choose WAV, MP3, or OGG. MP3 and OGG output load ffmpeg.wasm in the browser for encoding."}</p>
+      <p class="text-sm text-slate-600">{lang === "ko" ? "기본값은 원본 형식 저장입니다. 직접 선택할 수 있는 출력은 WAV, MP3, OGG, FLAC이며, MP3, OGG, FLAC은 브라우저에서 ffmpeg.wasm을 불러와 인코딩합니다." : "The default is to save in the original format. You can manually choose WAV, MP3, OGG, or FLAC. MP3, OGG, and FLAC output load ffmpeg.wasm in the browser for encoding."}</p>
       <div class="grid gap-4 md:grid-cols-2">
         <div>
           <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "원본 미리 듣기" : "Original Preview"}</p>
@@ -867,7 +889,7 @@ const timeZonePresets = [
         <p class="mt-2">{lang === "ko" ? "본인이 소유했거나 변환할 권한이 있는 오디오 파일만 사용하세요. 저작권이 있는 파일을 무단으로 변환하거나 배포해서는 안 됩니다." : "Only use audio files that you own or have the right to convert. Do not convert or distribute copyrighted files without permission."}</p>
       </div>
       <label class="font-semibold" for="compressor-file">{lang === "ko" ? "오디오 파일 선택" : "Choose Audio File"}</label>
-      <input id="compressor-file" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,.mp3,.wav,.ogg" />
+      <input id="compressor-file" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/flac,audio/x-flac,.mp3,.wav,.ogg,.flac" />
       <div class="grid gap-4 md:grid-cols-2">
         <label>{lang === "ko" ? "압축 프리셋" : "Compression preset"}
           <select id="compressor-preset">
@@ -881,6 +903,7 @@ const timeZonePresets = [
           <select id="compressor-output-format">
             <option value="mp3" selected>MP3</option>
             <option value="ogg">OGG</option>
+            <option value="flac">FLAC</option>
           </select>
         </label>
         <label>{lang === "ko" ? "비트레이트" : "Bitrate"}
@@ -898,8 +921,15 @@ const timeZonePresets = [
             <option value="stereo">Stereo</option>
           </select>
         </label>
+        <label class="hidden">{lang === "ko" ? "FLAC 압축 수준" : "FLAC compression"}
+          <select id="compressor-flac-level">
+            <option value="2">{lang === "ko" ? "빠른 처리" : "Fast"}</option>
+            <option value="5" selected>{lang === "ko" ? "균형" : "Balanced"}</option>
+            <option value="8">{lang === "ko" ? "작은 용량" : "Smaller file"}</option>
+          </select>
+        </label>
       </div>
-      <p class="text-sm text-slate-600">{lang === "ko" ? "MP3와 OGG 출력은 브라우저에서 ffmpeg.wasm을 불러와 인코딩합니다. WAV는 압축 목적에 적합하지 않아 출력 옵션에서 제외했습니다." : "MP3 and OGG output load ffmpeg.wasm in the browser for encoding. WAV is excluded here because it is not suitable for compression."}</p>
+      <p class="text-sm text-slate-600">{lang === "ko" ? "MP3와 OGG 출력은 손실 압축으로 용량을 줄이고, FLAC 출력은 무손실 압축 수준을 조절해 저장합니다. FLAC은 파일 크기 감소 폭이 제한적일 수 있습니다." : "MP3 and OGG output reduce size with lossy compression. FLAC output keeps lossless audio and adjusts compression level, so size reduction may be limited."}</p>
       <div class="grid gap-4 md:grid-cols-2">
         <div>
           <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "원본 미리 듣기" : "Original Preview"}</p>
@@ -930,7 +960,7 @@ const timeZonePresets = [
         <p class="mt-2">{lang === "ko" ? "본인이 소유했거나 편집할 권한이 있는 오디오 파일만 사용하세요. 저작권이 있는 파일을 무단으로 편집하거나 배포해서는 안 됩니다." : "Only use audio files that you own or have the right to edit. Do not edit or distribute copyrighted files without permission."}</p>
       </div>
       <label class="font-semibold" for="volume-file">{lang === "ko" ? "오디오 파일 선택" : "Choose Audio File"}</label>
-      <input id="volume-file" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,.mp3,.wav,.ogg" />
+      <input id="volume-file" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/flac,audio/x-flac,.mp3,.wav,.ogg,.flac" />
       <div class="grid gap-4 md:grid-cols-2">
         <div>
           <label for="volume-range">{lang === "ko" ? "볼륨" : "Volume"}</label>
@@ -953,6 +983,14 @@ const timeZonePresets = [
             <option value="mp3">MP3</option>
             <option value="wav">WAV</option>
             <option value="ogg">OGG</option>
+            <option value="flac">FLAC</option>
+          </select>
+        </label>
+        <label class="hidden">{lang === "ko" ? "FLAC 압축 수준" : "FLAC compression"}
+          <select id="volume-flac-level">
+            <option value="2">{lang === "ko" ? "빠른 처리" : "Fast"}</option>
+            <option value="5" selected>{lang === "ko" ? "균형" : "Balanced"}</option>
+            <option value="8">{lang === "ko" ? "작은 용량" : "Smaller file"}</option>
           </select>
         </label>
       </div>
@@ -1022,8 +1060,8 @@ const timeZonePresets = [
     <div class="grid gap-5">
       <section id="merger-drop-zone" class="rounded-md border border-dashed border-line bg-white p-4">
         <label class="font-semibold" for="merger-files">{lang === "ko" ? "오디오 파일 선택" : "Choose Audio Files"}</label>
-        <input id="merger-files" class="mt-2" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,.mp3,.wav,.ogg" multiple />
-        <p class="mt-2 text-sm text-slate-600">{lang === "ko" ? "MP3, WAV, OGG 파일을 최대 10개까지 선택하거나 이 영역에 끌어다 놓으세요. 선택한 파일은 서버로 업로드되지 않습니다." : "Choose up to 10 MP3, WAV, or OGG files, or drop them here. Selected files are not uploaded to a server."}</p>
+        <input id="merger-files" class="mt-2" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/flac,audio/x-flac,.mp3,.wav,.ogg,.flac" multiple />
+        <p class="mt-2 text-sm text-slate-600">{lang === "ko" ? "MP3, WAV, OGG, FLAC 파일을 최대 10개까지 선택하거나 이 영역에 끌어다 놓으세요. 선택한 파일은 서버로 업로드되지 않습니다." : "Choose up to 10 MP3, WAV, OGG, or FLAC files, or drop them here. Selected files are not uploaded to a server."}</p>
         <p id="merger-file-warning" class="mt-2 text-sm text-amber-700"></p>
       </section>
 
@@ -1073,6 +1111,7 @@ const timeZonePresets = [
                 <option value="mp3" selected>MP3</option>
                 <option value="wav">WAV</option>
                 <option value="ogg">OGG</option>
+                <option value="flac">FLAC</option>
               </select>
             </label>
             <label>{lang === "ko" ? "비트레이트" : "Bitrate"}
@@ -1093,6 +1132,13 @@ const timeZonePresets = [
               <select id="merger-channels">
                 <option value="2" selected>{lang === "ko" ? "스테레오" : "Stereo"}</option>
                 <option value="1">{lang === "ko" ? "모노" : "Mono"}</option>
+              </select>
+            </label>
+            <label class="hidden">{lang === "ko" ? "FLAC 압축 수준" : "FLAC compression"}
+              <select id="merger-flac-level">
+                <option value="2">{lang === "ko" ? "빠른 처리" : "Fast"}</option>
+                <option value="5" selected>{lang === "ko" ? "균형" : "Balanced"}</option>
+                <option value="8">{lang === "ko" ? "작은 용량" : "Smaller file"}</option>
               </select>
             </label>
           </div>
@@ -1127,9 +1173,9 @@ const timeZonePresets = [
     <div class="grid gap-5">
       <section class="rounded-md border border-line bg-white p-4">
         <label class="font-semibold" for="ringtone-file">{lang === "ko" ? "오디오 파일 선택" : "Choose Audio File"}</label>
-        <input id="ringtone-file" class="mt-2" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,.mp3,.wav,.ogg" />
+        <input id="ringtone-file" class="mt-2" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/flac,audio/x-flac,.mp3,.wav,.ogg,.flac" />
         <p class="mt-2 text-sm text-slate-600">{lang === "ko" ? "선택한 오디오 파일은 서버로 업로드되지 않고 브라우저 안에서만 처리됩니다." : "Selected audio files are not uploaded to a server and are processed only in your browser."}</p>
-        <p class="mt-1 text-sm text-slate-600">{lang === "ko" ? "MP3, WAV, OGG 파일을 지원합니다. 모바일에서는 50MB 이하 파일을 권장합니다." : "MP3, WAV, and OGG files are supported. Files under 50 MB are recommended on mobile devices."}</p>
+        <p class="mt-1 text-sm text-slate-600">{lang === "ko" ? "MP3, WAV, OGG, FLAC 파일을 지원합니다. FLAC도 입력할 수 있지만 아이폰 벨소리용 M4R 생성을 위해 AAC로 변환됩니다. 모바일에서는 50MB 이하 파일을 권장합니다." : "MP3, WAV, OGG, and FLAC files are supported. FLAC can be used as input, but it is converted to AAC when creating the M4R ringtone. Files under 50 MB are recommended on mobile devices."}</p>
       </section>
 
       <section class="rounded-md border border-line bg-white p-4">
@@ -1932,15 +1978,16 @@ const timeZonePresets = [
     if (progressEl && progress !== null) progressEl.value = progress;
   };
   const fileExtension = (name) => name.includes(".") ? name.split(".").pop().toLowerCase() : "";
-  const audioOutputFormats = new Set(["wav", "mp3", "ogg"]);
-  const supportedAudioInputFormats = new Set(["mp3", "wav", "ogg", "m4a", "aac"]);
+  const audioOutputFormats = new Set(["wav", "mp3", "ogg", "flac"]);
+  const supportedAudioInputFormats = new Set(["mp3", "wav", "ogg", "flac", "m4a", "aac"]);
   const getSourceAudioFormat = (file) => {
     const extension = fileExtension(file.name);
     if (audioOutputFormats.has(extension)) return extension;
-    if (extension === "m4a" || extension === "aac") return extension;
+    if (extension === "m4a" || extension === "aac" || extension === "flac") return extension;
     if (file.type === "audio/mpeg" || file.type === "audio/mp3") return "mp3";
     if (file.type === "audio/wav" || file.type === "audio/x-wav") return "wav";
     if (file.type === "audio/ogg") return "ogg";
+    if (file.type === "audio/flac" || file.type === "audio/x-flac") return "flac";
     if (file.type === "audio/mp4") return "m4a";
     if (file.type === "audio/aac") return "aac";
     return "wav";
@@ -1948,14 +1995,14 @@ const timeZonePresets = [
   const isSupportedAudioFile = (file) => {
     const extension = fileExtension(file.name);
     if (supportedAudioInputFormats.has(extension)) return true;
-    return ["audio/mpeg", "audio/mp3", "audio/wav", "audio/x-wav", "audio/ogg", "audio/mp4", "audio/aac"].includes(file.type);
+    return ["audio/mpeg", "audio/mp3", "audio/wav", "audio/x-wav", "audio/ogg", "audio/flac", "audio/x-flac", "audio/mp4", "audio/aac"].includes(file.type);
   };
   const assertSupportedAudioFile = (file, lang) => {
     if (!file) throw new Error(lang === "ko" ? "오디오 파일을 선택하세요." : "Choose an audio file.");
     if (!isSupportedAudioFile(file)) {
       throw new Error(lang === "ko"
-        ? "이 오디오 파일을 브라우저에서 읽을 수 없습니다. MP3, WAV, OGG 파일을 사용해보세요."
-        : "This audio file could not be read in the browser. Try using an MP3, WAV, OGG, M4A, or AAC file.");
+        ? "이 오디오 파일을 브라우저에서 읽을 수 없습니다. MP3, WAV, OGG, FLAC 파일을 사용해보세요."
+        : "This audio file could not be read in the browser. Try using an MP3, WAV, OGG, FLAC, M4A, or AAC file.");
     }
   };
   const revokeAudioUrls = (root) => {
@@ -2097,6 +2144,64 @@ ${workerSource
     }
     return ffmpegAudioPromise;
   };
+  const getFlacCompressionLevel = (root) => {
+    const value = root.querySelector("#audio-flac-level")?.value
+      || root.querySelector("#cutter-flac-level")?.value
+      || root.querySelector("#compressor-flac-level")?.value
+      || root.querySelector("#volume-flac-level")?.value
+      || root.querySelector("#merger-flac-level")?.value
+      || "5";
+    return String(Math.max(0, Math.min(12, Number(value) || 5)));
+  };
+  const syncAudioOutputOptions = (root) => {
+    const outputFormat =
+      root.querySelector("#audio-output-format")?.value
+      || root.querySelector("#cutter-output-format")?.value
+      || root.querySelector("#compressor-output-format")?.value
+      || root.querySelector("#volume-output-format")?.value
+      || root.querySelector("#merger-output-format")?.value
+      || "";
+    const isFlac = outputFormat === "flac";
+    ["audio-bitrate", "compressor-bitrate", "merger-bitrate"].forEach((id) => {
+      const label = root.querySelector(`#${id}`)?.closest("label");
+      if (label) label.classList.toggle("hidden", isFlac);
+    });
+    ["audio-flac-level", "cutter-flac-level", "compressor-flac-level", "volume-flac-level", "merger-flac-level"].forEach((id) => {
+      const label = root.querySelector(`#${id}`)?.closest("label");
+      if (label) label.classList.toggle("hidden", !isFlac);
+    });
+  };
+  const getAudioMimeType = (format) => ({
+    mp3: "audio/mpeg",
+    ogg: "audio/ogg",
+    flac: "audio/flac",
+    wav: "audio/wav",
+    m4r: "audio/mp4",
+  }[format] || "application/octet-stream");
+  const decodeAudioToWavWithFFmpeg = async (file, lang) => {
+    const root = document.querySelector("[data-tool].tool-card") || document.querySelector("[data-tool]") || { dataset: { lang }, querySelector: () => null };
+    let ffmpeg;
+    try {
+      ffmpeg = await getAudioFFmpeg(root || { dataset: { lang } });
+    } catch (error) {
+      ffmpegAudioPromise = null;
+      const detail = error?.message || String(error || "");
+      throw new Error(lang === "ko" ? `FLAC 디코딩을 위한 변환 라이브러리 로딩에 실패했습니다.${detail ? ` (${detail})` : ""}` : `Conversion library loading failed for FLAC decoding.${detail ? ` (${detail})` : ""}`);
+    }
+    const safeId = Date.now();
+    const inputName = `decode-input-${safeId}.${fileExtension(file.name) || "audio"}`;
+    const outputName = `decode-output-${safeId}.wav`;
+    try {
+      await ffmpeg.writeFile(inputName, new Uint8Array(await file.arrayBuffer()));
+      const exitCode = await ffmpeg.exec(["-i", inputName, "-vn", "-acodec", "pcm_s16le", outputName]);
+      if (exitCode !== 0) throw new Error(lang === "ko" ? "FFmpeg FLAC 디코딩에 실패했습니다." : "FFmpeg FLAC decoding failed.");
+      const data = await ffmpeg.readFile(outputName);
+      const bytes = data instanceof Uint8Array ? data : new Uint8Array(data);
+      return new Blob([bytes], { type: "audio/wav" });
+    } finally {
+      await Promise.allSettled([ffmpeg.deleteFile(inputName), ffmpeg.deleteFile(outputName)]);
+    }
+  };
   const convertAudioWithFFmpeg = async (root, file, outputFormat) => {
     const lang = root.dataset.lang || "ko";
     setAudioStatus(root, lang === "ko" ? "변환 라이브러리를 불러오는 중입니다." : "Loading conversion library.", 35);
@@ -2115,8 +2220,10 @@ ${workerSource
     await ffmpeg.writeFile(inputName, new Uint8Array(await file.arrayBuffer()));
     setAudioStatus(root, lang === "ko" ? "변환 중입니다." : "Converting.", 50);
     const argsByFormat = {
+      wav: ["-i", inputName, "-vn", "-codec:a", "pcm_s16le", outputName],
       mp3: ["-i", inputName, "-vn", "-codec:a", "libmp3lame", "-b:a", `${bitrate}k`, outputName],
       ogg: ["-i", inputName, "-vn", "-codec:a", "libvorbis", "-b:a", `${bitrate}k`, outputName],
+      flac: ["-i", inputName, "-vn", "-codec:a", "flac", "-compression_level", getFlacCompressionLevel(root), outputName],
     };
     const args = argsByFormat[outputFormat];
     if (!args) throw new Error(lang === "ko" ? "지원하지 않는 출력 형식입니다." : "Unsupported output format.");
@@ -2124,7 +2231,7 @@ ${workerSource
     if (exitCode !== 0) throw new Error(lang === "ko" ? "변환에 실패했습니다." : "Conversion failed.");
     const data = await ffmpeg.readFile(outputName);
     await Promise.allSettled([ffmpeg.deleteFile(inputName), ffmpeg.deleteFile(outputName)]);
-    const mime = outputFormat === "mp3" ? "audio/mpeg" : "audio/ogg";
+    const mime = getAudioMimeType(outputFormat);
     return new Blob([data], { type: mime });
   };
   const loadAudioInfo = async (root) => {
@@ -2172,7 +2279,7 @@ ${lang === "ko" ? "오디오 길이" : "Audio duration"}: ${formatDuration(metad
     const outputFormat = root.querySelector("#audio-output-format")?.value || "wav";
     let blob;
     let audioBuffer;
-    if (outputFormat === "wav") {
+    if (outputFormat === "wav" && getSourceAudioFormat(file) !== "flac") {
       setAudioStatus(root, lang === "ko" ? "변환 중입니다." : "Converting.", 50);
       const arrayBuffer = await file.arrayBuffer();
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -2227,7 +2334,16 @@ ${lang === "ko" ? "원본 대비 용량 변화" : "Size change compared with the
     try {
       return await audioContext.decodeAudioData(await file.arrayBuffer());
     } catch {
-      throw new Error(lang === "ko" ? "이 오디오 파일을 브라우저에서 읽을 수 없습니다. 다른 형식의 파일을 사용해보세요." : "This audio file could not be read in the browser. Try using a different file format.");
+      audioContext.close?.();
+      const decodedWav = await decodeAudioToWavWithFFmpeg(file, lang);
+      const fallbackContext = getAudioContext(lang);
+      try {
+        return await fallbackContext.decodeAudioData(await decodedWav.arrayBuffer());
+      } catch {
+        throw new Error(lang === "ko" ? "이 오디오 파일을 브라우저에서 읽을 수 없습니다. MP3, WAV, OGG, FLAC 파일을 사용해보세요." : "This audio file could not be read in the browser. Try using an MP3, WAV, OGG, or FLAC file.");
+      } finally {
+        fallbackContext.close?.();
+      }
     } finally {
       audioContext.close?.();
     }
@@ -2435,7 +2551,7 @@ ${lang === "ko" ? "구간 길이" : "Trimmed duration"}: ${formatSecondsLabel(tr
         encoding: "출력 파일을 생성하는 중입니다.",
         done: "오디오 합치기가 완료되었습니다.",
         failed: "오디오 합치기에 실패했습니다. 더 작은 파일이나 다른 설정으로 다시 시도해보세요.",
-        unsupported: "MP3, WAV, OGG 파일만 선택할 수 있습니다.",
+        unsupported: "MP3, WAV, OGG, FLAC 파일만 선택할 수 있습니다.",
       },
       en: {
         noFiles: "Choose at least two audio files to merge.",
@@ -2451,7 +2567,7 @@ ${lang === "ko" ? "구간 길이" : "Trimmed duration"}: ${formatSecondsLabel(tr
         encoding: "Creating output file.",
         done: "Audio merge complete.",
         failed: "Audio merging failed. Try smaller files or different settings.",
-        unsupported: "Only MP3, WAV, and OGG files can be selected.",
+        unsupported: "Only MP3, WAV, OGG, and FLAC files can be selected.",
       },
     };
     return texts[lang]?.[key] || texts.en[key] || key;
@@ -2961,7 +3077,7 @@ ${lang === "ko" ? "구간 길이" : "Trimmed duration"}: ${formatSecondsLabel(tr
 ${m.outputFormat}: ${outputFormat.toUpperCase()}
 ${lang === "ko" ? "재생 시간" : "Duration"}: ${formatDuration(rendered.duration, lang)}
 ${m.outputSize}: ${formatBytes(blob.size, lang)}
-${lang === "ko" ? "비트레이트" : "Bitrate"}: ${root.querySelector("#merger-bitrate")?.value || "192"} kbps
+${outputFormat === "flac" ? (lang === "ko" ? "무손실 압축" : "Lossless compression") : (lang === "ko" ? "비트레이트" : "Bitrate")}: ${outputFormat === "flac" ? `FLAC level ${getFlacCompressionLevel(root)}` : `${root.querySelector("#merger-bitrate")?.value || "192"} kbps`}
 ${lang === "ko" ? "샘플레이트" : "Sample rate"}: ${format(rendered.sampleRate, lang)} Hz
 ${lang === "ko" ? "채널" : "Channels"}: ${rendered.numberOfChannels}
 ${lang === "ko" ? "처리 방식" : "Processing"}: Web Audio timeline render + ${outputFormat === "wav" ? "WAV PCM export" : "FFmpeg WASM encode"}`;
@@ -3064,8 +3180,9 @@ ${lang === "ko" ? "채널 수" : "Channels"}: ${audioBuffer.numberOfChannels}${l
     if (!root._compressorState?.audioBuffer) await loadAudioCompressorInfo(root);
     const { file, audioBuffer } = root._compressorState;
     const outputFormat = root.querySelector("#compressor-output-format")?.value || "mp3";
-    if (!["mp3", "ogg"].includes(outputFormat)) throw new Error(lang === "ko" ? "지원하지 않는 출력 형식입니다." : "Unsupported output format.");
+    if (!["mp3", "ogg", "flac"].includes(outputFormat)) throw new Error(lang === "ko" ? "지원하지 않는 출력 형식입니다." : "Unsupported output format.");
     const bitrate = root.querySelector("#compressor-bitrate")?.value || "128";
+    const losslessOutput = outputFormat === "flac";
     const channelMode = root.querySelector("#compressor-channel")?.value || "source";
     setAudioStatus(root, lang === "ko" ? "압축 준비 중입니다." : "Preparing compression.", 40);
     const renderedBuffer = renderAudioChannels(audioBuffer, channelMode);
@@ -3087,7 +3204,7 @@ ${lang === "ko" ? "압축 후 파일 크기" : "Compressed file size"}: ${format
 ${lang === "ko" ? "감소한 용량" : "Reduced size"}: ${formatBytes(reduced, lang)}
 ${lang === "ko" ? "감소율" : "Reduction rate"}: ${format(reductionRate, lang)}%
 ${m.outputFormat}: ${outputFormat.toUpperCase()}
-${lang === "ko" ? "적용된 비트레이트" : "Applied bitrate"}: ${bitrate} kbps
+${losslessOutput ? (lang === "ko" ? "무손실 압축" : "Lossless compression") : (lang === "ko" ? "적용된 비트레이트" : "Applied bitrate")}: ${losslessOutput ? `FLAC level ${getFlacCompressionLevel(root)}` : `${bitrate} kbps`}
 ${lang === "ko" ? "적용된 채널 설정" : "Applied channel setting"}: ${channelLabel}${largerNote}`;
     setAudioStatus(root, lang === "ko" ? "압축이 완료되었습니다." : "Compression complete.", 100);
   };
@@ -5584,6 +5701,9 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
           });
         }
         if (slug === "image-mosaic" && control.id === "image-file") run(root);
+        if (["audio-output-format", "cutter-output-format", "compressor-output-format", "volume-output-format", "merger-output-format"].includes(control.id)) {
+          syncAudioOutputOptions(root);
+        }
         if (slug === "audio-converter" && control.id === "audio-file") {
           loadAudioInfo(root).catch((error) => {
             root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
@@ -5646,6 +5766,9 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
         autoRun();
       });
     });
+    if (["audio-converter", "audio-cutter", "audio-compressor", "audio-volume-editor", "audio-merger"].includes(slug)) {
+      syncAudioOutputOptions(root);
+    }
     if (slug === "audio-merger") {
       root.addEventListener("input", (event) => {
         const target = event.target;
@@ -5677,6 +5800,7 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
           updateMergerSummary(root);
         }
         if (["merger-output-format", "merger-bitrate", "merger-sample-rate", "merger-channels", "merger-normalize"].includes(target?.id)) {
+          if (target?.id === "merger-output-format") syncAudioOutputOptions(root);
           state.resultBlob = null;
         }
       });
