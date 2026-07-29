@@ -1,5 +1,6 @@
 ---
 import ImageColorEditor from "@/components/tools/ImageColorEditor.astro";
+import ImageAsciiArtEditor from "@/components/tools/ImageAsciiArtEditor.astro";
 import type { Lang } from "@/i18n/translations";
 
 type Props = { slug: string; lang?: Lang };
@@ -372,6 +373,7 @@ const timeZonePresets = [
 <div class="tool-panel" data-tool={slug} data-lang={lang}>
   {slug === "image-color-replacer" && <ImageColorEditor mode="replace" lang={lang} />}
   {slug === "make-color-transparent" && <ImageColorEditor mode="transparent" lang={lang} />}
+  {slug === "image-to-ascii-art" && <ImageAsciiArtEditor lang={lang} />}
 
   {["character-counter", "remove-spaces", "case-converter", "json-formatter", "base64-converter", "qr-code-generator", "url-encoder-decoder", "csv-json-converter"].includes(slug) && (
     <div class="grid gap-4">
@@ -740,7 +742,7 @@ const timeZonePresets = [
         <p class="mt-2">{lang === "ko" ? "본인이 소유했거나 변환할 권한이 있는 오디오 파일만 사용하세요. 저작권이 있는 파일을 무단으로 변환하거나 배포해서는 안 됩니다." : "Only use audio files that you own or have the right to convert. Do not convert or distribute copyrighted files without permission."}</p>
       </div>
       <label class="font-semibold" for="audio-file">{lang === "ko" ? "오디오 파일 선택" : "Choose Audio File"}</label>
-      <input id="audio-file" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,.mp3,.wav,.ogg" />
+      <input id="audio-file" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/mp4,audio/aac,.mp3,.wav,.ogg,.m4a,.aac" />
       <div class="grid gap-4 md:grid-cols-2">
         <label>{lang === "ko" ? "출력 형식" : "Output format"}
           <select id="audio-output-format">
@@ -1931,26 +1933,29 @@ const timeZonePresets = [
   };
   const fileExtension = (name) => name.includes(".") ? name.split(".").pop().toLowerCase() : "";
   const audioOutputFormats = new Set(["wav", "mp3", "ogg"]);
-  const supportedAudioInputFormats = new Set(["mp3", "wav", "ogg"]);
+  const supportedAudioInputFormats = new Set(["mp3", "wav", "ogg", "m4a", "aac"]);
   const getSourceAudioFormat = (file) => {
     const extension = fileExtension(file.name);
     if (audioOutputFormats.has(extension)) return extension;
+    if (extension === "m4a" || extension === "aac") return extension;
     if (file.type === "audio/mpeg" || file.type === "audio/mp3") return "mp3";
     if (file.type === "audio/wav" || file.type === "audio/x-wav") return "wav";
     if (file.type === "audio/ogg") return "ogg";
+    if (file.type === "audio/mp4") return "m4a";
+    if (file.type === "audio/aac") return "aac";
     return "wav";
   };
   const isSupportedAudioFile = (file) => {
     const extension = fileExtension(file.name);
     if (supportedAudioInputFormats.has(extension)) return true;
-    return ["audio/mpeg", "audio/mp3", "audio/wav", "audio/x-wav", "audio/ogg"].includes(file.type);
+    return ["audio/mpeg", "audio/mp3", "audio/wav", "audio/x-wav", "audio/ogg", "audio/mp4", "audio/aac"].includes(file.type);
   };
   const assertSupportedAudioFile = (file, lang) => {
     if (!file) throw new Error(lang === "ko" ? "오디오 파일을 선택하세요." : "Choose an audio file.");
     if (!isSupportedAudioFile(file)) {
       throw new Error(lang === "ko"
         ? "이 오디오 파일을 브라우저에서 읽을 수 없습니다. MP3, WAV, OGG 파일을 사용해보세요."
-        : "This audio file could not be read in the browser. Try using an MP3, WAV, or OGG file.");
+        : "This audio file could not be read in the browser. Try using an MP3, WAV, OGG, M4A, or AAC file.");
     }
   };
   const revokeAudioUrls = (root) => {

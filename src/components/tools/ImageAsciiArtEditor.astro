@@ -1,0 +1,668 @@
+---
+import type { Lang } from "@/i18n/translations";
+
+type Props = { lang: Lang };
+const { lang } = Astro.props;
+
+const text = {
+  ko: {
+    sectionImage: "이미지 선택",
+    sectionSettings: "변환 설정",
+    sectionStyle: "스타일 설정",
+    sectionResult: "결과 미리보기",
+    sectionExport: "내보내기",
+    imageFile: "이미지 파일",
+    uploadHelp: "JPG, PNG, WebP 이미지를 선택하거나 이 영역에 끌어 놓으세요.",
+    privacy: "이미지는 서버로 업로드되지 않고 사용자의 브라우저 안에서만 변환됩니다.",
+    mode: "출력 모드",
+    monochrome: "흑백 ASCII",
+    color: "컬러 ASCII",
+    colorHelp: "컬러 정보는 일반 텍스트에 포함되지 않습니다. 색상을 유지하려면 PNG 다운로드 또는 HTML 복사를 사용하세요.",
+    width: "가로 문자 수",
+    aspect: "문자 비율 보정",
+    resetAspect: "기본값 복원",
+    presetSmall: "작게: 40자",
+    presetNormal: "보통: 80자",
+    presetLarge: "크게: 120자",
+    presetXLarge: "매우 크게: 160자",
+    presetCustom: "직접 입력",
+    charset: "문자 세트",
+    basic: "기본",
+    detailed: "상세",
+    simple: "단순",
+    blocks: "블록",
+    numbers: "숫자",
+    custom: "사용자 지정",
+    customChars: "사용자 지정 문자",
+    charsetHelp: "문자는 왼쪽에서 오른쪽으로 진한 영역부터 밝은 영역에 적용됩니다.",
+    brightness: "밝기",
+    contrast: "대비",
+    invertImage: "이미지 밝기 반전",
+    reverseChars: "문자 순서 반전",
+    transparency: "투명 영역 처리",
+    space: "공백으로 처리",
+    composite: "배경색과 합성",
+    ignore: "투명도 무시",
+    alphaThreshold: "투명도 임계값",
+    textColor: "글자색",
+    backgroundColor: "배경색",
+    previewBackground: "미리보기 배경",
+    white: "흰색",
+    black: "검은색",
+    checkerboard: "체크무늬",
+    outputTransparent: "PNG 투명 배경",
+    previewScale: "미리보기 배율",
+    pngFontSize: "PNG 글꼴 크기",
+    pngPadding: "PNG 여백",
+    pngScale: "PNG 출력 배율",
+    resultInfo: "결과 정보",
+    copyText: "텍스트 복사",
+    copyPlain: "문자만 복사",
+    downloadTxt: "TXT 다운로드",
+    downloadPng: "PNG 다운로드",
+    copyHtml: "HTML 복사",
+    reset: "초기화",
+    empty: "이미지를 선택하면 ASCII 결과가 여기에 표시됩니다.",
+    copyHelp: "붙여넣는 곳에서 고정폭 글꼴을 사용하지 않거나 연속 공백을 제거하면 모양이 달라질 수 있습니다.",
+  },
+  en: {
+    sectionImage: "Choose Image",
+    sectionSettings: "Conversion Settings",
+    sectionStyle: "Style Settings",
+    sectionResult: "Result Preview",
+    sectionExport: "Export",
+    imageFile: "Image file",
+    uploadHelp: "Choose a JPG, PNG, or WebP image, or drag it here.",
+    privacy: "Images are converted locally in your browser and are not uploaded to a server.",
+    mode: "Output mode",
+    monochrome: "Monochrome ASCII",
+    color: "Colored ASCII",
+    colorHelp: "Plain text cannot preserve color. Use PNG download or HTML copy to keep the colors.",
+    width: "Output width",
+    aspect: "Character aspect correction",
+    resetAspect: "Restore default",
+    presetSmall: "Small: 40 chars",
+    presetNormal: "Normal: 80 chars",
+    presetLarge: "Large: 120 chars",
+    presetXLarge: "Extra large: 160 chars",
+    presetCustom: "Custom",
+    charset: "Character set",
+    basic: "Basic",
+    detailed: "Detailed",
+    simple: "Simple",
+    blocks: "Blocks",
+    numbers: "Numbers",
+    custom: "Custom",
+    customChars: "Custom characters",
+    charsetHelp: "Characters are applied from darkest to lightest, from left to right.",
+    brightness: "Brightness",
+    contrast: "Contrast",
+    invertImage: "Invert image brightness",
+    reverseChars: "Reverse character order",
+    transparency: "Transparent area handling",
+    space: "Use spaces",
+    composite: "Composite with background",
+    ignore: "Ignore transparency",
+    alphaThreshold: "Alpha threshold",
+    textColor: "Text color",
+    backgroundColor: "Background color",
+    previewBackground: "Preview background",
+    white: "White",
+    black: "Black",
+    checkerboard: "Checkerboard",
+    outputTransparent: "Transparent PNG background",
+    previewScale: "Preview scale",
+    pngFontSize: "PNG font size",
+    pngPadding: "PNG padding",
+    pngScale: "PNG export scale",
+    resultInfo: "Result info",
+    copyText: "Copy Text",
+    copyPlain: "Copy Characters Only",
+    downloadTxt: "Download TXT",
+    downloadPng: "Download PNG",
+    copyHtml: "Copy HTML",
+    reset: "Reset",
+    empty: "Choose an image to show ASCII output here.",
+    copyHelp: "The layout may change if the destination does not use a monospace font or removes repeated spaces.",
+  },
+}[lang];
+---
+
+<div class="grid gap-5" data-image-ascii-editor data-lang={lang}>
+  <section class="rounded-md border border-line bg-white p-4">
+    <h2 class="text-base font-semibold text-ink">{text.sectionImage}</h2>
+    <label class="mt-3 grid cursor-pointer gap-2 rounded-md border border-dashed border-line bg-panel p-4 text-sm hover:border-brand" data-drop-zone>
+      <span class="font-medium text-ink">{text.imageFile}</span>
+      <input data-image-file type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" />
+      <span class="text-slate-600">{text.uploadHelp}</span>
+      <span class="text-xs text-slate-500">{text.privacy}</span>
+    </label>
+    <div class="mt-4 hidden grid gap-3 md:grid-cols-[220px_1fr]" data-source-preview-row>
+      <img class="max-h-56 rounded-md border border-line object-contain" data-source-preview alt="" />
+      <p class="result-box text-sm" data-file-info></p>
+    </div>
+  </section>
+
+  <section class="rounded-md border border-line bg-white p-4">
+    <h2 class="text-base font-semibold text-ink">{text.sectionSettings}</h2>
+    <div class="mt-4 grid gap-4 md:grid-cols-2">
+      <label class="grid gap-2 text-sm">
+        <span class="font-medium text-ink">{text.mode}</span>
+        <select data-mode>
+          <option value="monochrome">{text.monochrome}</option>
+          <option value="color">{text.color}</option>
+        </select>
+        <span class="hidden text-xs leading-5 text-slate-500" data-color-help>{text.colorHelp}</span>
+      </label>
+
+      <label class="grid gap-2 text-sm">
+        <span class="font-medium text-ink">{text.width}</span>
+        <select data-width-preset>
+          <option value="40">{text.presetSmall}</option>
+          <option value="80" selected>{text.presetNormal}</option>
+          <option value="120">{text.presetLarge}</option>
+          <option value="160">{text.presetXLarge}</option>
+          <option value="custom">{text.presetCustom}</option>
+        </select>
+      </label>
+
+      <label class="grid gap-2 text-sm">
+        <span class="font-medium text-ink">{text.width}</span>
+        <input data-output-width type="number" min="20" max="200" value="80" inputmode="numeric" />
+      </label>
+
+      <div class="grid gap-2 text-sm">
+        <span class="font-medium text-ink">{text.aspect}</span>
+        <div class="grid gap-2 sm:grid-cols-[1fr_auto]">
+          <input data-aspect type="range" min="0.35" max="0.8" step="0.01" value="0.5" />
+          <button class="btn-secondary" type="button" data-reset-aspect>{text.resetAspect}</button>
+        </div>
+      </div>
+
+      <label class="grid gap-2 text-sm">
+        <span class="font-medium text-ink">{text.charset}</span>
+        <select data-charset>
+          <option value="basic">{text.basic}</option>
+          <option value="detailed">{text.detailed}</option>
+          <option value="simple">{text.simple}</option>
+          <option value="blocks">{text.blocks}</option>
+          <option value="numbers">{text.numbers}</option>
+          <option value="custom">{text.custom}</option>
+        </select>
+        <span class="text-xs leading-5 text-slate-500">{text.charsetHelp}</span>
+      </label>
+
+      <label class="hidden grid gap-2 text-sm" data-custom-characters-row>
+        <span class="font-medium text-ink">{text.customChars}</span>
+        <input data-custom-characters type="text" value="@%#*+=-:. " />
+      </label>
+
+      <label class="grid gap-2 text-sm">
+        <span class="font-medium text-ink">{text.brightness}: <span data-brightness-value>0</span></span>
+        <input data-brightness type="range" min="-100" max="100" value="0" />
+      </label>
+
+      <label class="grid gap-2 text-sm">
+        <span class="font-medium text-ink">{text.contrast}: <span data-contrast-value>0</span></span>
+        <input data-contrast type="range" min="-100" max="100" value="0" />
+      </label>
+
+      <label class="flex items-center gap-2 text-sm font-medium text-ink">
+        <input class="w-auto" data-invert-image type="checkbox" />
+        <span>{text.invertImage}</span>
+      </label>
+
+      <label class="flex items-center gap-2 text-sm font-medium text-ink">
+        <input class="w-auto" data-reverse-characters type="checkbox" />
+        <span>{text.reverseChars}</span>
+      </label>
+
+      <label class="grid gap-2 text-sm">
+        <span class="font-medium text-ink">{text.transparency}</span>
+        <select data-transparency>
+          <option value="space">{text.space}</option>
+          <option value="composite">{text.composite}</option>
+          <option value="ignore">{text.ignore}</option>
+        </select>
+      </label>
+
+      <label class="grid gap-2 text-sm">
+        <span class="font-medium text-ink">{text.alphaThreshold}: <span data-alpha-value>10</span></span>
+        <input data-alpha-threshold type="range" min="0" max="255" value="10" />
+      </label>
+    </div>
+  </section>
+
+  <section class="rounded-md border border-line bg-white p-4">
+    <h2 class="text-base font-semibold text-ink">{text.sectionStyle}</h2>
+    <div class="mt-4 grid gap-4 md:grid-cols-2">
+      <label class="grid gap-2 text-sm">
+        <span class="font-medium text-ink">{text.textColor}</span>
+        <input data-text-color type="color" value="#111827" />
+      </label>
+      <label class="grid gap-2 text-sm">
+        <span class="font-medium text-ink">{text.backgroundColor}</span>
+        <input data-background-color type="color" value="#ffffff" />
+      </label>
+      <label class="grid gap-2 text-sm">
+        <span class="font-medium text-ink">{text.previewBackground}</span>
+        <select data-preview-background>
+          <option value="white">{text.white}</option>
+          <option value="black">{text.black}</option>
+          <option value="checkerboard">{text.checkerboard}</option>
+          <option value="custom">{text.custom}</option>
+        </select>
+      </label>
+      <label class="flex items-center gap-2 text-sm font-medium text-ink">
+        <input class="w-auto" data-transparent-png type="checkbox" />
+        <span>{text.outputTransparent}</span>
+      </label>
+      <label class="grid gap-2 text-sm">
+        <span class="font-medium text-ink">{text.previewScale}</span>
+        <select data-preview-scale>
+          <option value="0.5">50%</option>
+          <option value="0.75">75%</option>
+          <option value="1" selected>100%</option>
+          <option value="1.25">125%</option>
+          <option value="1.5">150%</option>
+        </select>
+      </label>
+      <label class="grid gap-2 text-sm">
+        <span class="font-medium text-ink">{text.pngFontSize}</span>
+        <input data-png-font-size type="number" min="6" max="48" value="12" inputmode="numeric" />
+      </label>
+      <label class="grid gap-2 text-sm">
+        <span class="font-medium text-ink">{text.pngPadding}</span>
+        <input data-png-padding type="number" min="0" max="120" value="16" inputmode="numeric" />
+      </label>
+      <label class="grid gap-2 text-sm">
+        <span class="font-medium text-ink">{text.pngScale}</span>
+        <select data-png-scale>
+          <option value="1">1x</option>
+          <option value="2" selected>2x</option>
+          <option value="3">3x</option>
+        </select>
+      </label>
+    </div>
+  </section>
+
+  <section class="rounded-md border border-line bg-white p-4">
+    <h2 class="text-base font-semibold text-ink">{text.sectionResult}</h2>
+    <div class="mt-4 overflow-auto rounded-md border border-line bg-white p-3" data-result-preview>
+      <pre class="ascii-preview m-0 text-xs leading-none" data-ascii-pre aria-label={text.sectionResult}>{text.empty}</pre>
+      <canvas class="hidden max-w-none" data-ascii-canvas aria-label={text.sectionResult}></canvas>
+    </div>
+    <p class="mt-3 text-sm text-slate-600" data-result-info>{text.resultInfo}</p>
+  </section>
+
+  <section class="rounded-md border border-line bg-white p-4">
+    <h2 class="text-base font-semibold text-ink">{text.sectionExport}</h2>
+    <p class="mt-2 text-sm text-slate-600">{text.copyHelp}</p>
+    <div class="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+      <button class="btn-secondary" type="button" data-copy-text>{text.copyText}</button>
+      <button class="btn-secondary" type="button" data-download-txt>{text.downloadTxt}</button>
+      <button class="btn-primary" type="button" data-download-png>{text.downloadPng}</button>
+      <button class="btn-secondary" type="button" data-copy-html>{text.copyHtml}</button>
+      <button class="btn-secondary" type="button" data-reset>{text.reset}</button>
+    </div>
+  </section>
+
+  <p class="result-box hidden whitespace-pre-wrap" data-status aria-live="polite"></p>
+</div>
+
+<style>
+  .ascii-preview {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    white-space: pre;
+    letter-spacing: 0;
+    font-variant-ligatures: none;
+  }
+
+  .ascii-checkerboard {
+    background-color: #cbd5e1;
+    background-image:
+      linear-gradient(45deg, #94a3b8 25%, transparent 25%),
+      linear-gradient(-45deg, #94a3b8 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #94a3b8 75%),
+      linear-gradient(-45deg, transparent 75%, #94a3b8 75%);
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+    background-size: 16px 16px;
+  }
+</style>
+
+<script>
+  import { buildAsciiFilename, canvasToPngBlob, createAsciiHtml, createAsciiTextBlob, renderAsciiToCanvas } from "@/utils/ascii-export";
+  import { createAsciiArtFromImage, getAsciiCharacterSets } from "@/utils/image-ascii";
+
+  const statusText = {
+    ko: {
+      unsupported: "지원하지 않는 이미지 형식입니다. JPG, PNG, WebP 파일을 사용해보세요.",
+      decodeFailed: "이미지를 읽을 수 없습니다. 파일이 손상되었거나 브라우저에서 지원하지 않을 수 있습니다.",
+      invalidChars: "문자 세트는 최소 2자 이상이어야 합니다.",
+      generated: "ASCII 아트가 생성되었습니다.",
+      copied: "복사되었습니다.",
+      copyFailed: "복사에 실패했습니다. 결과 영역에서 직접 선택해 복사해주세요.",
+      exportFailed: "파일 생성에 실패했습니다. 출력 크기를 줄이거나 다른 이미지를 사용해보세요.",
+    },
+    en: {
+      unsupported: "Unsupported image format. Try a JPG, PNG, or WebP file.",
+      decodeFailed: "This image could not be read. It may be damaged or unsupported by the browser.",
+      invalidChars: "Use at least two characters in the character set.",
+      generated: "ASCII art generated.",
+      copied: "Copied.",
+      copyFailed: "Copy failed. Select and copy the result manually.",
+      exportFailed: "Export failed. Try reducing the output size or using another image.",
+    },
+  };
+
+  const debounce = (callback, delay) => {
+    let timer = 0;
+    return (...args) => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => callback(...args), delay);
+    };
+  };
+
+  const setStatus = (root, message) => {
+    const status = root.querySelector("[data-status]");
+    if (!status) return;
+    status.textContent = message;
+    status.classList.toggle("hidden", !message);
+  };
+
+  const copyText = async (value) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      return true;
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = value;
+      textarea.style.position = "fixed";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      const ok = document.execCommand("copy");
+      textarea.remove();
+      return ok;
+    }
+  };
+
+  const downloadBlob = (blob, filename) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
+  const setButtonsDisabled = (root, disabled) => {
+    root.querySelectorAll("[data-copy-text], [data-download-txt], [data-download-png], [data-copy-html]").forEach((button) => {
+      button.disabled = disabled;
+    });
+  };
+
+  const getSettings = (root) => {
+    const characterSets = getAsciiCharacterSets();
+    const charset = root.querySelector("[data-charset]")?.value || "basic";
+    const customCharacters = root.querySelector("[data-custom-characters]")?.value || "";
+    const characters = charset === "custom" ? customCharacters : characterSets[charset] || characterSets.basic;
+
+    return {
+      mode: root.querySelector("[data-mode]")?.value || "monochrome",
+      outputWidth: Number(root.querySelector("[data-output-width]")?.value || 80),
+      characterAspectRatio: Number(root.querySelector("[data-aspect]")?.value || 0.5),
+      characters,
+      brightness: Number(root.querySelector("[data-brightness]")?.value || 0),
+      contrast: Number(root.querySelector("[data-contrast]")?.value || 0),
+      invertImage: Boolean(root.querySelector("[data-invert-image]")?.checked),
+      reverseCharacters: Boolean(root.querySelector("[data-reverse-characters]")?.checked),
+      transparencyMode: root.querySelector("[data-transparency]")?.value || "space",
+      alphaThreshold: Number(root.querySelector("[data-alpha-threshold]")?.value || 10),
+      backgroundColor: root.querySelector("[data-background-color]")?.value || "#ffffff",
+      textColor: root.querySelector("[data-text-color]")?.value || "#111827",
+    };
+  };
+
+  const updatePreviewBackground = (root) => {
+    const preview = root.querySelector("[data-result-preview]");
+    if (!preview) return;
+    const mode = root.querySelector("[data-preview-background]")?.value || "white";
+    const backgroundColor = root.querySelector("[data-background-color]")?.value || "#ffffff";
+    preview.classList.toggle("ascii-checkerboard", mode === "checkerboard");
+    preview.style.backgroundColor = mode === "black" ? "#000000" : mode === "custom" ? backgroundColor : mode === "checkerboard" ? "" : "#ffffff";
+  };
+
+  const drawColorPreview = (root, result, settings) => {
+    const canvas = root.querySelector("[data-ascii-canvas]");
+    const pre = root.querySelector("[data-ascii-pre]");
+    if (!canvas) return;
+
+    const fontSize = 8 * Number(root.querySelector("[data-preview-scale]")?.value || 1);
+    const charWidth = Math.max(4, fontSize * 0.62);
+    canvas.width = Math.ceil(result.width * charWidth);
+    canvas.height = Math.ceil(result.height * fontSize);
+    canvas.style.width = `${canvas.width}px`;
+    canvas.style.height = `${canvas.height}px`;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.font = `${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
+    context.textBaseline = "top";
+    result.cells.forEach((row, y) => {
+      row.forEach((cell, x) => {
+        if (cell.char === " ") return;
+        context.fillStyle = cell.color;
+        context.fillText(cell.char, x * charWidth, y * fontSize);
+      });
+    });
+
+    canvas.classList.remove("hidden");
+    pre?.classList.add("hidden");
+  };
+
+  const updatePrePreview = (root, result, settings) => {
+    const pre = root.querySelector("[data-ascii-pre]");
+    const canvas = root.querySelector("[data-ascii-canvas]");
+    if (!pre) return;
+    pre.textContent = result.text;
+    pre.style.color = settings.textColor;
+    pre.style.fontSize = `${12 * Number(root.querySelector("[data-preview-scale]")?.value || 1)}px`;
+    pre.classList.remove("hidden");
+    canvas?.classList.add("hidden");
+  };
+
+  const generateAscii = (root) => {
+    const lang = root.dataset.lang || "ko";
+    const messages = statusText[lang] || statusText.en;
+    const image = root._asciiImage;
+    if (!image) return;
+
+    try {
+      const settings = getSettings(root);
+      if (settings.characters.length < 2) {
+        setStatus(root, messages.invalidChars);
+        return;
+      }
+
+      const result = createAsciiArtFromImage(image, settings);
+      root._asciiResult = result;
+      root._asciiSettings = settings;
+      updatePreviewBackground(root);
+
+      if (settings.mode === "color") drawColorPreview(root, result, settings);
+      else updatePrePreview(root, result, settings);
+
+      const totalCharacters = result.width * result.height;
+      const info = root.querySelector("[data-result-info]");
+      if (info) info.textContent = `${result.width} x ${result.height} / ${totalCharacters.toLocaleString()} chars / ${settings.mode}`;
+      root.querySelector("[data-copy-text]").textContent = settings.mode === "color"
+        ? (lang === "ko" ? "문자만 복사" : "Copy Characters Only")
+        : (lang === "ko" ? "텍스트 복사" : "Copy Text");
+      setButtonsDisabled(root, false);
+      setStatus(root, messages.generated);
+    } catch {
+      setStatus(root, messages.exportFailed);
+    }
+  };
+
+  const initImageAsciiEditor = (root) => {
+    if (root.dataset.initialized === "true") return;
+    root.dataset.initialized = "true";
+    const lang = root.dataset.lang || "ko";
+    const messages = statusText[lang] || statusText.en;
+    const fileInput = root.querySelector("[data-image-file]");
+    const dropZone = root.querySelector("[data-drop-zone]");
+    const debouncedGenerate = debounce(() => generateAscii(root), 90);
+    setButtonsDisabled(root, true);
+
+    const reset = () => {
+      if (root._asciiPreviewUrl) URL.revokeObjectURL(root._asciiPreviewUrl);
+      root._asciiPreviewUrl = "";
+      root._asciiImage = null;
+      root._asciiResult = null;
+      root._asciiOriginalName = "image";
+      if (fileInput) fileInput.value = "";
+      root.querySelector("[data-source-preview-row]")?.classList.add("hidden");
+      const pre = root.querySelector("[data-ascii-pre]");
+      const canvas = root.querySelector("[data-ascii-canvas]");
+      if (pre) {
+        pre.textContent = lang === "ko" ? "이미지를 선택하면 ASCII 결과가 여기에 표시됩니다." : "Choose an image to show ASCII output here.";
+        pre.classList.remove("hidden");
+      }
+      canvas?.classList.add("hidden");
+      setButtonsDisabled(root, true);
+      setStatus(root, "");
+    };
+
+    const handleFile = async (file) => {
+      if (!file) return;
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        setStatus(root, messages.unsupported);
+        return;
+      }
+
+      try {
+        if (root._asciiPreviewUrl) URL.revokeObjectURL(root._asciiPreviewUrl);
+        const url = URL.createObjectURL(file);
+        const image = new Image();
+        image.decoding = "async";
+        image.onload = () => {
+          root._asciiImage = image;
+          root._asciiOriginalName = file.name;
+          root._asciiPreviewUrl = url;
+          const preview = root.querySelector("[data-source-preview]");
+          const info = root.querySelector("[data-file-info]");
+          preview.src = url;
+          root.querySelector("[data-source-preview-row]")?.classList.remove("hidden");
+          if (info) info.textContent = `${file.name}\n${(file.size / 1024 / 1024).toFixed(2)} MB\n${image.naturalWidth} x ${image.naturalHeight}px`;
+          generateAscii(root);
+        };
+        image.onerror = () => {
+          URL.revokeObjectURL(url);
+          setStatus(root, messages.decodeFailed);
+        };
+        image.src = url;
+      } catch {
+        setStatus(root, messages.decodeFailed);
+      }
+    };
+
+    fileInput?.addEventListener("click", () => {
+      fileInput.value = "";
+    });
+    fileInput?.addEventListener("change", () => handleFile(fileInput.files?.[0]));
+    dropZone?.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      dropZone.classList.add("border-brand");
+    });
+    dropZone?.addEventListener("dragleave", () => dropZone.classList.remove("border-brand"));
+    dropZone?.addEventListener("drop", (event) => {
+      event.preventDefault();
+      dropZone.classList.remove("border-brand");
+      handleFile(event.dataTransfer?.files?.[0]);
+    });
+
+    root.querySelector("[data-width-preset]")?.addEventListener("change", (event) => {
+      if (event.target.value !== "custom") root.querySelector("[data-output-width]").value = event.target.value;
+      debouncedGenerate();
+    });
+
+    root.querySelector("[data-output-width]")?.addEventListener("input", () => {
+      root.querySelector("[data-width-preset]").value = "custom";
+      debouncedGenerate();
+    });
+
+    root.querySelector("[data-reset-aspect]")?.addEventListener("click", () => {
+      root.querySelector("[data-aspect]").value = "0.5";
+      debouncedGenerate();
+    });
+
+    root.querySelector("[data-charset]")?.addEventListener("change", (event) => {
+      root.querySelector("[data-custom-characters-row]")?.classList.toggle("hidden", event.target.value !== "custom");
+      debouncedGenerate();
+    });
+
+    root.querySelector("[data-mode]")?.addEventListener("change", (event) => {
+      root.querySelector("[data-color-help]")?.classList.toggle("hidden", event.target.value !== "color");
+      debouncedGenerate();
+    });
+
+    root.querySelectorAll("input, select").forEach((input) => {
+      if (input.matches("[data-image-file], [data-width-preset], [data-output-width], [data-charset], [data-mode]")) return;
+      input.addEventListener("input", () => {
+        const brightness = root.querySelector("[data-brightness]");
+        const contrast = root.querySelector("[data-contrast]");
+        const alpha = root.querySelector("[data-alpha-threshold]");
+        root.querySelector("[data-brightness-value]").textContent = brightness?.value || "0";
+        root.querySelector("[data-contrast-value]").textContent = contrast?.value || "0";
+        root.querySelector("[data-alpha-value]").textContent = alpha?.value || "10";
+        if (input.matches("[data-preview-background]")) updatePreviewBackground(root);
+        else debouncedGenerate();
+      });
+    });
+
+    root.querySelector("[data-copy-text]")?.addEventListener("click", async () => {
+      if (!root._asciiResult) return;
+      const ok = await copyText(root._asciiResult.text);
+      setStatus(root, ok ? messages.copied : messages.copyFailed);
+    });
+
+    root.querySelector("[data-download-txt]")?.addEventListener("click", () => {
+      if (!root._asciiResult) return;
+      downloadBlob(createAsciiTextBlob(root._asciiResult), buildAsciiFilename(root._asciiOriginalName || "image", "txt"));
+    });
+
+    root.querySelector("[data-download-png]")?.addEventListener("click", async () => {
+      if (!root._asciiResult || !root._asciiSettings) return;
+      try {
+        const canvas = renderAsciiToCanvas(root._asciiResult, {
+          colorMode: root._asciiSettings.mode === "color",
+          fontSize: Number(root.querySelector("[data-png-font-size]")?.value || 12),
+          padding: Number(root.querySelector("[data-png-padding]")?.value || 16),
+          textColor: root._asciiSettings.textColor,
+          backgroundColor: root._asciiSettings.backgroundColor,
+          transparentBackground: Boolean(root.querySelector("[data-transparent-png]")?.checked),
+          scale: Number(root.querySelector("[data-png-scale]")?.value || 2),
+        });
+        const blob = await canvasToPngBlob(canvas);
+        downloadBlob(blob, buildAsciiFilename(root._asciiOriginalName || "image", "png"));
+      } catch {
+        setStatus(root, messages.exportFailed);
+      }
+    });
+
+    root.querySelector("[data-copy-html]")?.addEventListener("click", async () => {
+      if (!root._asciiResult || !root._asciiSettings) return;
+      const html = createAsciiHtml(root._asciiResult, root._asciiSettings.mode === "color", root._asciiSettings.textColor, root._asciiSettings.backgroundColor);
+      const ok = await copyText(html);
+      setStatus(root, ok ? messages.copied : messages.copyFailed);
+    });
+
+    root.querySelector("[data-reset]")?.addEventListener("click", reset);
+  };
+
+  document.querySelectorAll("[data-image-ascii-editor]").forEach(initImageAsciiEditor);
+</script>
