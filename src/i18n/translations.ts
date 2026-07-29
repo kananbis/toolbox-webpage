@@ -38,7 +38,7 @@ export const baseTools = [
   { slug: "pyeong-calculator", category: "converter" },
   { slug: "password-generator", category: "generator", privacy: true },
   { slug: "random-number-generator", category: "generator" },
-  { slug: "lotto-number-generator", category: "generator" },
+  { slug: "lotto-number-generator", category: "fun" },
   { slug: "random-string-generator", category: "generator", privacy: true },
   { slug: "uuid-generator", category: "generator" },
   { slug: "qr-code-generator", category: "generator", privacy: true },
@@ -158,8 +158,8 @@ export const i18n = {
       converter: { name: "변환기", description: "온도, 길이, 무게, 평수, 시간, 시간대 값을 필요한 형식으로 변환합니다." },
       audio: { name: "오디오 도구", description: "오디오 변환, 자르기, 압축, 볼륨 조절처럼 자주 필요한 오디오 파일 작업을 브라우저에서 처리합니다." },
       pdf: { name: "PDF 도구", description: "PDF 파일 합치기, 나누기, 페이지 추출, 회전, 페이지 삭제, 워터마크, 페이지 번호 추가, 이미지 변환 같은 작업을 브라우저에서 처리합니다." },
-      fun: { name: "재미있는 도구", description: "이미지 효과, 랜덤 선택, 게임처럼 가볍게 즐길 수 있는 온라인 도구입니다." },
-      generator: { name: "생성기", description: "비밀번호, 랜덤 숫자, 랜덤 문자, UUID, QR 코드, 로또 번호를 바로 생성합니다." },
+      fun: { name: "재미있는 도구", description: "이미지 효과, 랜덤 선택, 로또 번호, 게임처럼 가볍게 즐길 수 있는 온라인 도구입니다." },
+      generator: { name: "생성기", description: "비밀번호, 랜덤 숫자, 랜덤 문자, UUID, QR 코드를 바로 생성합니다." },
       developer: { name: "개발자 도구", description: "JSON, Base64, URL 인코딩, CSV/JSON 변환 작업을 빠르게 처리합니다." },
       electronics: { name: "전자 계산기", description: "옴의 법칙, 전압 분배기, LED 저항, 배터리 수명, RC/RL 필터, 리액턴스처럼 전자 회로에서 자주 쓰는 값을 계산합니다." },
       image: { name: "이미지 도구", description: "이미지 크기 변경, 용량 압축, 자르기, 회전, 모자이크, 워터마크, 포맷 변환처럼 자주 필요한 이미지 작업을 브라우저에서 처리합니다." },
@@ -265,8 +265,8 @@ export const i18n = {
       converter: { name: "Converters", description: "Convert temperature, length, weight, pyeong, time, and time zone values into the format you need." },
       audio: { name: "Audio Tools", description: "Convert, trim, compress, and adjust audio files directly in your browser." },
       pdf: { name: "PDF Tools", description: "Merge, split, extract, rotate, delete pages, add watermarks, add page numbers, and convert PDF files directly in your browser." },
-      fun: { name: "Fun Tools", description: "Fun online tools for image effects, random choices, and simple games." },
-      generator: { name: "Generators", description: "Generate passwords, random numbers, random strings, UUIDs, QR codes, and lotto numbers." },
+      fun: { name: "Fun Tools", description: "Fun online tools for image effects, random choices, lotto numbers, and simple games." },
+      generator: { name: "Generators", description: "Generate passwords, random numbers, random strings, UUIDs, and QR codes." },
       developer: { name: "Developer Tools", description: "Handle JSON, Base64, URL encoding, and CSV/JSON conversion tasks quickly." },
       electronics: { name: "Electronics Calculators", description: "Calculate common electronics values such as Ohms law, voltage divider output, LED resistor values, battery life, RC/RL filters, and reactance." },
       image: { name: "Image Tools", description: "Resize, compress, crop, rotate, watermark, mosaic, and convert images directly in your browser." },
@@ -641,14 +641,15 @@ export function getTool(lang: Lang, slug: string) {
 }
 
 export function getRelatedTools(lang: Lang, slug: string, limit = 3) {
-  if (["image-to-ascii-art", "image-to-pixel-art", "random-wheel", "ladder-game"].includes(slug)) {
+  if (["image-to-ascii-art", "image-to-pixel-art", "random-wheel", "ladder-game", "lotto-number-generator"].includes(slug)) {
     const relatedByFunTool: Record<string, string[]> = {
       "image-to-ascii-art": ["image-to-pixel-art", "image-color-picker", "image-resizer", "image-mosaic"],
       "image-to-pixel-art": ["image-to-ascii-art", "image-resizer", "image-compressor", "image-format-converter"],
-      "random-wheel": ["ladder-game", "random-number-generator", "random-string-generator"],
-      "ladder-game": ["random-wheel", "random-number-generator", "random-string-generator"],
+      "random-wheel": ["ladder-game", "lotto-number-generator", "random-number-generator"],
+      "ladder-game": ["random-wheel", "lotto-number-generator", "random-number-generator"],
+      "lotto-number-generator": ["random-wheel", "ladder-game", "random-number-generator"],
     };
-    return (relatedByFunTool[slug] ?? ["image-to-ascii-art", "image-to-pixel-art", "random-wheel", "ladder-game"])
+    return (relatedByFunTool[slug] ?? ["image-to-ascii-art", "image-to-pixel-art", "random-wheel", "ladder-game", "lotto-number-generator"])
       .filter((toolSlug) => toolSlug !== slug)
       .slice(0, limit)
       .map((toolSlug) => getTool(lang, toolSlug))
