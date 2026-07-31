@@ -12,8 +12,8 @@ const otherLang = lang === "ko" ? "en" : "ko";
 const title = lang === "ko" ? `소개 - ${t.siteName}` : `About - ${t.siteName}`;
 const description =
   lang === "ko"
-    ? "Toolbox는 오디오, PDF, 이미지, 계산기, 변환기, 텍스트 도구를 제공하는 무료 온라인 도구 모음입니다."
-    : "Toolbox is a free collection of browser-based tools for audio, PDF, images, calculations, conversions, and text tasks.";
+    ? "Toolbox는 오디오, PDF, 이미지, 계산기, 변환기, 텍스트 작업을 브라우저에서 처리하는 무료 웹 도구 모음입니다."
+    : "Toolbox is a free collection of browser-based tools for audio, PDF, image, calculation, conversion, and text tasks.";
 ---
 
 <Layout
@@ -28,19 +28,41 @@ const description =
     {
       lang === "ko" ? (
         <>
-          <p class="mt-4">Toolbox는 자주 필요한 파일 처리와 계산 작업을 빠르게 처리할 수 있도록 만든 무료 온라인 도구 사이트입니다.</p>
-          <p>오디오 압축, 오디오 자르기, 아이폰 벨소리 만들기, PDF 합치기와 정리, 이미지 리사이즈와 색상 추출, 텍스트 도구, 계산기, 변환기, 개발자 도구를 제공합니다.</p>
-          <p>대부분의 도구는 입력한 내용이나 선택한 파일을 서버로 보내지 않고 현재 브라우저 안에서 처리합니다.</p>
-          <h2>운영 방향</h2>
-          <p>Toolbox는 설치 없이 사용할 수 있는 가볍고 실용적인 웹 도구를 목표로 합니다. 정적 사이트 구조를 유지하면서 모바일과 데스크톱에서 빠르게 열리고, 필요한 기능을 복잡한 가입 절차 없이 사용할 수 있게 만드는 데 집중합니다.</p>
+          <p class="mt-4">Toolbox는 설치나 로그인 없이 바로 사용할 수 있는 무료 웹 도구 모음입니다. 오디오 편집, PDF 정리, 이미지 처리, 날짜와 비율 계산, 단위 변환, 텍스트 정리처럼 반복적으로 필요한 작업을 가볍게 처리하는 것을 목표로 합니다.</p>
+          <h2>제공하는 도구 범위</h2>
+          <p>현재 사이트에는 이미지 압축과 리사이즈, PDF 합치기와 페이지 정리, 오디오 변환과 자르기, 시간대 변환, QR 코드 생성, 글자수 세기, 전자 계산기, 랜덤 선택 도구 등이 포함되어 있습니다. 각 도구는 독립된 페이지로 제공되며, 해당 작업의 사용 방법과 제한사항을 함께 안내합니다.</p>
+          <h2>브라우저 처리 원칙</h2>
+          <p>가능한 도구는 사용자의 현재 브라우저 안에서 처리합니다. 텍스트 입력값, 계산값, 선택한 이미지/PDF/오디오 파일은 도구 기능을 수행하기 위해 브라우저 메모리에서 사용되며, 별도의 서버 업로드 방식으로 처리하지 않습니다.</p>
+          <p>다만 오디오 변환처럼 FFmpeg WASM이 필요한 기능은 실행 라이브러리를 외부 CDN에서 내려받을 수 있습니다. 이 경우 내려받는 것은 변환 엔진 파일이며, 사용자가 선택한 오디오 파일 자체를 CDN으로 전송하지 않습니다.</p>
+          <h2>계산과 변환 기준</h2>
+          <p>계산기와 변환기는 페이지에 표시된 공식, 단위, 반올림 기준을 바탕으로 결과를 만듭니다. 금융, 전자, 건강 관련 계산은 빠른 참고용이며 실제 계약, 구매, 진단, 설계 검증을 대신하지 않습니다.</p>
+          <h2>지원 형식과 검증</h2>
+          <p>파일 도구는 브라우저와 사용 중인 라이브러리에서 실제로 처리 가능한 형식만 UI에 표시하는 것을 원칙으로 합니다. 브라우저, 운영체제, 파일 손상 여부, 파일 크기, 코덱 세부 정보에 따라 같은 형식이라도 처리 결과가 달라질 수 있습니다.</p>
+          <h2>업데이트와 오류 제보</h2>
+          <p>도구 기능과 설명은 새 형식 지원, 브라우저 호환성, 사용자 제보에 따라 업데이트될 수 있습니다. 오류를 발견하면 문의 페이지에 안내된 정보와 함께 재현 순서를 보내주세요.</p>
+          <h2>광고 운영 원칙</h2>
+          <p>사이트 운영 비용을 충당하기 위해 광고를 사용할 수 있습니다. 광고는 도구 사용을 방해하지 않는 위치에 배치하는 것을 원칙으로 하며, 광고 기능이 비활성화된 상태에서는 빈 광고 영역을 표시하지 않습니다.</p>
+          <h2>보장하지 않는 범위</h2>
+          <p>Toolbox는 전문 서비스나 공식 인증 도구가 아닙니다. 변환 결과의 모든 프로그램 호환성, 계산 결과의 법적 효력, 파일 처리 성공, 특정 브라우저에서의 성능을 보장하지 않습니다. 중요한 파일은 작업 전에 원본을 보관하세요.</p>
         </>
       ) : (
         <>
-          <p class="mt-4">Toolbox is a free online tool site for quick file processing, calculations, and everyday web tasks.</p>
-          <p>It provides audio compression, audio trimming, iPhone ringtone creation, PDF merging and organization, image resizing and color picking, text tools, calculators, converters, and developer utilities.</p>
-          <p>Most tools process your input or selected files directly in your current browser without sending them to a server.</p>
-          <h2>Our Direction</h2>
-          <p>Toolbox focuses on lightweight, practical web tools that work without installation. The site keeps a static, low-complexity structure while making each tool easy to use on both mobile and desktop devices.</p>
+          <p class="mt-4">Toolbox is a free web utility site that works without installation or sign-in. It is built for everyday tasks such as editing audio, organizing PDFs, processing images, calculating dates and percentages, converting units, and cleaning up text.</p>
+          <h2>What the Site Provides</h2>
+          <p>The site includes tools for image compression and resizing, PDF merging and page editing, audio conversion and trimming, time zone conversion, QR code creation, character counting, electronics calculations, and random selection. Each tool has its own page with usage notes and limitations.</p>
+          <h2>Browser-Based Processing</h2>
+          <p>Where possible, tools run directly in your current browser. Text input, calculation values, and selected image, PDF, or audio files are used in browser memory for the selected task and are not processed through a server upload workflow.</p>
+          <p>Some audio tools may download an FFmpeg WASM runtime from an external CDN. In that case, the downloaded files are the conversion engine. Your selected audio file is not sent to the CDN.</p>
+          <h2>Calculation and Conversion Standards</h2>
+          <p>Calculators and converters use the formulas, units, and rounding rules shown on each page. Financial, electronics, and health-related results are quick references and do not replace contracts, product validation, diagnosis, or professional review.</p>
+          <h2>Format Support and Testing</h2>
+          <p>File tools should show only formats that are supported by the browser and the libraries used by the page. Results can still vary by browser, operating system, damaged files, file size, codec details, and device memory.</p>
+          <h2>Updates and Bug Reports</h2>
+          <p>Tool features and explanations may be updated as browser support changes and issues are reported. If you find a problem, use the Contact page and include the tool name, browser, file type, error message, and steps to reproduce it.</p>
+          <h2>Advertising Policy</h2>
+          <p>Advertising may be used to support operating costs. Ads should not block the main tool workflow. When advertising is disabled, empty ad containers are not rendered.</p>
+          <h2>What Is Not Guaranteed</h2>
+          <p>Toolbox is not a professional or certified service. It does not guarantee every file conversion will succeed, every output will work in every program, calculations will have legal force, or performance will be the same across browsers. Keep original files before editing.</p>
         </>
       )
     }

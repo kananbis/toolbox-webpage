@@ -3,6 +3,7 @@ import Layout from "@/components/Layout.astro";
 import BookmarkPrompt from "@/components/BookmarkPrompt.astro";
 import ToolCard from "@/components/ToolCard.astro";
 import ToolLayout from "@/components/ToolLayout.astro";
+import { getCategoryEnhancement } from "@/i18n/content-quality";
 import { baseTools, categorySlugs, getCategoryItems, getToolsByCategory, getTool, languages, i18n, type CategorySlug, type Lang } from "@/i18n/translations";
 
 export function getStaticPaths() {
@@ -17,6 +18,7 @@ const lang = Astro.props.lang as Lang;
 const t = i18n[lang];
 const category = kind === "category" ? getCategoryItems(lang).find((item) => item.slug === id) : undefined;
 const tool = kind === "tool" ? getTool(lang, id) : undefined;
+const categoryEnhancement = category ? getCategoryEnhancement(lang, category.slug as CategorySlug) : undefined;
 const otherLang = lang === "ko" ? "en" : "ko";
 ---
 
@@ -36,6 +38,23 @@ const otherLang = lang === "ko" ? "en" : "ko";
     <h1 class="text-3xl font-bold tracking-normal md:text-4xl">{category.name}</h1>
     <p class="mt-4 max-w-3xl text-lg leading-8 text-slate-700">{category.description}</p>
     <BookmarkPrompt lang={lang} />
+    {
+      categoryEnhancement && (
+        <section class="prose-lite mt-8">
+          {categoryEnhancement.guide.map((section) => (
+            <>
+              <h2>{section.title}</h2>
+              {section.body && <p>{section.body}</p>}
+              {section.items && (
+                <ul class="mt-3 list-disc space-y-2 pl-6">
+                  {section.items.map((item) => <li>{item}</li>)}
+                </ul>
+              )}
+            </>
+          ))}
+        </section>
+      )
+    }
     <div class="mt-8 grid gap-4 md:grid-cols-3">
       {getToolsByCategory(lang, category.slug as CategorySlug).map((item) => <ToolCard tool={item} />)}
     </div>

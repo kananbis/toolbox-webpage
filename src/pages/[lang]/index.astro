@@ -34,6 +34,7 @@ const frequent = frequentSlugs.map((slug) => tools.find((tool) => tool.slug === 
 const categories = getCategoryItems(lang);
 const otherLang = lang === "ko" ? "en" : "ko";
 const caseConverterLabel = lang === "ko" ? "\uC601\uBB38 \uB300\uC18C\uBB38\uC790 \uBCC0\uD658\uAE30" : null;
+const withSlash = (path: string) => (path.endsWith("/") ? path : `${path}/`);
 ---
 
 <Layout
@@ -53,14 +54,14 @@ const caseConverterLabel = lang === "ko" ? "\uC601\uBB38 \uB300\uC18C\uBB38\uC79
       <p class="mt-5 text-lg leading-8 text-slate-700">{t.home.body1}</p>
       <p class="mt-4 text-base leading-7 text-slate-700">{t.home.body2}</p>
       <div class="mt-6 flex flex-wrap gap-3">
-        <a href={`/${lang}/tools`} class="rounded-md bg-brand px-5 py-3 text-sm font-semibold text-white no-underline">{t.home.button}</a>
+        <a href={`/${lang}/tools/`} class="rounded-md bg-brand px-5 py-3 text-sm font-semibold text-white no-underline">{t.home.button}</a>
       </div>
     </div>
     <div class="w-full rounded-lg border border-line bg-panel p-5 md:max-w-[340px] md:justify-self-end">
       <h2 class="text-lg font-bold">{t.home.frequent}</h2>
       <div class="mt-4 grid gap-3">
         {frequent.map((tool) => (
-          <a href={tool.path} class="rounded-md bg-white p-3 text-sm font-semibold text-ink no-underline shadow-sm">
+          <a href={withSlash(tool.path)} class="rounded-md bg-white p-3 text-sm font-semibold text-ink no-underline shadow-sm">
             {tool.slug === "case-converter" && caseConverterLabel ? caseConverterLabel : tool.name}
           </a>
         ))}
@@ -76,7 +77,7 @@ const caseConverterLabel = lang === "ko" ? "\uC601\uBB38 \uB300\uC18C\uBB38\uC79
     <h2 class="text-2xl font-bold">{t.home.categories}</h2>
     <div class="mt-4 grid gap-4 md:grid-cols-5">
       {categories.map((category) => (
-        <a href={category.path} class="rounded-lg border border-line bg-white p-4 text-ink no-underline shadow-sm">
+        <a href={withSlash(category.path)} class="rounded-lg border border-line bg-white p-4 text-ink no-underline shadow-sm">
           <p class="font-semibold">{category.name}</p>
           <p class="mt-2 text-sm leading-6 text-slate-600">{category.description}</p>
         </a>

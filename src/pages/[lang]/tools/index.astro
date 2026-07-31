@@ -1,6 +1,5 @@
 ---
 import Layout from "@/components/Layout.astro";
-import AdSlot from "@/components/AdSlot.astro";
 import BookmarkPrompt from "@/components/BookmarkPrompt.astro";
 import ToolCard from "@/components/ToolCard.astro";
 import { categorySlugs, getCategoryItems, getToolsByCategory, i18n, languages, type CategorySlug, type Lang } from "@/i18n/translations";
@@ -13,6 +12,7 @@ const lang = Astro.params.lang as Lang;
 const t = i18n[lang];
 const categories = getCategoryItems(lang);
 const otherLang = lang === "ko" ? "en" : "ko";
+const withSlash = (path: string) => (path.endsWith("/") ? path : `${path}/`);
 ---
 
 <Layout
@@ -30,8 +30,6 @@ const otherLang = lang === "ko" ? "en" : "ko";
 
   <BookmarkPrompt lang={lang} />
 
-  <AdSlot lang={lang} placement="homeMiddle" />
-
   <div class="mt-10 space-y-12">
     {categories.map((category) => (
       <section>
@@ -40,7 +38,7 @@ const otherLang = lang === "ko" ? "en" : "ko";
             <h2 class="text-2xl font-bold">{category.name}</h2>
             <p class="mt-2 text-slate-600">{category.description}</p>
           </div>
-          <a href={category.path} class="text-sm font-semibold">{t.common.categoryView}</a>
+          <a href={withSlash(category.path)} class="text-sm font-semibold">{t.common.categoryView}</a>
         </div>
         <div class="mt-4 grid gap-4 md:grid-cols-3">
           {getToolsByCategory(lang, category.slug as CategorySlug).map((tool) => <ToolCard tool={tool} />)}
