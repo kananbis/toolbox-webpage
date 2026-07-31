@@ -1,7 +1,6 @@
 ---
 import Layout from "@/components/Layout.astro";
 import { i18n, languages, type Lang } from "@/i18n/translations";
-import { SITE_CONFIG } from "../../../site.config.mjs";
 
 export function getStaticPaths() {
   return languages.map((lang) => ({ params: { lang } }));
@@ -10,7 +9,6 @@ export function getStaticPaths() {
 const lang = Astro.params.lang as Lang;
 const t = i18n[lang];
 const otherLang = lang === "ko" ? "en" : "ko";
-const contactEmail = SITE_CONFIG.contactEmail;
 const title = lang === "ko" ? `개인정보처리방침 - ${t.siteName}` : `Privacy Policy - ${t.siteName}`;
 const description =
   lang === "ko"
@@ -39,9 +37,9 @@ const description =
           <h2>localStorage 사용</h2>
           <p>사이트는 즐겨찾기 안내를 30일 동안 다시 표시하지 않기 위해 `mfwtools_bookmark_prompt_hidden_until` 값을 localStorage에 저장할 수 있습니다. 이 값은 사용자가 입력한 파일 내용이나 도구 입력값을 포함하지 않습니다. 브라우저 설정에서 사이트 데이터를 삭제하면 함께 삭제됩니다.</p>
           <h2>Google Analytics</h2>
-          <p>배포 환경에 `GA_MEASUREMENT_ID`가 설정된 경우 Google Analytics 스크립트가 로드될 수 있습니다. 이 경우 페이지 방문과 같은 사용 통계가 Google 정책에 따라 처리될 수 있습니다. 환경 변수가 설정되지 않은 경우 Analytics 스크립트는 로드되지 않습니다.</p>
+          <p>사이트 운영 상태에 따라 Google Analytics가 사용될 수 있습니다. 이 경우 페이지 방문과 같은 사용 통계가 Google 정책에 따라 처리될 수 있습니다. 분석 도구가 사용되지 않는 상태에서는 관련 스크립트가 로드되지 않을 수 있습니다.</p>
           <h2>Google AdSense와 광고 쿠키</h2>
-          <p>사이트는 Google AdSense 사용을 신청하거나 사용할 수 있습니다. AdSense가 활성화되면 Google 및 광고 파트너가 쿠키 또는 유사 기술을 사용해 광고를 표시하고 측정할 수 있습니다. 광고 기능이 비활성화되어 있거나 광고 설정값이 없는 경우 광고 스크립트와 광고 슬롯은 렌더링하지 않습니다.</p>
+          <p>사이트는 Google AdSense 사용을 신청하거나 사용할 수 있습니다. AdSense가 활성화되면 Google 및 광고 파트너가 쿠키 또는 유사 기술을 사용해 광고를 표시하고 측정할 수 있습니다. 광고 슬롯이 비활성화된 경우 페이지에는 빈 광고 영역이나 광고 라벨이 표시되지 않습니다. 다만 AdSense 사이트 확인 또는 광고 기능 준비를 위해 Google 광고 스크립트가 로드될 수 있습니다.</p>
           <h2>Cloudflare와 외부 CDN</h2>
           <p>사이트는 Cloudflare Pages 같은 정적 호스팅 환경에서 제공될 수 있습니다. Cloudflare는 보안, 캐싱, 접속 로그 등 인프라 운영에 필요한 정보를 처리할 수 있습니다. 일부 기능은 라이브러리 파일을 외부 CDN에서 불러올 수 있지만, 사용자 파일을 외부 변환 API로 업로드하지 않습니다.</p>
           <h2>문의 시 처리되는 정보</h2>
@@ -49,11 +47,7 @@ const description =
           <h2>사용자의 선택권</h2>
           <p>브라우저 설정에서 쿠키, localStorage, 사이트 데이터를 삭제할 수 있습니다. 광고 맞춤 설정은 Google 광고 설정 페이지와 브라우저 개인정보 설정에서 관리할 수 있습니다.</p>
           <h2>문의</h2>
-          <p>
-            개인정보 관련 문의는{" "}
-            {contactEmail ? <a href={`mailto:${contactEmail}`}>{contactEmail}</a> : "문의 페이지에 안내된 연락처"}
-            로 보내주세요. 현재 배포 환경에 이메일이 없다면 운영자는 `PUBLIC_CONTACT_EMAIL` 설정을 완료해야 합니다.
-          </p>
+          <p>개인정보 관련 문의는 문의 페이지에 표시된 이메일 주소로 보내주세요.</p>
         </>
       ) : (
         <>
@@ -66,9 +60,9 @@ const description =
           <h2>localStorage</h2>
           <p>The site may store `mfwtools_bookmark_prompt_hidden_until` in localStorage so the bookmark prompt stays hidden for 30 days after dismissal. This value does not contain file content or tool input. It can be removed by clearing site data in the browser.</p>
           <h2>Google Analytics</h2>
-          <p>If `GA_MEASUREMENT_ID` is configured in the deployment environment, Google Analytics may be loaded. Page usage data may then be processed according to Google's policies. If the environment variable is not configured, the Analytics script is not loaded.</p>
+          <p>Depending on the site's operating status, Google Analytics may be used. In that case, page usage data may be processed according to Google's policies. If analytics is not in use, the related script may not be loaded.</p>
           <h2>Google AdSense and Advertising Cookies</h2>
-          <p>The site may apply for or use Google AdSense. When AdSense is enabled, Google and advertising partners may use cookies or similar technologies to show and measure ads. If advertising is disabled or required ad settings are missing, ad scripts and ad slots are not rendered.</p>
+          <p>The site may apply for or use Google AdSense. When AdSense is enabled, Google and advertising partners may use cookies or similar technologies to show and measure ads. When ad placements are disabled, empty ad areas and ad labels are not displayed. However, the Google advertising script may still be loaded for AdSense site verification or preparation of advertising features.</p>
           <h2>Cloudflare and External CDNs</h2>
           <p>The site may be served through static hosting such as Cloudflare Pages. Cloudflare may process information needed for security, caching, and infrastructure logs. Some features may load library files from external CDNs, but user files are not uploaded to external conversion APIs.</p>
           <h2>Contact Information</h2>
@@ -76,11 +70,7 @@ const description =
           <h2>Your Choices</h2>
           <p>You can clear cookies, localStorage, and site data in your browser settings. Ad personalization can be managed through Google ad settings and browser privacy controls.</p>
           <h2>Contact</h2>
-          <p>
-            For privacy questions, contact{" "}
-            {contactEmail ? <a href={`mailto:${contactEmail}`}>{contactEmail}</a> : "the address shown on the Contact page"}
-            . If no email is configured in the current deployment, the site operator should set `PUBLIC_CONTACT_EMAIL`.
-          </p>
+          <p>For privacy-related inquiries, please use the email address shown on the contact page.</p>
         </>
       )
     }
