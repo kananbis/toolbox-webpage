@@ -45,6 +45,12 @@ button {
   @apply rounded-lg border border-line bg-white p-4 shadow-sm md:p-6;
 }
 
+.page-intro {
+  max-width: 64rem;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
 .prose-lite h2 {
   @apply mt-10 text-2xl font-bold tracking-normal text-ink;
 }
