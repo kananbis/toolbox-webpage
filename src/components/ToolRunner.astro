@@ -847,8 +847,19 @@ const timeZonePresets = [
           </div>
           <p id="ringtone-duration-label" class="text-sm text-slate-600">{lang === "ko" ? "전체 길이: -" : "Total length: -"}</p>
         </div>
+        <div class="waveform-toolbar mt-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <button class="btn-secondary waveform-button" type="button" data-action="waveform-zoom-out" data-waveform-target="ringtone" aria-label={lang === "ko" ? "파형 축소" : "Zoom waveform out"}>-</button>
+            <button class="btn-secondary waveform-button" type="button" data-action="waveform-zoom-in" data-waveform-target="ringtone" aria-label={lang === "ko" ? "파형 확대" : "Zoom waveform in"}>+</button>
+            <button class="btn-secondary waveform-button" type="button" data-action="waveform-reset" data-waveform-target="ringtone">{lang === "ko" ? "전체 보기" : "Full View"}</button>
+          </div>
+          <p id="waveform-viewport-label" class="text-sm text-slate-600" aria-live="polite">{lang === "ko" ? "표시 구간: 전체" : "View: full"}</p>
+        </div>
         <div id="ringtone-waveform" class="ringtone-waveform mt-4" aria-label={lang === "ko" ? "오디오 자르기 구간 선택 파형" : "Audio trim range waveform"} role="application" tabindex="0">
           <canvas id="ringtone-waveform-canvas"></canvas>
+        </div>
+        <div class="waveform-minimap mt-2" aria-label={lang === "ko" ? "전체 오디오 파형 미니맵" : "Full audio waveform minimap"} role="application" tabindex="0">
+          <canvas id="ringtone-minimap-canvas"></canvas>
         </div>
         <div class="mt-4 flex flex-wrap gap-2">
           <button class="btn-secondary" type="button" data-action="cutter-play-all">{lang === "ko" ? "전체 재생" : "Play Full Audio"}</button>
@@ -1186,8 +1197,19 @@ const timeZonePresets = [
           </div>
           <p id="ringtone-duration-label" class="text-sm text-slate-600">{lang === "ko" ? "전체 길이: -" : "Total length: -"}</p>
         </div>
+        <div class="waveform-toolbar mt-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <button class="btn-secondary waveform-button" type="button" data-action="waveform-zoom-out" data-waveform-target="ringtone" aria-label={lang === "ko" ? "파형 축소" : "Zoom waveform out"}>-</button>
+            <button class="btn-secondary waveform-button" type="button" data-action="waveform-zoom-in" data-waveform-target="ringtone" aria-label={lang === "ko" ? "파형 확대" : "Zoom waveform in"}>+</button>
+            <button class="btn-secondary waveform-button" type="button" data-action="waveform-reset" data-waveform-target="ringtone">{lang === "ko" ? "전체 보기" : "Full View"}</button>
+          </div>
+          <p id="waveform-viewport-label" class="text-sm text-slate-600" aria-live="polite">{lang === "ko" ? "표시 구간: 전체" : "View: full"}</p>
+        </div>
         <div id="ringtone-waveform" class="ringtone-waveform mt-4" aria-label={lang === "ko" ? "벨소리 구간 선택 파형" : "Ringtone section waveform"} role="application" tabindex="0">
           <canvas id="ringtone-waveform-canvas"></canvas>
+        </div>
+        <div class="waveform-minimap mt-2" aria-label={lang === "ko" ? "전체 오디오 파형 미니맵" : "Full audio waveform minimap"} role="application" tabindex="0">
+          <canvas id="ringtone-minimap-canvas"></canvas>
         </div>
         <p id="ringtone-range-label" class="mt-3 text-sm text-slate-700">{lang === "ko" ? "오디오 파일을 선택하면 파형이 표시됩니다." : "Choose an audio file to display the waveform."}</p>
         <p id="ringtone-length-warning" class="mt-1 text-sm text-amber-700"></p>
@@ -1675,7 +1697,7 @@ const timeZonePresets = [
     pointer-events: auto;
   }
 
-  .ringtone-waveform {
+  :global(.ringtone-waveform) {
     position: relative;
     width: 100%;
     min-height: 130px;
@@ -1687,15 +1709,145 @@ const timeZonePresets = [
     background: #f8fafc;
   }
 
-  .ringtone-waveform:focus {
+  :global(.ringtone-waveform.is-trim-dragging),
+  :global(.ringtone-waveform.is-trim-dragging canvas) {
+    cursor: ew-resize;
+  }
+
+  :global(.ringtone-waveform:focus) {
     outline: 2px solid #2563eb;
     outline-offset: 2px;
   }
 
-  .ringtone-waveform canvas {
+  :global(.ringtone-waveform canvas) {
     display: block;
     width: 100%;
     height: 100%;
+    cursor: default;
+  }
+
+  :global(.ringtone-waveform.is-panning),
+  :global(.ringtone-waveform.is-panning canvas) {
+    cursor: grabbing;
+  }
+
+  :global(.ringtone-waveform.is-zoomed canvas) {
+    cursor: grab;
+  }
+
+  :global(.waveform-toolbar) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  :global(.waveform-button) {
+    min-width: 2.5rem;
+  }
+
+  :global(.waveform-minimap) {
+    position: relative;
+    width: 100%;
+    height: 42px;
+    min-height: 42px;
+    overflow: hidden;
+    border: 1px solid #d9e2ef;
+    border-radius: 0.375rem;
+    background: #f8fafc;
+    cursor: pointer;
+    touch-action: none;
+  }
+
+  :global(.waveform-minimap.is-panning) {
+    cursor: grabbing;
+  }
+
+  :global(.waveform-minimap canvas) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  :global(.trim-handle) {
+    position: absolute;
+    z-index: 3;
+    bottom: 8px;
+    width: 44px;
+    height: 38px;
+    margin-left: -22px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    appearance: none;
+    cursor: ew-resize;
+    touch-action: none;
+  }
+
+  :global(.trim-handle::before) {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: #2563eb;
+    opacity: 0.9;
+  }
+
+  :global(.trim-handle-grip) {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    display: block;
+    width: 18px;
+    height: 18px;
+    transform: translateX(-50%);
+    border: 2px solid #ffffff;
+    border-radius: 0.375rem;
+    background:
+      linear-gradient(90deg, transparent 5px, rgb(255 255 255 / 0.9) 5px 7px, transparent 7px 11px, rgb(255 255 255 / 0.9) 11px 13px, transparent 13px),
+      #2563eb;
+    box-shadow: 0 2px 6px rgb(15 23 42 / 0.28);
+  }
+
+  :global(.trim-handle:hover .trim-handle-grip),
+  :global(.trim-handle:focus-visible .trim-handle-grip),
+  :global(.trim-handle.is-active .trim-handle-grip) {
+    background:
+      linear-gradient(90deg, transparent 5px, rgb(255 255 255 / 0.95) 5px 7px, transparent 7px 11px, rgb(255 255 255 / 0.95) 11px 13px, transparent 13px),
+      #1d4ed8;
+  }
+
+  :global(.trim-handle:focus-visible) {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+  }
+
+  :global(input[type="range"][data-merger-input="volume"]),
+  :global(#volume-range) {
+    cursor: pointer;
+    pointer-events: auto;
+    touch-action: pan-y;
+  }
+
+  :global(input[type="range"][data-merger-input="volume"]::-webkit-slider-thumb),
+  :global(#volume-range::-webkit-slider-thumb) {
+    cursor: grab;
+  }
+
+  :global(input[type="range"][data-merger-input="volume"]:active::-webkit-slider-thumb),
+  :global(#volume-range:active::-webkit-slider-thumb) {
+    cursor: grabbing;
+  }
+
+  :global(input[type="range"][data-merger-input="volume"]::-moz-range-thumb),
+  :global(#volume-range::-moz-range-thumb) {
+    cursor: grab;
   }
 
   .merger-file-card[draggable="true"] {
@@ -1707,7 +1859,7 @@ const timeZonePresets = [
     box-shadow: 0 0 0 1px rgb(37 99 235 / 0.25);
   }
 
-  .merger-waveform {
+  :global(.merger-waveform) {
     height: 112px;
     min-height: 112px;
     max-height: 112px;
@@ -1715,7 +1867,7 @@ const timeZonePresets = [
     contain: layout paint;
   }
 
-  .merger-waveform canvas {
+  :global(.merger-waveform canvas) {
     height: 112px;
     min-height: 112px;
     max-height: 112px;
@@ -2667,34 +2819,50 @@ ${lang === "ko" ? "구간 길이" : "Trimmed duration"}: ${formatSecondsLabel(tr
     context.fillStyle = "#f8fafc";
     context.fillRect(0, 0, width, height);
     const center = height / 2;
+    const viewport = getWaveformViewport(item);
+    const peaks = getVisibleWaveformPeaks(item, width);
     context.strokeStyle = "#64748b";
     context.lineWidth = 1;
     for (let x = 0; x < width; x += 1) {
-      const peak = item.peaks[Math.min(item.peaks.length - 1, Math.floor(x / width * item.peaks.length))] || { min: 0, max: 0 };
+      const peak = peaks[Math.min(peaks.length - 1, Math.floor(x / width * peaks.length))] || { min: 0, max: 0 };
       context.beginPath();
       context.moveTo(x + 0.5, center + peak.min * center * 0.84);
       context.lineTo(x + 0.5, center + peak.max * center * 0.84);
       context.stroke();
     }
-    const startX = item.start / item.duration * width;
-    const endX = item.end / item.duration * width;
+    drawWaveformTicks(context, item, width, height, root.dataset.lang || "ko");
+    const startX = waveformTimeToX(item.start, item, width);
+    const endX = waveformTimeToX(item.end, item, width);
+    const clippedStartX = clampNumber(startX, 0, width);
+    const clippedEndX = clampNumber(endX, 0, width);
+    updateTrimHandlePositions(wrapper, item.start, item.end, item.duration || 1, viewport);
     context.fillStyle = "rgba(15, 23, 42, 0.18)";
-    context.fillRect(0, 0, startX, height);
-    context.fillRect(endX, 0, width - endX, height);
+    context.fillRect(0, 0, clippedStartX, height);
+    context.fillRect(clippedEndX, 0, width - clippedEndX, height);
     context.fillStyle = "rgba(37, 99, 235, 0.16)";
-    context.fillRect(startX, 0, Math.max(0, endX - startX), height);
+    context.fillRect(clippedStartX, 0, Math.max(0, clippedEndX - clippedStartX), height);
     context.fillStyle = "#2563eb";
-    context.fillRect(startX - 2, 0, 4, height);
-    context.fillRect(endX - 2, 0, 4, height);
+    if (item.start >= viewport.visibleStart && item.start <= viewport.visibleEnd) context.fillRect(startX - 2, 0, 4, height);
+    if (item.end >= viewport.visibleStart && item.end <= viewport.visibleEnd) context.fillRect(endX - 2, 0, 4, height);
     if (Number.isFinite(item.playhead)) {
-      const x = item.playhead / item.duration * width;
-      context.fillStyle = "#ef4444";
-      context.fillRect(x - 1, 0, 2, height);
+      const x = waveformTimeToX(item.playhead, item, width);
+      if (x >= 0 && x <= width) {
+        context.fillStyle = "#ef4444";
+        context.fillRect(x - 1, 0, 2, height);
+      }
     }
+    drawWaveformMinimap(root.querySelector(`canvas[data-merger-minimap="${item.id}"]`), item);
+    updateWaveformViewportLabel(root, item, wrapper);
   };
   const renderMergerWaveforms = (root) => {
     const state = getMergerState(root);
     state.items.forEach((item) => drawMergerWaveform(root, item));
+  };
+  const updateMergerVolumeUi = (root, item) => {
+    const input = root.querySelector(`input[data-merger-input="volume"][data-id="${item.id}"]`);
+    const label = root.querySelector(`[data-merger-volume-label="${item.id}"]`);
+    if (input && input.value !== String(item.volume)) input.value = String(item.volume);
+    if (label) label.textContent = `${item.volume}%`;
   };
   const renderAudioMerger = (root) => {
     const lang = root.dataset.lang || "ko";
@@ -2717,13 +2885,24 @@ ${lang === "ko" ? "구간 길이" : "Trimmed duration"}: ${formatSecondsLabel(tr
               <button class="btn-secondary" type="button" data-action="merger-remove" data-id="${item.id}">${lang === "ko" ? "삭제" : "Remove"}</button>
             </div>
           </div>
+          <div class="waveform-toolbar mt-4">
+            <div class="flex flex-wrap items-center gap-2">
+              <button class="btn-secondary waveform-button" type="button" data-action="waveform-zoom-out" data-id="${item.id}" aria-label="${lang === "ko" ? "파형 축소" : "Zoom waveform out"}">-</button>
+              <button class="btn-secondary waveform-button" type="button" data-action="waveform-zoom-in" data-id="${item.id}" aria-label="${lang === "ko" ? "파형 확대" : "Zoom waveform in"}">+</button>
+              <button class="btn-secondary waveform-button" type="button" data-action="waveform-reset" data-id="${item.id}">${lang === "ko" ? "전체 보기" : "Full View"}</button>
+            </div>
+            <p class="text-sm text-slate-600" data-waveform-viewport-label="${item.id}" aria-live="polite">${lang === "ko" ? "표시 구간: 전체" : "View: full"}</p>
+          </div>
           <div class="ringtone-waveform merger-waveform mt-4" role="application" tabindex="0">
             <canvas data-merger-waveform="${item.id}" width="900" height="112" style="display:block;width:100%;height:112px;min-height:112px;max-height:112px;" aria-label="${lang === "ko" ? "파일별 파형" : "File waveform"}"></canvas>
+          </div>
+          <div class="waveform-minimap mt-2" role="application" tabindex="0" aria-label="${lang === "ko" ? "전체 파일 파형 미니맵" : "Full file waveform minimap"}">
+            <canvas data-merger-minimap="${item.id}" width="900" height="42"></canvas>
           </div>
           <div class="mt-4 grid gap-3 md:grid-cols-3">
             <label>${lang === "ko" ? "시작 시간" : "Start time"}<input data-merger-input="start" data-id="${item.id}" type="text" inputmode="decimal" value="${formatRingtoneTime(item.start)}" /></label>
             <label>${lang === "ko" ? "종료 시간" : "End time"}<input data-merger-input="end" data-id="${item.id}" type="text" inputmode="decimal" value="${formatRingtoneTime(item.end)}" /></label>
-            <label>${lang === "ko" ? "볼륨" : "Volume"}<div class="mt-2 flex items-center gap-2"><input data-merger-input="volume" data-id="${item.id}" type="range" min="0" max="200" step="1" value="${item.volume}" /><span class="text-sm text-slate-600">${item.volume}%</span></div></label>
+            <label>${lang === "ko" ? "볼륨" : "Volume"}<div class="mt-2 flex items-center gap-2"><input class="min-w-0" data-merger-input="volume" data-id="${item.id}" type="range" min="0" max="200" step="1" value="${item.volume}" /><span class="min-w-12 text-sm text-slate-600" data-merger-volume-label="${item.id}">${item.volume}%</span></div></label>
           </div>
           <div class="mt-3 flex flex-wrap items-center gap-3">
             <label class="flex items-center gap-2 text-sm"><input class="w-auto" data-merger-input="muted" data-id="${item.id}" type="checkbox" ${item.muted ? "checked" : ""} />${lang === "ko" ? "음소거" : "Mute"}</label>
@@ -2784,7 +2963,7 @@ ${lang === "ko" ? "구간 길이" : "Trimmed duration"}: ${formatSecondsLabel(tr
       const audioBuffer = await loadAudioBuffer(file, lang);
       setMergerStatus(root, `${mergerText(lang, "waveform")} (${index + 1}/${files.length})`, 40 + Math.round(index / files.length * 30));
       const peaks = await summarizeWaveform(audioBuffer, 900);
-      items.push({ id: `${Date.now()}-${index}-${Math.random().toString(36).slice(2)}`, file, audioBuffer, peaks, duration: audioBuffer.duration, start: 0, end: audioBuffer.duration, volume: 100, muted: false, playhead: NaN });
+      items.push({ id: `${Date.now()}-${index}-${Math.random().toString(36).slice(2)}`, file, audioBuffer, peaks, duration: audioBuffer.duration, start: 0, end: audioBuffer.duration, volume: 100, muted: false, playhead: NaN, waveformViewport: { zoomLevel: 1, visibleStart: 0, visibleEnd: audioBuffer.duration } });
     }
     state.items = items;
     state.transitions = [];
@@ -2806,32 +2985,47 @@ ${lang === "ko" ? "구간 길이" : "Trimmed duration"}: ${formatSecondsLabel(tr
   const initMergerWaveformPointer = (root, canvas) => {
     if (canvas.dataset.pointerReady === "true") return;
     canvas.dataset.pointerReady = "true";
-    const timeFromEvent = (event, item) => {
-      const rect = (canvas.closest(".merger-waveform") || canvas).getBoundingClientRect();
-      const x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
-      return rect.width ? x / rect.width * item.duration : 0;
-    };
-    canvas.addEventListener("pointerdown", (event) => {
+    const lang = root.dataset.lang || "ko";
+    const wrapper = canvas.closest(".merger-waveform") || canvas;
+    ensureTrimHandles(wrapper, lang);
+    wrapper.addEventListener("keydown", (event) => {
       const item = getMergerItem(root, canvas.dataset.mergerWaveform);
-      if (!item) return;
-      event.preventDefault();
-      stopMergerPreview(root);
-      canvas.setPointerCapture?.(event.pointerId);
-      const rect = (canvas.closest(".merger-waveform") || canvas).getBoundingClientRect();
-      const x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
-      const startX = item.start / item.duration * rect.width;
-      const endX = item.end / item.duration * rect.width;
-      const hit = 32;
-      item.dragMode = Math.abs(x - startX) <= hit ? "start" : Math.abs(x - endX) <= hit ? "end" : x > startX && x < endX ? "move" : (x < startX ? "start" : "end");
-      item.dragStartTime = timeFromEvent(event, item);
-      item.dragInitialStart = item.start;
-      item.dragInitialEnd = item.end;
+      handleWaveformViewportKey(event, item, () => item && drawMergerWaveform(root, item));
     });
-    canvas.addEventListener("pointermove", (event) => {
+    const timeFromEvent = (event, item) => {
+      return clientXToWaveformTime(wrapper, item, event.clientX);
+    };
+    const stopDrag = (event) => {
+      const item = getMergerItem(root, canvas.dataset.mergerWaveform);
+      if (item) {
+        item.dragMode = "";
+        drawMergerWaveform(root, item);
+      }
+      wrapper.classList.remove("is-trim-dragging");
+      wrapper.classList.remove("is-panning");
+      wrapper.querySelectorAll(".trim-handle").forEach((handle) => handle.classList.remove("is-active"));
+      window.removeEventListener("pointermove", moveDrag);
+      window.removeEventListener("pointerup", stopDrag);
+      window.removeEventListener("pointercancel", stopDrag);
+      if (event?.pointerId != null) {
+        try { event.target?.releasePointerCapture?.(event.pointerId); } catch {}
+      }
+    };
+    const moveDrag = (event) => {
       const item = getMergerItem(root, canvas.dataset.mergerWaveform);
       if (!item?.dragMode) return;
       event.preventDefault();
       const time = timeFromEvent(event, item);
+      if (item.dragMode === "pan") {
+        const viewport = getWaveformViewport(item);
+        const rect = wrapper.getBoundingClientRect();
+        const visibleDuration = viewport.visibleEnd - viewport.visibleStart;
+        const deltaRatio = rect.width ? (event.clientX - item.panStartX) / rect.width : 0;
+        const nextStart = item.panStartVisibleStart - deltaRatio * visibleDuration;
+        setWaveformViewport(item, viewport.zoomLevel, nextStart);
+        drawMergerWaveform(root, item);
+        return;
+      }
       if (item.dragMode === "start") clampMergerRange(item, time, item.end, "start");
       if (item.dragMode === "end") clampMergerRange(item, item.start, time, "end");
       if (item.dragMode === "move") {
@@ -2846,17 +3040,87 @@ ${lang === "ko" ? "구간 길이" : "Trimmed duration"}: ${formatSecondsLabel(tr
       if (endInput) endInput.value = formatRingtoneTime(item.end);
       updateMergerSummary(root);
       drawMergerWaveform(root, item);
-    });
-    ["pointerup", "pointercancel", "pointerleave"].forEach((eventName) => {
-      canvas.addEventListener(eventName, () => {
+    };
+    const startDrag = (event, forcedMode = "") => {
+      const item = getMergerItem(root, canvas.dataset.mergerWaveform);
+      if (!item) return;
+      event.preventDefault();
+      event.stopPropagation();
+      stopMergerPreview(root);
+      event.currentTarget?.setPointerCapture?.(event.pointerId);
+      const rect = wrapper.getBoundingClientRect();
+      const x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
+      const startX = waveformTimeToX(item.start, item, rect.width);
+      const endX = waveformTimeToX(item.end, item, rect.width);
+      const hit = 32;
+      const viewport = getWaveformViewport(item);
+      const nearStart = item.start >= viewport.visibleStart && item.start <= viewport.visibleEnd && Math.abs(x - startX) <= hit;
+      const nearEnd = item.end >= viewport.visibleStart && item.end <= viewport.visibleEnd && Math.abs(x - endX) <= hit;
+      const inSelection = x > Math.min(startX, endX) && x < Math.max(startX, endX) && endX >= 0 && startX <= rect.width;
+      item.dragMode = forcedMode || (nearStart ? "start" : nearEnd ? "end" : inSelection ? "move" : (viewport.zoomLevel > 1 ? "pan" : (x < startX ? "start" : "end")));
+      item.dragStartTime = timeFromEvent(event, item);
+      item.dragInitialStart = item.start;
+      item.dragInitialEnd = item.end;
+      item.panStartX = event.clientX;
+      item.panStartVisibleStart = viewport.visibleStart;
+      wrapper.classList.toggle("is-trim-dragging", item.dragMode !== "pan");
+      wrapper.classList.toggle("is-panning", item.dragMode === "pan");
+      wrapper.querySelectorAll(".trim-handle").forEach((handle) => handle.classList.toggle("is-active", handle.dataset.trimHandle === item.dragMode));
+      window.addEventListener("pointermove", moveDrag, { passive: false });
+      window.addEventListener("pointerup", stopDrag, { once: true });
+      window.addEventListener("pointercancel", stopDrag, { once: true });
+    };
+    canvas.addEventListener("pointerdown", (event) => startDrag(event));
+    wrapper.querySelectorAll("[data-trim-handle]").forEach((handle) => {
+      handle.addEventListener("pointerdown", (event) => startDrag(event, handle.dataset.trimHandle));
+      handle.addEventListener("keydown", (event) => {
         const item = getMergerItem(root, canvas.dataset.mergerWaveform);
-        if (item) item.dragMode = "";
-        if (item) drawMergerWaveform(root, item);
+        if (!item) return;
+        const step = event.shiftKey ? 1 : 0.1;
+        let handled = true;
+        if (event.key === "ArrowLeft") {
+          if (handle.dataset.trimHandle === "start") clampMergerRange(item, item.start - step, item.end, "start");
+          else clampMergerRange(item, item.start, item.end - step, "end");
+        } else if (event.key === "ArrowRight") {
+          if (handle.dataset.trimHandle === "start") clampMergerRange(item, item.start + step, item.end, "start");
+          else clampMergerRange(item, item.start, item.end + step, "end");
+        } else {
+          handled = false;
+        }
+        if (handled) {
+          event.preventDefault();
+          stopMergerPreview(root);
+          keepWaveformTimeVisible(item, handle.dataset.trimHandle === "start" ? item.start : item.end);
+          const startInput = root.querySelector(`input[data-merger-input="start"][data-id="${item.id}"]`);
+          const endInput = root.querySelector(`input[data-merger-input="end"][data-id="${item.id}"]`);
+          if (startInput) startInput.value = formatRingtoneTime(item.start);
+          if (endInput) endInput.value = formatRingtoneTime(item.end);
+          updateMergerSummary(root);
+          drawMergerWaveform(root, item);
+        }
       });
     });
   };
   const initMergerDynamicControls = (root) => {
-    root.querySelectorAll("canvas[data-merger-waveform]").forEach((canvas) => initMergerWaveformPointer(root, canvas));
+    root.querySelectorAll("canvas[data-merger-waveform]").forEach((canvas) => {
+      initMergerWaveformPointer(root, canvas);
+      const item = getMergerItem(root, canvas.dataset.mergerWaveform);
+      const wrapper = canvas.closest(".merger-waveform");
+      initWaveformWheel(root, wrapper, () => getMergerItem(root, canvas.dataset.mergerWaveform), () => item && drawMergerWaveform(root, item));
+    });
+    root.querySelectorAll("canvas[data-merger-minimap]").forEach((canvas) => {
+      initWaveformMinimapPointer(root, canvas.closest(".waveform-minimap") || canvas, () => getMergerItem(root, canvas.dataset.mergerMinimap), () => {
+        const item = getMergerItem(root, canvas.dataset.mergerMinimap);
+        if (item) drawMergerWaveform(root, item);
+      });
+    });
+    root.querySelectorAll('input[data-merger-input="volume"]').forEach((input) => {
+      if (input.dataset.volumePointerReady === "true") return;
+      input.dataset.volumePointerReady = "true";
+      ["pointerdown", "mousedown", "touchstart", "click", "dragstart"].forEach((eventName) => {
+        input.addEventListener(eventName, (event) => event.stopPropagation());
+      });
+    });
   };
   const playMergerItem = async (root, item) => {
     const lang = root.dataset.lang || "ko";
@@ -2881,6 +3145,7 @@ ${lang === "ko" ? "구간 길이" : "Trimmed duration"}: ${formatSecondsLabel(tr
     source.start(0, item.start, duration);
     state.previewTimer = window.setInterval(() => {
       item.playhead = Math.min(item.end, item.start + context.currentTime - startedAt);
+      followWaveformPlayhead(item);
       drawMergerWaveform(root, item);
     }, 60);
     updateMergerPlaybackUi(root);
@@ -3381,6 +3646,355 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
     }
     return peaks;
   };
+  const waveformZoomLevels = [1, 2, 4, 8, 16, 32];
+  const clampNumber = (value, min, max) => Math.max(min, Math.min(max, value));
+  const getMinVisibleDuration = (duration) => Math.min(Math.max(0.1, duration || 0), 2);
+  const getMaxWaveformZoom = (duration) => {
+    const minVisible = getMinVisibleDuration(duration);
+    const available = waveformZoomLevels.filter((zoom) => duration / zoom >= minVisible || zoom === 1);
+    return available[available.length - 1] || 1;
+  };
+  const getWaveformViewport = (owner) => {
+    const duration = Math.max(0.1, owner?.duration || 0.1);
+    const maxZoom = getMaxWaveformZoom(duration);
+    const current = owner.waveformViewport || {};
+    let zoomLevel = waveformZoomLevels.includes(Number(current.zoomLevel)) ? Number(current.zoomLevel) : 1;
+    zoomLevel = Math.min(zoomLevel, maxZoom);
+    const visibleDuration = Math.min(duration, Math.max(getMinVisibleDuration(duration), duration / zoomLevel));
+    let visibleStart = Number.isFinite(current.visibleStart) ? Number(current.visibleStart) : 0;
+    visibleStart = clampNumber(visibleStart, 0, Math.max(0, duration - visibleDuration));
+    const viewport = {
+      zoomLevel,
+      visibleStart,
+      visibleEnd: Math.min(duration, visibleStart + visibleDuration),
+    };
+    owner.waveformViewport = viewport;
+    return viewport;
+  };
+  const setWaveformViewport = (owner, zoomLevel, visibleStart = 0) => {
+    const duration = Math.max(0.1, owner?.duration || 0.1);
+    const maxZoom = getMaxWaveformZoom(duration);
+    const nextZoom = Math.min(maxZoom, waveformZoomLevels.includes(Number(zoomLevel)) ? Number(zoomLevel) : 1);
+    const visibleDuration = Math.min(duration, Math.max(getMinVisibleDuration(duration), duration / nextZoom));
+    const start = clampNumber(Number(visibleStart) || 0, 0, Math.max(0, duration - visibleDuration));
+    owner.waveformViewport = {
+      zoomLevel: nextZoom,
+      visibleStart: start,
+      visibleEnd: Math.min(duration, start + visibleDuration),
+    };
+    return owner.waveformViewport;
+  };
+  const zoomWaveformAroundTime = (owner, nextZoom, anchorTime = null, anchorRatio = null) => {
+    const current = getWaveformViewport(owner);
+    const duration = Math.max(0.1, owner.duration || 0.1);
+    const currentDuration = current.visibleEnd - current.visibleStart;
+    const anchor = Number.isFinite(anchorTime) ? clampNumber(anchorTime, 0, duration) : (owner.playing && Number.isFinite(owner.playhead) ? owner.playhead : (owner.start + owner.end) / 2);
+    const ratio = Number.isFinite(anchorRatio) ? clampNumber(anchorRatio, 0, 1) : (currentDuration > 0 ? clampNumber((anchor - current.visibleStart) / currentDuration, 0, 1) : 0.5);
+    const maxZoom = getMaxWaveformZoom(duration);
+    const zoom = Math.min(maxZoom, Math.max(1, nextZoom));
+    const visibleDuration = Math.min(duration, Math.max(getMinVisibleDuration(duration), duration / zoom));
+    return setWaveformViewport(owner, zoom, anchor - visibleDuration * ratio);
+  };
+  const clientXToWaveformTime = (wrapper, owner, clientX) => {
+    const viewport = getWaveformViewport(owner);
+    const rect = wrapper.getBoundingClientRect();
+    const ratio = rect.width ? clampNumber((clientX - rect.left) / rect.width, 0, 1) : 0;
+    return viewport.visibleStart + ratio * (viewport.visibleEnd - viewport.visibleStart);
+  };
+  const waveformTimeToX = (time, owner, width) => {
+    const viewport = getWaveformViewport(owner);
+    const visibleDuration = Math.max(0.1, viewport.visibleEnd - viewport.visibleStart);
+    return (time - viewport.visibleStart) / visibleDuration * width;
+  };
+  const getWaveformPeaksForRange = (audioBuffer, startSeconds, endSeconds, points) => {
+    const sampleRate = audioBuffer.sampleRate || 44100;
+    const channels = audioBuffer.numberOfChannels || 1;
+    const length = audioBuffer.length;
+    const startSample = clampNumber(Math.floor(startSeconds * sampleRate), 0, Math.max(0, length - 1));
+    const endSample = clampNumber(Math.ceil(endSeconds * sampleRate), startSample + 1, length);
+    const bucketSize = Math.max(1, Math.floor((endSample - startSample) / Math.max(1, points)));
+    const peaks = [];
+    for (let bucket = 0; bucket < points; bucket += 1) {
+      const start = startSample + bucket * bucketSize;
+      const end = bucket === points - 1 ? endSample : Math.min(endSample, start + bucketSize);
+      let min = 0;
+      let max = 0;
+      for (let i = start; i < end; i += 1) {
+        let value = 0;
+        for (let channel = 0; channel < channels; channel += 1) value += audioBuffer.getChannelData(channel)[i] || 0;
+        value /= channels;
+        if (value < min) min = value;
+        if (value > max) max = value;
+      }
+      peaks.push({ min, max });
+    }
+    return peaks;
+  };
+  const getVisibleWaveformPeaks = (owner, points) => {
+    const viewport = getWaveformViewport(owner);
+    if (viewport.zoomLevel === 1 && owner.peaks?.length) return owner.peaks;
+    const key = `${Math.round(viewport.visibleStart * 10)}:${Math.round(viewport.visibleEnd * 10)}:${points}`;
+    owner.waveformPeakCache ||= new Map();
+    if (owner.waveformPeakCache.has(key)) return owner.waveformPeakCache.get(key);
+    const peaks = getWaveformPeaksForRange(owner.audioBuffer, viewport.visibleStart, viewport.visibleEnd, points);
+    owner.waveformPeakCache.set(key, peaks);
+    if (owner.waveformPeakCache.size > 18) owner.waveformPeakCache.delete(owner.waveformPeakCache.keys().next().value);
+    return peaks;
+  };
+  const keepWaveformTimeVisible = (owner, time) => {
+    if (!owner || !Number.isFinite(time)) return;
+    const viewport = getWaveformViewport(owner);
+    if (viewport.zoomLevel <= 1 || (time >= viewport.visibleStart && time <= viewport.visibleEnd)) return;
+    const visibleDuration = viewport.visibleEnd - viewport.visibleStart;
+    setWaveformViewport(owner, viewport.zoomLevel, time - visibleDuration / 2);
+  };
+  const followWaveformPlayhead = (owner) => {
+    if (!owner || !Number.isFinite(owner.playhead) || owner.dragMode === "pan") return;
+    const viewport = getWaveformViewport(owner);
+    if (viewport.zoomLevel <= 1 || (owner.playhead >= viewport.visibleStart && owner.playhead <= viewport.visibleEnd)) return;
+    const visibleDuration = viewport.visibleEnd - viewport.visibleStart;
+    setWaveformViewport(owner, viewport.zoomLevel, owner.playhead - visibleDuration * 0.25);
+  };
+  const chooseTickStep = (visibleDuration) => {
+    const candidates = [0.1, 0.5, 1, 2, 5, 10, 30, 60, 120, 300, 600];
+    return candidates.find((step) => visibleDuration / step <= 8) || 600;
+  };
+  const drawWaveformTicks = (context, owner, width, height, lang) => {
+    const viewport = getWaveformViewport(owner);
+    const visibleDuration = viewport.visibleEnd - viewport.visibleStart;
+    const step = chooseTickStep(visibleDuration);
+    const first = Math.ceil(viewport.visibleStart / step) * step;
+    context.save();
+    context.font = "11px ui-sans-serif, system-ui, sans-serif";
+    context.fillStyle = "#475569";
+    context.strokeStyle = "rgba(148, 163, 184, 0.45)";
+    context.lineWidth = 1;
+    for (let time = first; time <= viewport.visibleEnd + 0.001; time += step) {
+      const x = waveformTimeToX(time, owner, width);
+      context.beginPath();
+      context.moveTo(x + 0.5, 0);
+      context.lineTo(x + 0.5, height);
+      context.stroke();
+      const label = formatRingtoneTime(time, visibleDuration < 20);
+      context.fillText(label, Math.min(width - 48, Math.max(4, x + 4)), 14);
+    }
+    context.restore();
+  };
+  const updateWaveformViewportLabel = (root, owner, wrapper) => {
+    const lang = root.dataset.lang || "ko";
+    const viewport = getWaveformViewport(owner);
+    const label = wrapper?.parentElement?.querySelector("[data-waveform-viewport-label]") || root.querySelector("#waveform-viewport-label");
+    const text = viewport.zoomLevel === 1
+      ? (lang === "ko" ? "표시 구간: 전체" : "View: full")
+      : (lang === "ko"
+        ? `확대: ${viewport.zoomLevel}배 · 보기: ${formatRingtoneTime(viewport.visibleStart)} ~ ${formatRingtoneTime(viewport.visibleEnd)}`
+        : `Zoom: ${viewport.zoomLevel}x · View: ${formatRingtoneTime(viewport.visibleStart)} to ${formatRingtoneTime(viewport.visibleEnd)}`);
+    if (label) label.textContent = text;
+    const maxZoom = getMaxWaveformZoom(owner.duration || 0);
+    const toolbar = wrapper?.parentElement?.querySelector(".waveform-toolbar") || root;
+    toolbar.querySelectorAll('[data-action="waveform-zoom-out"]').forEach((button) => { button.disabled = viewport.zoomLevel <= 1; });
+    toolbar.querySelectorAll('[data-action="waveform-zoom-in"]').forEach((button) => { button.disabled = viewport.zoomLevel >= maxZoom; });
+    wrapper?.classList.toggle("is-zoomed", viewport.zoomLevel > 1);
+  };
+  const drawWaveformMinimap = (canvas, owner) => {
+    if (!canvas || !owner?.peaks?.length) return;
+    const wrapper = canvas.closest(".waveform-minimap") || canvas;
+    const rect = wrapper.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const width = Math.max(1, Math.round(rect.width));
+    const height = Math.max(1, Math.round(rect.height));
+    const targetWidth = Math.round(width * dpr);
+    const targetHeight = Math.round(height * dpr);
+    if (canvas.width !== targetWidth) canvas.width = targetWidth;
+    if (canvas.height !== targetHeight) canvas.height = targetHeight;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    context.clearRect(0, 0, width, height);
+    context.fillStyle = "#f8fafc";
+    context.fillRect(0, 0, width, height);
+    const center = height / 2;
+    context.strokeStyle = "#94a3b8";
+    context.lineWidth = 1;
+    for (let x = 0; x < width; x += 1) {
+      const peak = owner.peaks[Math.min(owner.peaks.length - 1, Math.floor(x / width * owner.peaks.length))] || { min: 0, max: 0 };
+      context.beginPath();
+      context.moveTo(x + 0.5, center + peak.min * center * 0.78);
+      context.lineTo(x + 0.5, center + peak.max * center * 0.78);
+      context.stroke();
+    }
+    const viewport = getWaveformViewport(owner);
+    const duration = owner.duration || 1;
+    const startX = viewport.visibleStart / duration * width;
+    const endX = viewport.visibleEnd / duration * width;
+    context.fillStyle = "rgba(37, 99, 235, 0.18)";
+    context.fillRect(startX, 0, Math.max(2, endX - startX), height);
+    context.strokeStyle = "#2563eb";
+    context.lineWidth = 2;
+    context.strokeRect(startX + 1, 1, Math.max(2, endX - startX - 2), height - 2);
+  };
+  const getWaveformActionOwner = (root, button) => {
+    if (button?.dataset?.id) return getMergerItem(root, button.dataset.id);
+    return root._ringtoneState;
+  };
+  const redrawWaveformOwner = (root, owner) => {
+    if (!owner) return;
+    if (owner.id) drawMergerWaveform(root, owner);
+    else requestRingtoneDraw(root);
+  };
+  const changeWaveformZoom = (root, button, direction) => {
+    const owner = getWaveformActionOwner(root, button);
+    if (!owner?.duration) return;
+    const viewport = getWaveformViewport(owner);
+    const currentIndex = waveformZoomLevels.indexOf(viewport.zoomLevel);
+    const nextIndex = direction === "in"
+      ? Math.min(waveformZoomLevels.length - 1, currentIndex + 1)
+      : Math.max(0, currentIndex - 1);
+    zoomWaveformAroundTime(owner, waveformZoomLevels[nextIndex]);
+    redrawWaveformOwner(root, owner);
+  };
+  const resetWaveformZoom = (root, button) => {
+    const owner = getWaveformActionOwner(root, button);
+    if (!owner?.duration) return;
+    setWaveformViewport(owner, 1, 0);
+    redrawWaveformOwner(root, owner);
+  };
+  const initWaveformWheel = (root, wrapper, ownerGetter, redraw) => {
+    if (!wrapper || wrapper.dataset.wheelReady === "true") return;
+    wrapper.dataset.wheelReady = "true";
+    let lastWheelAt = 0;
+    wrapper.addEventListener("wheel", (event) => {
+      if (!event.ctrlKey && !event.altKey) return;
+      const now = performance.now();
+      if (now - lastWheelAt < 120) return;
+      lastWheelAt = now;
+      const owner = ownerGetter();
+      if (!owner?.duration) return;
+      event.preventDefault();
+      const viewport = getWaveformViewport(owner);
+      const index = waveformZoomLevels.indexOf(viewport.zoomLevel);
+      const nextIndex = event.deltaY < 0 ? Math.min(waveformZoomLevels.length - 1, index + 1) : Math.max(0, index - 1);
+      const rect = wrapper.getBoundingClientRect();
+      const ratio = rect.width ? clampNumber((event.clientX - rect.left) / rect.width, 0, 1) : 0.5;
+      const anchorTime = clientXToWaveformTime(wrapper, owner, event.clientX);
+      zoomWaveformAroundTime(owner, waveformZoomLevels[nextIndex], anchorTime, ratio);
+      redraw();
+    }, { passive: false });
+  };
+  const initWaveformMinimapPointer = (root, minimap, ownerGetter, redraw) => {
+    if (!minimap || minimap.dataset.pointerReady === "true") return;
+    minimap.dataset.pointerReady = "true";
+    let isPanning = false;
+    const moveViewport = (event) => {
+      const owner = ownerGetter();
+      if (!owner?.duration) return;
+      const viewport = getWaveformViewport(owner);
+      const rect = minimap.getBoundingClientRect();
+      const ratio = rect.width ? clampNumber((event.clientX - rect.left) / rect.width, 0, 1) : 0;
+      const time = ratio * owner.duration;
+      const visibleDuration = viewport.visibleEnd - viewport.visibleStart;
+      setWaveformViewport(owner, viewport.zoomLevel, time - visibleDuration / 2);
+      redraw();
+    };
+    const stop = (event) => {
+      isPanning = false;
+      minimap.classList.remove("is-panning");
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", stop);
+      window.removeEventListener("pointercancel", stop);
+      if (event?.pointerId != null) {
+        try { event.target?.releasePointerCapture?.(event.pointerId); } catch {}
+      }
+    };
+    const move = (event) => {
+      if (!isPanning) return;
+      event.preventDefault();
+      moveViewport(event);
+    };
+    minimap.addEventListener("pointerdown", (event) => {
+      const owner = ownerGetter();
+      if (!owner?.duration) return;
+      event.preventDefault();
+      event.stopPropagation();
+      isPanning = true;
+      minimap.classList.add("is-panning");
+      minimap.setPointerCapture?.(event.pointerId);
+      moveViewport(event);
+      window.addEventListener("pointermove", move, { passive: false });
+      window.addEventListener("pointerup", stop, { once: true });
+      window.addEventListener("pointercancel", stop, { once: true });
+    });
+  };
+  const handleWaveformViewportKey = (event, owner, redraw) => {
+    if (!owner?.duration || event.target?.classList?.contains("trim-handle")) return;
+    const viewport = getWaveformViewport(owner);
+    const index = waveformZoomLevels.indexOf(viewport.zoomLevel);
+    const visibleDuration = viewport.visibleEnd - viewport.visibleStart;
+    let handled = true;
+    if (event.key === "+" || event.key === "=") {
+      zoomWaveformAroundTime(owner, waveformZoomLevels[Math.min(waveformZoomLevels.length - 1, index + 1)]);
+    } else if (event.key === "-") {
+      zoomWaveformAroundTime(owner, waveformZoomLevels[Math.max(0, index - 1)]);
+    } else if (event.key === "0") {
+      setWaveformViewport(owner, 1, 0);
+    } else if (event.shiftKey && event.key === "ArrowLeft") {
+      setWaveformViewport(owner, viewport.zoomLevel, viewport.visibleStart - visibleDuration * 0.25);
+    } else if (event.shiftKey && event.key === "ArrowRight") {
+      setWaveformViewport(owner, viewport.zoomLevel, viewport.visibleStart + visibleDuration * 0.25);
+    } else {
+      handled = false;
+    }
+    if (handled) {
+      event.preventDefault();
+      redraw();
+    }
+  };
+  const formatTrimAriaValue = (seconds) => `${Math.round((Number(seconds) || 0) * 10) / 10}s`;
+  const updateTrimHandlePositions = (wrapper, start, end, duration, viewport = null) => {
+    if (!wrapper || !duration) return;
+    const startHandle = wrapper.querySelector('[data-trim-handle="start"]');
+    const endHandle = wrapper.querySelector('[data-trim-handle="end"]');
+    const visibleStart = Number.isFinite(viewport?.visibleStart) ? viewport.visibleStart : 0;
+    const visibleEnd = Number.isFinite(viewport?.visibleEnd) ? viewport.visibleEnd : duration;
+    const visibleDuration = Math.max(0.1, visibleEnd - visibleStart);
+    const startVisible = start >= visibleStart && start <= visibleEnd;
+    const endVisible = end >= visibleStart && end <= visibleEnd;
+    const startPercent = Math.max(0, Math.min(100, (start - visibleStart) / visibleDuration * 100));
+    const endPercent = Math.max(0, Math.min(100, (end - visibleStart) / visibleDuration * 100));
+    if (startHandle) {
+      startHandle.style.display = startVisible ? "" : "none";
+      startHandle.style.left = `${startPercent}%`;
+      startHandle.setAttribute("aria-valuemin", "0");
+      startHandle.setAttribute("aria-valuemax", String(Math.round(duration * 10) / 10));
+      startHandle.setAttribute("aria-valuenow", String(Math.round(start * 10) / 10));
+      startHandle.setAttribute("aria-valuetext", formatTrimAriaValue(start));
+    }
+    if (endHandle) {
+      endHandle.style.display = endVisible ? "" : "none";
+      endHandle.style.left = `${endPercent}%`;
+      endHandle.setAttribute("aria-valuemin", "0");
+      endHandle.setAttribute("aria-valuemax", String(Math.round(duration * 10) / 10));
+      endHandle.setAttribute("aria-valuenow", String(Math.round(end * 10) / 10));
+      endHandle.setAttribute("aria-valuetext", formatTrimAriaValue(end));
+    }
+  };
+  const ensureTrimHandles = (wrapper, lang) => {
+    if (!wrapper || wrapper.dataset.trimHandlesReady === "true") return;
+    wrapper.dataset.trimHandlesReady = "true";
+    const labels = lang === "ko"
+      ? { start: "선택 시작 시간", end: "선택 종료 시간" }
+      : { start: "Selection start time", end: "Selection end time" };
+    ["start", "end"].forEach((type) => {
+      const handle = document.createElement("button");
+      handle.type = "button";
+      handle.className = `trim-handle trim-handle-${type}`;
+      handle.dataset.trimHandle = type;
+      handle.setAttribute("role", "slider");
+      handle.setAttribute("aria-label", labels[type]);
+      handle.innerHTML = '<span class="trim-handle-grip" aria-hidden="true"></span>';
+      wrapper.appendChild(handle);
+    });
+  };
   const drawRingtoneWaveform = (root) => {
     const state = root._ringtoneState;
     const canvas = root.querySelector("#ringtone-waveform-canvas");
@@ -3399,7 +4013,8 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
     context.fillStyle = "#f8fafc";
     context.fillRect(0, 0, width, height);
     const center = height / 2;
-    const peaks = state.peaks || [];
+    const viewport = getWaveformViewport(state);
+    const peaks = getVisibleWaveformPeaks(state, width);
     context.strokeStyle = "#64748b";
     context.lineWidth = 1;
     for (let x = 0; x < width; x += 1) {
@@ -3410,21 +4025,29 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
       context.stroke();
     }
     const duration = state.duration || 1;
-    const startX = state.start / duration * width;
-    const endX = state.end / duration * width;
+    drawWaveformTicks(context, state, width, height, root.dataset.lang || "ko");
+    const startX = waveformTimeToX(state.start, state, width);
+    const endX = waveformTimeToX(state.end, state, width);
+    const clippedStartX = clampNumber(startX, 0, width);
+    const clippedEndX = clampNumber(endX, 0, width);
+    updateTrimHandlePositions(wrapper, state.start, state.end, duration, viewport);
     context.fillStyle = "rgba(15, 23, 42, 0.18)";
-    context.fillRect(0, 0, startX, height);
-    context.fillRect(endX, 0, width - endX, height);
+    context.fillRect(0, 0, clippedStartX, height);
+    context.fillRect(clippedEndX, 0, width - clippedEndX, height);
     context.fillStyle = "rgba(37, 99, 235, 0.16)";
-    context.fillRect(startX, 0, Math.max(0, endX - startX), height);
+    context.fillRect(clippedStartX, 0, Math.max(0, clippedEndX - clippedStartX), height);
     context.fillStyle = "#2563eb";
-    context.fillRect(startX - 2, 0, 4, height);
-    context.fillRect(endX - 2, 0, 4, height);
+    if (state.start >= viewport.visibleStart && state.start <= viewport.visibleEnd) context.fillRect(startX - 2, 0, 4, height);
+    if (state.end >= viewport.visibleStart && state.end <= viewport.visibleEnd) context.fillRect(endX - 2, 0, 4, height);
     if (Number.isFinite(state.playhead)) {
-      const playheadX = state.playhead / duration * width;
-      context.fillStyle = "#ef4444";
-      context.fillRect(playheadX - 1, 0, 2, height);
+      const playheadX = waveformTimeToX(state.playhead, state, width);
+      if (playheadX >= 0 && playheadX <= width) {
+        context.fillStyle = "#ef4444";
+        context.fillRect(playheadX - 1, 0, 2, height);
+      }
     }
+    drawWaveformMinimap(root.querySelector("#ringtone-minimap-canvas"), state);
+    updateWaveformViewportLabel(root, state, wrapper);
   };
   const requestRingtoneDraw = (root) => {
     const state = root._ringtoneState;
@@ -3511,6 +4134,7 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
     const tick = () => {
       if (!state.playing || state.playToken !== playToken) return;
       state.playhead = Math.min(start + duration, state.playOffset + (audioContext.currentTime - state.playStartTime));
+      followWaveformPlayhead(state);
       requestRingtoneDraw(root);
       state.playRaf = requestAnimationFrame(tick);
     };
@@ -3525,6 +4149,8 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
     if (Number.isFinite(start) && Number.isFinite(end)) {
       stopRingtonePlayback(root);
       clampRingtoneSelection(root, start, end);
+      keepWaveformTimeVisible(state, state.start);
+      keepWaveformTimeVisible(state, state.end);
       updateRingtoneUi(root, false);
     }
   };
@@ -3533,33 +4159,43 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
     const wrapper = root.querySelector("#ringtone-waveform");
     if (!canvas || !wrapper || wrapper.dataset.pointerReady === "true") return;
     wrapper.dataset.pointerReady = "true";
+    const lang = root.dataset.lang || "ko";
+    ensureTrimHandles(wrapper, lang);
+    initWaveformWheel(root, wrapper, () => root._ringtoneState, () => requestRingtoneDraw(root));
+    initWaveformMinimapPointer(root, root.querySelector(".waveform-minimap"), () => root._ringtoneState, () => requestRingtoneDraw(root));
+    wrapper.addEventListener("keydown", (event) => handleWaveformViewportKey(event, root._ringtoneState, () => requestRingtoneDraw(root)));
     const timeFromEvent = (event) => {
       const state = root._ringtoneState;
-      const rect = canvas.getBoundingClientRect();
-      const x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
-      return rect.width && state?.duration ? x / rect.width * state.duration : 0;
+      return state ? clientXToWaveformTime(wrapper, state, event.clientX) : 0;
     };
-    canvas.addEventListener("pointerdown", (event) => {
+    const stopDrag = (event) => {
       const state = root._ringtoneState;
-      if (!state?.audioBuffer) return;
-      event.preventDefault();
-      stopRingtonePlayback(root);
-      canvas.setPointerCapture?.(event.pointerId);
-      const rect = canvas.getBoundingClientRect();
-      const x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
-      const startX = state.start / state.duration * rect.width;
-      const endX = state.end / state.duration * rect.width;
-      const hit = 32;
-      state.dragMode = Math.abs(x - startX) <= hit ? "start" : Math.abs(x - endX) <= hit ? "end" : x > startX && x < endX ? "move" : (x < startX ? "start" : "end");
-      state.dragStartTime = timeFromEvent(event);
-      state.dragInitialStart = state.start;
-      state.dragInitialEnd = state.end;
-    });
-    canvas.addEventListener("pointermove", (event) => {
+      if (state) state.dragMode = "";
+      wrapper.classList.remove("is-trim-dragging");
+      wrapper.classList.remove("is-panning");
+      wrapper.querySelectorAll(".trim-handle").forEach((handle) => handle.classList.remove("is-active"));
+      window.removeEventListener("pointermove", moveDrag);
+      window.removeEventListener("pointerup", stopDrag);
+      window.removeEventListener("pointercancel", stopDrag);
+      if (event?.pointerId != null) {
+        try { event.target?.releasePointerCapture?.(event.pointerId); } catch {}
+      }
+    };
+    const moveDrag = (event) => {
       const state = root._ringtoneState;
       if (!state?.dragMode) return;
       event.preventDefault();
       const time = timeFromEvent(event);
+      if (state.dragMode === "pan") {
+        const viewport = getWaveformViewport(state);
+        const rect = wrapper.getBoundingClientRect();
+        const visibleDuration = viewport.visibleEnd - viewport.visibleStart;
+        const deltaRatio = rect.width ? (event.clientX - state.panStartX) / rect.width : 0;
+        const nextStart = state.panStartVisibleStart - deltaRatio * visibleDuration;
+        setWaveformViewport(state, viewport.zoomLevel, nextStart);
+        requestRingtoneDraw(root);
+        return;
+      }
       if (state.dragMode === "start") clampRingtoneSelection(root, time, state.end);
       if (state.dragMode === "end") clampRingtoneSelection(root, state.start, time);
       if (state.dragMode === "move") {
@@ -3570,11 +4206,59 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
         clampRingtoneSelection(root, start, start + length);
       }
       updateRingtoneUi(root);
-    });
-    ["pointerup", "pointercancel", "pointerleave"].forEach((eventName) => {
-      canvas.addEventListener(eventName, () => {
+    };
+    const startDrag = (event, forcedMode = "") => {
+      const state = root._ringtoneState;
+      if (!state?.audioBuffer) return;
+      event.preventDefault();
+      event.stopPropagation();
+      stopRingtonePlayback(root);
+      event.currentTarget?.setPointerCapture?.(event.pointerId);
+      const rect = wrapper.getBoundingClientRect();
+      const x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
+      const startX = waveformTimeToX(state.start, state, rect.width);
+      const endX = waveformTimeToX(state.end, state, rect.width);
+      const hit = 32;
+      const viewport = getWaveformViewport(state);
+      const nearStart = state.start >= viewport.visibleStart && state.start <= viewport.visibleEnd && Math.abs(x - startX) <= hit;
+      const nearEnd = state.end >= viewport.visibleStart && state.end <= viewport.visibleEnd && Math.abs(x - endX) <= hit;
+      const inSelection = x > Math.min(startX, endX) && x < Math.max(startX, endX) && endX >= 0 && startX <= rect.width;
+      state.dragMode = forcedMode || (nearStart ? "start" : nearEnd ? "end" : inSelection ? "move" : (viewport.zoomLevel > 1 ? "pan" : (x < startX ? "start" : "end")));
+      state.dragStartTime = timeFromEvent(event);
+      state.dragInitialStart = state.start;
+      state.dragInitialEnd = state.end;
+      state.panStartX = event.clientX;
+      state.panStartVisibleStart = viewport.visibleStart;
+      wrapper.classList.toggle("is-trim-dragging", state.dragMode !== "pan");
+      wrapper.classList.toggle("is-panning", state.dragMode === "pan");
+      wrapper.querySelectorAll(".trim-handle").forEach((handle) => handle.classList.toggle("is-active", handle.dataset.trimHandle === state.dragMode));
+      window.addEventListener("pointermove", moveDrag, { passive: false });
+      window.addEventListener("pointerup", stopDrag, { once: true });
+      window.addEventListener("pointercancel", stopDrag, { once: true });
+    };
+    canvas.addEventListener("pointerdown", (event) => startDrag(event));
+    wrapper.querySelectorAll("[data-trim-handle]").forEach((handle) => {
+      handle.addEventListener("pointerdown", (event) => startDrag(event, handle.dataset.trimHandle));
+      handle.addEventListener("keydown", (event) => {
         const state = root._ringtoneState;
-        if (state) state.dragMode = "";
+        if (!state?.audioBuffer) return;
+        const step = event.shiftKey ? 1 : 0.1;
+        let handled = true;
+        if (event.key === "ArrowLeft") {
+          if (handle.dataset.trimHandle === "start") clampRingtoneSelection(root, state.start - step, state.end);
+          else clampRingtoneSelection(root, state.start, state.end - step);
+        } else if (event.key === "ArrowRight") {
+          if (handle.dataset.trimHandle === "start") clampRingtoneSelection(root, state.start + step, state.end);
+          else clampRingtoneSelection(root, state.start, state.end + step);
+        } else {
+          handled = false;
+        }
+        if (handled) {
+          event.preventDefault();
+          stopRingtonePlayback(root);
+          keepWaveformTimeVisible(state, handle.dataset.trimHandle === "start" ? state.start : state.end);
+          updateRingtoneUi(root);
+        }
       });
     });
   };
@@ -3591,7 +4275,7 @@ ${lang === "ko" ? "페이드 아웃 설정" : "Fade out setting"}: ${fadeOutLabe
     const startedAt = performance.now();
     const audioBuffer = await loadAudioBuffer(file, lang);
     const peaks = await summarizeWaveform(audioBuffer);
-    root._ringtoneState = { file, audioBuffer, peaks, duration: audioBuffer.duration, start: 0, end: Math.min(audioBuffer.duration, 30), playhead: 0, processing: false, waveformMs: performance.now() - startedAt };
+    root._ringtoneState = { file, audioBuffer, peaks, duration: audioBuffer.duration, start: 0, end: Math.min(audioBuffer.duration, 30), playhead: 0, processing: false, waveformMs: performance.now() - startedAt, waveformViewport: { zoomLevel: 1, visibleStart: 0, visibleEnd: audioBuffer.duration } };
     initRingtonePointerEvents(root);
     const largeNote = file.size >= 52428800
       ? `\n${lang === "ko" ? "큰 오디오 파일은 브라우저 메모리를 많이 사용하며 처리 시간이 길어질 수 있습니다. 모바일에서는 50MB 이하 파일을 권장합니다." : "Large audio files may use significant browser memory and take longer to process. Files under 50 MB are recommended on mobile devices."}`
@@ -5605,6 +6289,15 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
       if (slug === "audio-volume-editor" && action === "volume-preset") {
         syncVolumeInputs(root, button.dataset.volume || "100");
       }
+      if (action === "waveform-zoom-in") {
+        changeWaveformZoom(root, button, "in");
+      }
+      if (action === "waveform-zoom-out") {
+        changeWaveformZoom(root, button, "out");
+      }
+      if (action === "waveform-reset") {
+        resetWaveformZoom(root, button);
+      }
       if (slug === "audio-merger" && action?.startsWith("merger-")) {
         const state = getMergerState(root);
         const id = button.dataset.id;
@@ -5779,13 +6472,24 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
           stopMergerPreview(root);
           if (target.dataset.mergerInput === "start") {
             const start = parseAudioTime(target.value);
-            if (Number.isFinite(start)) clampMergerRange(item, start, item.end, "start");
+            if (Number.isFinite(start)) {
+              clampMergerRange(item, start, item.end, "start");
+              keepWaveformTimeVisible(item, item.start);
+            }
           }
           if (target.dataset.mergerInput === "end") {
             const end = parseAudioTime(target.value);
-            if (Number.isFinite(end)) clampMergerRange(item, item.start, end, "end");
+            if (Number.isFinite(end)) {
+              clampMergerRange(item, item.start, end, "end");
+              keepWaveformTimeVisible(item, item.end);
+            }
           }
-          if (target.dataset.mergerInput === "volume") item.volume = Math.max(0, Math.min(200, Number(target.value) || 0));
+          if (target.dataset.mergerInput === "volume") {
+            item.volume = Math.max(0, Math.min(200, Number(target.value) || 0));
+            updateMergerVolumeUi(root, item);
+            updateMergerSummary(root);
+            return;
+          }
           if (target.dataset.mergerInput === "muted") item.muted = target.checked;
           renderAudioMerger(root);
         }
@@ -5805,6 +6509,10 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
         }
       });
       root.addEventListener("dragstart", (event) => {
+        if (event.target.closest("input, button, select, textarea, .trim-handle")) {
+          event.stopPropagation();
+          return;
+        }
         const card = event.target.closest(".merger-file-card");
         if (card) event.dataTransfer?.setData("text/plain", card.dataset.mergerId || "");
       });
@@ -5912,3 +6620,4 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
     if (selectOnlyAutoRunSlugs.has(slug)) autoRun();
   });
 </script>
+
