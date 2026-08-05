@@ -28,7 +28,7 @@ const toolEnhancements: Record<Lang, Partial<Record<ToolSlug, ToolEnhancement>>>
     "image-compressor": {
       situations: { title: "이 도구가 필요한 상황", items: ["블로그나 쇼핑몰에 올릴 이미지를 더 가볍게 만들 때", "모바일에서 로딩이 느린 JPG, PNG, WebP 파일을 줄일 때", "해상도는 유지하면서 품질 값을 조절해 용량을 줄이고 싶을 때"] },
       options: { title: "품질 값 선택 기준", body: "JPG와 WebP는 품질 값을 낮출수록 용량이 줄어들 수 있지만 세부 묘사가 손실될 수 있습니다. PNG는 사진보다 로고, 아이콘, 캡처 이미지에서 압축 효과가 다르게 나타날 수 있습니다." },
-      interpretation: { title: "결과 확인 방법", body: "용량 감소율만 보지 말고 확대해서 글자, 얼굴, 경계선 주변에 깨짐이 생겼는지 확인하세요. 품질 차이가 눈에 띄면 품질 값을 조금 올리는 편이 좋습니다." },
+      interpretation: { title: "결과 확인 방법", body: "용량 감소율만 보지 말고 원본과 압축 결과를 같은 배율과 위치로 확대해서 글자, 얼굴, 경계선 주변에 깨짐이 생겼는지 확인하세요. 품질 차이가 눈에 띄면 품질 값을 조금 올리는 편이 좋습니다." },
       limitations: { title: "제한사항", body: "이미 충분히 압축된 이미지나 색상이 단순한 PNG는 기대보다 줄어들지 않을 수 있습니다. 투명도가 필요한 이미지는 JPG가 아니라 PNG 또는 WebP 출력을 사용해야 합니다." },
     },
     "image-resizer": {
@@ -107,7 +107,7 @@ const toolEnhancements: Record<Lang, Partial<Record<ToolSlug, ToolEnhancement>>>
     "image-compressor": {
       situations: { title: "When to Use This Tool", items: ["Make images lighter before uploading to blogs or stores", "Reduce slow-loading JPG, PNG, or WebP files", "Keep dimensions while adjusting quality and file size"] },
       options: { title: "Choosing a Quality Value", body: "For JPG and WebP, lower quality can reduce file size but may remove detail. PNG compression behaves differently depending on whether the image is a photo, logo, icon, or screenshot." },
-      interpretation: { title: "How to Check the Result", body: "Do not judge only by file size. Zoom in and check text, faces, and edges. If artifacts are visible, increase the quality value." },
+      interpretation: { title: "How to Check the Result", body: "Do not judge only by file size. Zoom the original and compressed previews to the same scale and position, then check text, faces, and edges. If artifacts are visible, increase the quality value." },
       limitations: { title: "Limits", body: "Already-compressed images may not shrink much. If transparency is required, use PNG or WebP instead of JPG." },
     },
     "image-resizer": {

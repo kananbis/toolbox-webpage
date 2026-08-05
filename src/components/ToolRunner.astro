@@ -428,7 +428,18 @@ const timeZonePresets = [
       )}
 
       {["image-compressor", "webp-converter"].includes(slug) && (
-        <label>{ui.labels.quality}<input id="quality" type="range" min="10" max="100" value="80" /></label>
+        <label class="grid gap-2" for="quality">
+          <span class="flex items-center justify-between gap-3">
+            <span>{ui.labels.quality}</span>
+            <span id="quality-value" class="rounded-full bg-slate-100 px-2 py-1 text-sm font-semibold text-slate-700">80%</span>
+          </span>
+          <input id="quality" type="range" min="10" max="100" step="1" value="80" aria-valuemin="10" aria-valuemax="100" aria-valuenow="80" aria-valuetext="80%" />
+          {slug === "image-compressor" && (
+            <span class="text-sm text-slate-600">
+              {lang === "ko" ? "품질을 낮추면 파일 용량은 줄어들 수 있지만 이미지가 흐려지거나 압축 흔적이 보일 수 있습니다." : "Lower quality can reduce file size, but it may also introduce blur or visible compression artifacts."}
+            </span>
+          )}
+        </label>
       )}
 
       {slug === "image-cropper" && (
@@ -505,6 +516,43 @@ const timeZonePresets = [
         </div>
       )}
 
+      {slug === "image-compressor" ? (
+        <div class="grid gap-4">
+          <div>
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "원본 / 압축 결과 비교" : "Original / Compressed Comparison"}</p>
+              <div class="flex flex-wrap items-center gap-2" aria-label={lang === "ko" ? "이미지 비교 확대 조절" : "Image comparison zoom controls"}>
+                <button class="btn-secondary px-3 py-1.5 text-sm" type="button" data-action="image-zoom-fit" aria-label={lang === "ko" ? "화면에 맞추기" : "Fit to view"}>{lang === "ko" ? "화면 맞춤" : "Fit"}</button>
+                <button class="btn-secondary px-3 py-1.5 text-sm" type="button" data-action="image-zoom-actual" aria-label={lang === "ko" ? "100% 크기로 보기" : "View at 100%"}>100%</button>
+                <button class="btn-secondary px-3 py-1.5 text-sm" type="button" data-action="image-zoom-out" aria-label={lang === "ko" ? "이미지 축소" : "Zoom out"}>-</button>
+                <span id="comparison-zoom-value" class="min-w-16 rounded-full bg-slate-100 px-2 py-1 text-center text-sm font-semibold text-slate-700" aria-live="polite">{lang === "ko" ? "맞춤" : "Fit"}</span>
+                <button class="btn-secondary px-3 py-1.5 text-sm" type="button" data-action="image-zoom-in" aria-label={lang === "ko" ? "이미지 확대" : "Zoom in"}>+</button>
+                <span id="compression-processing" class="hidden text-sm text-slate-600">{lang === "ko" ? "처리 중" : "Processing"}</span>
+              </div>
+            </div>
+            <div class="mt-2 grid gap-4 md:grid-cols-2">
+              <figure class="grid gap-2">
+                <figcaption class="text-sm font-semibold text-slate-600">{lang === "ko" ? "원본" : "Original"}</figcaption>
+                <div class="relative h-[260px] touch-none overflow-hidden rounded-md border border-line bg-slate-50 md:h-[360px]" data-comparison-frame="original" tabindex="0" role="group" aria-label={lang === "ko" ? "원본 이미지 확대 미리보기" : "Zoomable original image preview"}>
+                  <img id="original-preview" data-comparison-img alt={lang === "ko" ? "원본 이미지 미리보기" : "Original image preview"} class="pointer-events-none absolute left-0 top-0 max-w-none select-none" draggable="false" />
+                </div>
+              </figure>
+              <figure class="grid gap-2">
+                <figcaption class="text-sm font-semibold text-slate-600">{lang === "ko" ? "압축 결과" : "Compressed Result"}</figcaption>
+                <div class="relative h-[260px] touch-none overflow-hidden rounded-md border border-line bg-slate-50 md:h-[360px]" data-comparison-frame="compressed" tabindex="0" role="group" aria-label={lang === "ko" ? "압축 결과 이미지 확대 미리보기" : "Zoomable compressed image preview"}>
+                  <img id="compressed-preview" data-comparison-img alt={lang === "ko" ? "압축 결과 이미지 미리보기" : "Compressed image preview"} class="pointer-events-none absolute left-0 top-0 max-w-none select-none" draggable="false" />
+                </div>
+              </figure>
+            </div>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-600">{lang === "ko" ? "처리 결과" : "Processing Result"}</p>
+            <div id="compression-summary" class="mt-2 hidden rounded-md border border-line bg-slate-50 p-3 text-sm" aria-live="polite"></div>
+            <pre class="result-box mt-2 whitespace-pre-wrap" id="result">{ui.result}</pre>
+            <a id="download-link" class="btn-primary mt-3 hidden w-fit" download>{lang === "ko" ? "압축 이미지 다운로드" : "Download compressed image"}</a>
+          </div>
+        </div>
+      ) : (
       <div class={`grid gap-4 ${slug === "image-color-picker" ? "" : "md:grid-cols-2"}`}>
         {slug !== "image-color-picker" && (
           <div>
@@ -518,6 +566,7 @@ const timeZonePresets = [
           <a id="download-link" class="btn-primary mt-3 hidden w-fit" download>{lang === "ko" ? "다운로드" : "Download"}</a>
         </div>
       </div>
+      )}
     </div>
   )}
 
@@ -4909,6 +4958,28 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
   const canvasToBlob = (canvas, type, quality) => new Promise((resolve, reject) => {
     canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("Image encoding failed.")), type, quality);
   });
+  const syncImageQualityLabel = (root) => {
+    const input = root.querySelector("#quality");
+    if (!input) return;
+    const percent = Math.max(10, Math.min(100, Math.round(Number(input.value) || 80)));
+    input.setAttribute("aria-valuenow", String(percent));
+    input.setAttribute("aria-valuetext", `${percent}%`);
+    const value = root.querySelector("#quality-value");
+    if (value) value.textContent = `${percent}%`;
+  };
+  const setOriginalImagePreview = (root, file) => {
+    const preview = root.querySelector("#original-preview");
+    if (!preview) return;
+    const fileKey = `${file.name}:${file.size}:${file.lastModified}`;
+    if (root.dataset.originalImageFileKey === fileKey && preview.getAttribute("src")) return;
+    const previousUrl = root.dataset.originalImageUrl;
+    if (previousUrl) URL.revokeObjectURL(previousUrl);
+    const url = URL.createObjectURL(file);
+    root.dataset.originalImageUrl = url;
+    root.dataset.originalImageFileKey = fileKey;
+    preview.onload = () => renderImageComparison(root);
+    preview.src = url;
+  };
   const setImageDownload = (root, blob, filename) => {
     const previousUrl = root.dataset.downloadUrl;
     if (previousUrl) URL.revokeObjectURL(previousUrl);
@@ -4919,7 +4990,321 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
     link.download = filename;
     link.classList.remove("hidden");
     const preview = root.querySelector("#image-preview");
-    preview.src = url;
+    if (preview) preview.src = url;
+    const compressedPreview = root.querySelector("#compressed-preview");
+    if (compressedPreview) {
+      compressedPreview.onload = () => renderImageComparison(root);
+      compressedPreview.src = url;
+    }
+  };
+  const getImageSizeChange = (originalSize, outputSize, lang) => {
+    const delta = originalSize - outputSize;
+    const rate = originalSize > 0 ? Math.abs(delta) / originalSize * 100 : 0;
+    if (delta > 0) {
+      return {
+        summary: lang === "ko" ? `용량 감소 ${rate.toFixed(1)}%` : `${rate.toFixed(1)}% smaller`,
+        savedLabel: lang === "ko" ? "절감 용량" : "Saved",
+        rateLabel: lang === "ko" ? "용량 감소율" : "Reduction",
+        savedText: formatBytes(delta, lang),
+        rateText: `${rate.toFixed(1)}%`,
+        detail: `${formatBytes(originalSize, lang)} → ${formatBytes(outputSize, lang)}`,
+      };
+    }
+    if (delta < 0) {
+      return {
+        summary: lang === "ko" ? `용량 증가 ${rate.toFixed(1)}%` : `${rate.toFixed(1)}% larger`,
+        savedLabel: lang === "ko" ? "증가 용량" : "Increased by",
+        rateLabel: lang === "ko" ? "용량 증가율" : "Increase",
+        savedText: formatBytes(Math.abs(delta), lang),
+        rateText: `${rate.toFixed(1)}%`,
+        detail: `${formatBytes(originalSize, lang)} → ${formatBytes(outputSize, lang)}`,
+      };
+    }
+    return {
+      summary: lang === "ko" ? "용량 변화 없음" : "No size change",
+      savedLabel: lang === "ko" ? "절감 용량" : "Saved",
+      rateLabel: lang === "ko" ? "용량 감소율" : "Reduction",
+      savedText: formatBytes(0, lang),
+      rateText: "0.0%",
+      detail: `${formatBytes(originalSize, lang)} → ${formatBytes(outputSize, lang)}`,
+    };
+  };
+  const updateCompressionSummary = (root, originalSize, outputSize, lang) => {
+    const summary = root.querySelector("#compression-summary");
+    if (!summary) return null;
+    const change = getImageSizeChange(originalSize, outputSize, lang);
+    summary.classList.remove("hidden");
+    summary.innerHTML = `<strong>${change.summary}</strong><span class="mt-1 block text-slate-600">${change.detail}</span>`;
+    return change;
+  };
+  const clearImageCompressionPreview = (root) => {
+    root.dataset.imageCompressionJobId = `${Date.now()}-${Math.random()}`;
+    ["originalImageUrl", "downloadUrl"].forEach((key) => {
+      const url = root.dataset[key];
+      if (url) URL.revokeObjectURL(url);
+      delete root.dataset[key];
+    });
+    delete root.dataset.originalImageFileKey;
+    root._imageComparisonState = {
+      mode: "fit",
+      zoom: 1,
+      centerXRatio: 0.5,
+      centerYRatio: 0.5,
+      dragging: null,
+    };
+    ["#original-preview", "#compressed-preview", "#image-preview"].forEach((selector) => {
+      const preview = root.querySelector(selector);
+      if (preview) preview.removeAttribute("src");
+    });
+    const summary = root.querySelector("#compression-summary");
+    if (summary) {
+      summary.innerHTML = "";
+      summary.classList.add("hidden");
+    }
+    setCompressionProcessing(root, false);
+    renderImageComparison(root);
+  };
+  const getImageComparisonState = (root) => {
+    if (!root._imageComparisonState) {
+      root._imageComparisonState = {
+        mode: "fit",
+        zoom: 1,
+        centerXRatio: 0.5,
+        centerYRatio: 0.5,
+        dragging: null,
+      };
+    }
+    return root._imageComparisonState;
+  };
+  const getComparisonFrames = (root) => Array.from(root.querySelectorAll("[data-comparison-frame]"));
+  const getLoadedComparisonImage = (frame) => {
+    const image = frame?.querySelector("[data-comparison-img]");
+    if (!image?.naturalWidth || !image?.naturalHeight) return null;
+    return image;
+  };
+  const getPrimaryComparisonPair = (root) => {
+    for (const frame of getComparisonFrames(root)) {
+      const image = getLoadedComparisonImage(frame);
+      if (image) return { frame, image };
+    }
+    return null;
+  };
+  const getComparisonFitZoom = (root) => {
+    const pair = getPrimaryComparisonPair(root);
+    if (!pair) return 1;
+    const rect = pair.frame.getBoundingClientRect();
+    if (!rect.width || !rect.height) return 1;
+    return Math.min(rect.width / pair.image.naturalWidth, rect.height / pair.image.naturalHeight);
+  };
+  const getComparisonMinZoom = (root) => Math.min(getComparisonFitZoom(root), 1);
+  const getComparisonMaxZoom = (root) => Math.max(8, getComparisonFitZoom(root));
+  const getComparisonEffectiveZoom = (root) => {
+    const state = getImageComparisonState(root);
+    return state.mode === "fit" ? getComparisonFitZoom(root) : clampNumber(state.zoom, getComparisonMinZoom(root), getComparisonMaxZoom(root));
+  };
+  const clampComparisonCenter = (root, zoom) => {
+    const pair = getPrimaryComparisonPair(root);
+    const state = getImageComparisonState(root);
+    if (!pair) {
+      state.centerXRatio = 0.5;
+      state.centerYRatio = 0.5;
+      return;
+    }
+    const rect = pair.frame.getBoundingClientRect();
+    const renderedWidth = pair.image.naturalWidth * zoom;
+    const renderedHeight = pair.image.naturalHeight * zoom;
+    if (renderedWidth <= rect.width) state.centerXRatio = 0.5;
+    else {
+      const min = rect.width / 2 / renderedWidth;
+      state.centerXRatio = clampNumber(state.centerXRatio, min, 1 - min);
+    }
+    if (renderedHeight <= rect.height) state.centerYRatio = 0.5;
+    else {
+      const min = rect.height / 2 / renderedHeight;
+      state.centerYRatio = clampNumber(state.centerYRatio, min, 1 - min);
+    }
+  };
+  const renderImageComparison = (root) => {
+    const state = getImageComparisonState(root);
+    const frames = getComparisonFrames(root);
+    if (!frames.length) return;
+    const fitZoom = getComparisonFitZoom(root);
+    const maxZoom = getComparisonMaxZoom(root);
+    const minZoom = getComparisonMinZoom(root);
+    const zoom = state.mode === "fit" ? fitZoom : clampNumber(state.zoom, minZoom, maxZoom);
+    clampComparisonCenter(root, zoom);
+    frames.forEach((frame) => {
+      const image = getLoadedComparisonImage(frame);
+      if (!image) return;
+      const rect = frame.getBoundingClientRect();
+      const renderedWidth = image.naturalWidth * zoom;
+      const renderedHeight = image.naturalHeight * zoom;
+      image.style.width = `${renderedWidth}px`;
+      image.style.height = `${renderedHeight}px`;
+      image.style.left = `${rect.width / 2 - state.centerXRatio * renderedWidth}px`;
+      image.style.top = `${rect.height / 2 - state.centerYRatio * renderedHeight}px`;
+      frame.style.cursor = state.dragging ? "grabbing" : state.mode === "fit" ? "zoom-in" : "grab";
+    });
+    const zoomLabel = root.querySelector("#comparison-zoom-value");
+    if (zoomLabel) {
+      const isFit = state.mode === "fit" || Math.abs(zoom - fitZoom) < 0.01;
+      zoomLabel.textContent = isFit ? (root.dataset.lang === "ko" ? "맞춤" : "Fit") : `${Math.round(zoom * 100)}%`;
+    }
+    const zoomOut = root.querySelector('[data-action="image-zoom-out"]');
+    const zoomIn = root.querySelector('[data-action="image-zoom-in"]');
+    if (zoomOut) zoomOut.disabled = state.mode === "fit" || zoom <= minZoom + 0.01;
+    if (zoomIn) zoomIn.disabled = zoom >= maxZoom - 0.01;
+  };
+  const clientPointToImageRatio = (root, frame, clientX, clientY, zoom = getComparisonEffectiveZoom(root)) => {
+    const image = getLoadedComparisonImage(frame) || getPrimaryComparisonPair(root)?.image;
+    if (!image) return { x: 0.5, y: 0.5, frameX: 0.5, frameY: 0.5 };
+    const state = getImageComparisonState(root);
+    const rect = frame.getBoundingClientRect();
+    const renderedWidth = image.naturalWidth * zoom;
+    const renderedHeight = image.naturalHeight * zoom;
+    const frameX = clampNumber(clientX - rect.left, 0, rect.width);
+    const frameY = clampNumber(clientY - rect.top, 0, rect.height);
+    const left = rect.width / 2 - state.centerXRatio * renderedWidth;
+    const top = rect.height / 2 - state.centerYRatio * renderedHeight;
+    return {
+      x: clampNumber((frameX - left) / renderedWidth, 0, 1),
+      y: clampNumber((frameY - top) / renderedHeight, 0, 1),
+      frameX,
+      frameY,
+    };
+  };
+  const setComparisonZoom = (root, nextZoom, frame = null, clientX = null, clientY = null) => {
+    const state = getImageComparisonState(root);
+    const pair = frame ? { frame, image: getLoadedComparisonImage(frame) || getPrimaryComparisonPair(root)?.image } : getPrimaryComparisonPair(root);
+    if (!pair?.image) return;
+    const currentZoom = getComparisonEffectiveZoom(root);
+    const rect = pair.frame.getBoundingClientRect();
+    const anchor = clientX === null || clientY === null
+      ? { x: state.centerXRatio, y: state.centerYRatio, frameX: rect.width / 2, frameY: rect.height / 2 }
+      : clientPointToImageRatio(root, pair.frame, clientX, clientY, currentZoom);
+    const maxZoom = getComparisonMaxZoom(root);
+    const fitZoom = getComparisonFitZoom(root);
+    const zoom = clampNumber(nextZoom, getComparisonMinZoom(root), maxZoom);
+    state.mode = Math.abs(zoom - fitZoom) < 0.01 ? "fit" : "manual";
+    state.zoom = zoom;
+    const renderedWidth = pair.image.naturalWidth * zoom;
+    const renderedHeight = pair.image.naturalHeight * zoom;
+    state.centerXRatio = anchor.x - (anchor.frameX - rect.width / 2) / renderedWidth;
+    state.centerYRatio = anchor.y - (anchor.frameY - rect.height / 2) / renderedHeight;
+    renderImageComparison(root);
+  };
+  const fitImageComparison = (root) => {
+    const state = getImageComparisonState(root);
+    state.mode = "fit";
+    state.zoom = getComparisonFitZoom(root);
+    state.centerXRatio = 0.5;
+    state.centerYRatio = 0.5;
+    renderImageComparison(root);
+  };
+  const setCompressionProcessing = (root, isProcessing) => {
+    const indicator = root.querySelector("#compression-processing");
+    if (indicator) indicator.classList.toggle("hidden", !isProcessing);
+  };
+  const setupImageComparisonViewer = (root) => {
+    const frames = getComparisonFrames(root);
+    if (!frames.length) return;
+    const getDragPair = () => getPrimaryComparisonPair(root);
+    frames.forEach((frame) => {
+      frame.addEventListener("pointerdown", (event) => {
+        const pair = getDragPair();
+        if (!pair?.image) return;
+        const state = getImageComparisonState(root);
+        const zoom = getComparisonEffectiveZoom(root);
+        const renderedWidth = pair.image.naturalWidth * zoom;
+        const renderedHeight = pair.image.naturalHeight * zoom;
+        const rect = pair.frame.getBoundingClientRect();
+        if (renderedWidth <= rect.width && renderedHeight <= rect.height) return;
+        event.preventDefault();
+        frame.setPointerCapture?.(event.pointerId);
+        state.dragging = {
+          pointerId: event.pointerId,
+          startX: event.clientX,
+          startY: event.clientY,
+          startCenterXRatio: state.centerXRatio,
+          startCenterYRatio: state.centerYRatio,
+        };
+        renderImageComparison(root);
+      });
+      frame.addEventListener("pointermove", (event) => {
+        const state = getImageComparisonState(root);
+        if (!state.dragging || state.dragging.pointerId !== event.pointerId) return;
+        const pair = getDragPair();
+        if (!pair?.image) return;
+        event.preventDefault();
+        const zoom = getComparisonEffectiveZoom(root);
+        const renderedWidth = pair.image.naturalWidth * zoom;
+        const renderedHeight = pair.image.naturalHeight * zoom;
+        state.centerXRatio = state.dragging.startCenterXRatio - (event.clientX - state.dragging.startX) / renderedWidth;
+        state.centerYRatio = state.dragging.startCenterYRatio - (event.clientY - state.dragging.startY) / renderedHeight;
+        renderImageComparison(root);
+      });
+      const stopDrag = (event) => {
+        const state = getImageComparisonState(root);
+        if (!state.dragging || state.dragging.pointerId !== event.pointerId) return;
+        frame.releasePointerCapture?.(event.pointerId);
+        state.dragging = null;
+        renderImageComparison(root);
+      };
+      frame.addEventListener("pointerup", stopDrag);
+      frame.addEventListener("pointercancel", stopDrag);
+      frame.addEventListener("wheel", (event) => {
+        if (!event.ctrlKey && !event.altKey) return;
+        event.preventDefault();
+        const currentZoom = getComparisonEffectiveZoom(root);
+        setComparisonZoom(root, currentZoom * (event.deltaY < 0 ? 1.5 : 1 / 1.5), frame, event.clientX, event.clientY);
+      }, { passive: false });
+      frame.addEventListener("dblclick", (event) => {
+        event.preventDefault();
+        const state = getImageComparisonState(root);
+        if (state.mode === "fit") setComparisonZoom(root, 2, frame, event.clientX, event.clientY);
+        else fitImageComparison(root);
+      });
+      frame.addEventListener("keydown", (event) => {
+        const pair = getDragPair();
+        if (!pair?.image) return;
+        const state = getImageComparisonState(root);
+        const zoom = getComparisonEffectiveZoom(root);
+        const renderedWidth = pair.image.naturalWidth * zoom;
+        const renderedHeight = pair.image.naturalHeight * zoom;
+        const move = event.shiftKey ? 80 : 24;
+        if (event.key === "+" || event.key === "=") {
+          event.preventDefault();
+          setComparisonZoom(root, zoom * 1.5);
+        }
+        if (event.key === "-") {
+          event.preventDefault();
+          setComparisonZoom(root, zoom / 1.5);
+        }
+        if (event.key === "0") {
+          event.preventDefault();
+          fitImageComparison(root);
+        }
+        if (event.key === "1") {
+          event.preventDefault();
+          setComparisonZoom(root, 1);
+        }
+        if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key) && state.mode !== "fit") {
+          event.preventDefault();
+          if (event.key === "ArrowLeft") state.centerXRatio -= move / renderedWidth;
+          if (event.key === "ArrowRight") state.centerXRatio += move / renderedWidth;
+          if (event.key === "ArrowUp") state.centerYRatio -= move / renderedHeight;
+          if (event.key === "ArrowDown") state.centerYRatio += move / renderedHeight;
+          renderImageComparison(root);
+        }
+      });
+    });
+    if (window.ResizeObserver) {
+      const observer = new ResizeObserver(() => renderImageComparison(root));
+      frames.forEach((frame) => observer.observe(frame));
+    } else {
+      window.addEventListener("resize", () => renderImageComparison(root));
+    }
+    renderImageComparison(root);
   };
   const getImageExtension = (type) => type === "image/webp" ? "webp" : type === "image/png" ? "png" : "jpg";
   const getImageFormatLabel = (type) => type === "image/webp" ? "WebP" : type === "image/png" ? "PNG" : "JPG";
@@ -5639,6 +6024,13 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
         if (!file) throw new Error(m.chooseImage);
         const allowedTypes = slug === "webp-converter" ? ["image/jpeg", "image/png"] : ["image/jpeg", "image/png", "image/webp"];
         if (!allowedTypes.includes(file.type)) throw new Error(m.unsupportedImage);
+        const imageJobId = slug === "image-compressor" ? `${Date.now()}-${Math.random()}` : "";
+        if (imageJobId) root.dataset.imageCompressionJobId = imageJobId;
+        if (slug === "image-compressor") {
+          syncImageQualityLabel(root);
+          setOriginalImagePreview(root, file);
+          setCompressionProcessing(root, true);
+        }
 
         const image = await loadImageBitmap(file);
         const originalWidth = image.width;
@@ -5758,11 +6150,26 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
           if (slug === "image-watermark") drawOverlayText(context, root, outputWidth, outputHeight);
         }
         const blob = await canvasToBlob(canvas, outputType, quality);
+        if (imageJobId && root.dataset.imageCompressionJobId !== imageJobId) return;
         const extension = getImageExtension(outputType);
         const filename = outputName.includes(".") ? outputName : `${outputName}.${extension}`;
         setImageDownload(root, blob, filename);
         const cropInfo = slug === "image-cropper" ? `\n${m.cropArea}: x=${sourceX}, y=${sourceY}, width=${sourceWidth}, height=${sourceHeight}` : "";
         result.textContent = `${m.originalFileName}: ${file.name}\n${m.originalDimensions}: ${originalWidth} × ${originalHeight}px\n${m.originalSize}: ${formatBytes(file.size, lang)}\n${m.outputDimensions}: ${outputWidth} × ${outputHeight}px\n${m.outputSize}: ${formatBytes(blob.size, lang)}\n${m.outputFormat}: ${getImageFormatLabel(outputType)}${cropInfo}${note}`;
+        if (slug === "image-compressor") {
+          const change = updateCompressionSummary(root, file.size, blob.size, lang);
+          const savedLine = change ? [`${change.savedLabel}: ${change.savedText}`, `${change.rateLabel}: ${change.rateText}`] : [];
+          result.textContent = [
+            `${m.originalFileName}: ${file.name}`,
+            `${m.originalDimensions}: ${originalWidth} × ${originalHeight}px`,
+            `${m.originalSize}: ${formatBytes(file.size, lang)}`,
+            `${m.outputDimensions}: ${outputWidth} × ${outputHeight}px`,
+            `${m.outputSize}: ${formatBytes(blob.size, lang)}`,
+            ...savedLine,
+            `${m.outputFormat}: ${getImageFormatLabel(outputType)}${note}`,
+          ].join("\n");
+          setCompressionProcessing(root, false);
+        }
       }
       if (slug === "unix-timestamp-converter") {
         const mode = root.querySelector("#mode").value;
@@ -6130,6 +6537,7 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
         result.textContent = Array.from({ length: count }, () => randomChars(chars, length)).join("\n");
       }
     } catch (error) {
+      if (slug === "image-compressor") setCompressionProcessing(root, false);
       if (slug === "time-zone-converter") {
         const table = root.querySelector("#timezone-result-table");
         if (table) table.innerHTML = "";
@@ -6140,11 +6548,20 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
   document.querySelectorAll("[data-tool]").forEach((root) => {
     const slug = root.dataset.tool;
     syncUnitConverterOptions(root);
+    syncImageQualityLabel(root);
+    if (slug === "image-compressor") setupImageComparisonViewer(root);
     if (autoRunSlugs.has(slug)) {
       root.querySelectorAll('button[data-action="run"]').forEach((button) => button.remove());
     }
+    let imageAutoRunTimer = 0;
     const autoRun = () => {
+      syncImageQualityLabel(root);
       if (!autoRunSlugs.has(slug) || !hasAutoRunInput(root)) return;
+      if (slug === "image-compressor") {
+        window.clearTimeout(imageAutoRunTimer);
+        imageAutoRunTimer = window.setTimeout(() => run(root), 200);
+        return;
+      }
       run(root);
     };
     root.addEventListener("click", (event) => {
@@ -6158,6 +6575,14 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
             if (status) status.textContent = timeZoneText(root.dataset.lang || "ko", copied ? "copied" : "copyFailed");
           }
         });
+      }
+      if (slug === "image-compressor" && action?.startsWith("image-zoom-")) {
+        const zoom = getComparisonEffectiveZoom(root);
+        if (action === "image-zoom-fit") fitImageComparison(root);
+        if (action === "image-zoom-actual") setComparisonZoom(root, 1);
+        if (action === "image-zoom-out") setComparisonZoom(root, zoom / 1.5);
+        if (action === "image-zoom-in") setComparisonZoom(root, zoom * 1.5);
+        return;
       }
       if (action === "reset") {
         if (slug === "audio-merger") {
@@ -6181,6 +6606,7 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
         if (vatRate) vatRate.value = "10";
         const quality = root.querySelector("#quality");
         if (quality) quality.value = "80";
+        syncImageQualityLabel(root);
         const keepRatio = root.querySelector("#keep-ratio");
         if (keepRatio) keepRatio.checked = true;
         root.dataset.rotation = "0";
@@ -6194,11 +6620,7 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
         delete root._pdfFiles;
         delete root._pdfOrganizerPages;
         delete root.dataset.cutterDuration;
-        const previousUrl = root.dataset.downloadUrl;
-        if (previousUrl) URL.revokeObjectURL(previousUrl);
-        delete root.dataset.downloadUrl;
-        const preview = root.querySelector("#image-preview");
-        if (preview) preview.removeAttribute("src");
+        clearImageCompressionPreview(root);
         delete root._mosaicState;
         setMosaicSelection(root, { x: 0, y: 0, width: 0, height: 0 });
         const mosaicCanvas = root.querySelector("#mosaic-canvas");
@@ -6393,6 +6815,7 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
             setPdfStatus(root, error instanceof Error ? error.message : pdfText(root.dataset.lang || "ko", "invalidPdf"));
           });
         }
+        if (slug === "image-compressor" && control.id === "image-file") clearImageCompressionPreview(root);
         if (slug === "image-mosaic" && control.id === "image-file") run(root);
         if (["audio-output-format", "cutter-output-format", "compressor-output-format", "volume-output-format", "merger-output-format"].includes(control.id)) {
           syncAudioOutputOptions(root);
