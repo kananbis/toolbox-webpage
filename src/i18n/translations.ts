@@ -615,7 +615,7 @@ const pdfToolBasis = {
 export function getCategoryItems(lang: Lang) {
   return categorySlugs.map((slug) => ({
     slug,
-    path: `/${lang}/tools/${slug}`,
+    path: `/${lang}/tools/${slug}/`,
     ...i18n[lang].categories[slug],
   }));
 }
@@ -627,7 +627,7 @@ export function getTools(lang: Lang) {
   return baseTools.map((tool) => ({
     ...tool,
     category: tool.category as CategorySlug,
-    path: `/${lang}/tools/${tool.slug}`,
+    path: `/${lang}/tools/${tool.slug}/`,
     ...(localizedPdfToolText[tool.slug] ?? localizedAudioToolText[tool.slug] ?? localizedToolText[tool.slug]),
   }));
 }
@@ -640,86 +640,104 @@ export function getTool(lang: Lang, slug: string) {
   return getTools(lang).find((tool) => tool.slug === slug);
 }
 
-export function getRelatedTools(lang: Lang, slug: string, limit = 3) {
-  if (["image-to-ascii-art", "image-to-pixel-art", "random-wheel", "ladder-game", "lotto-number-generator"].includes(slug)) {
-    const relatedByFunTool: Record<string, string[]> = {
-      "image-to-ascii-art": ["image-to-pixel-art", "image-color-picker", "image-resizer", "image-mosaic"],
-      "image-to-pixel-art": ["image-to-ascii-art", "image-resizer", "image-compressor", "image-format-converter"],
-      "random-wheel": ["ladder-game", "lotto-number-generator", "random-number-generator"],
-      "ladder-game": ["random-wheel", "lotto-number-generator", "random-number-generator"],
-      "lotto-number-generator": ["random-wheel", "ladder-game", "random-number-generator"],
-    };
-    return (relatedByFunTool[slug] ?? ["image-to-ascii-art", "image-to-pixel-art", "random-wheel", "ladder-game", "lotto-number-generator"])
-      .filter((toolSlug) => toolSlug !== slug)
-      .slice(0, limit)
-      .map((toolSlug) => getTool(lang, toolSlug))
-      .filter((tool): tool is NonNullable<ReturnType<typeof getTool>> => Boolean(tool));
-  }
+export function getRelatedTools(lang: Lang, slug: string, limit = 6) {
+  const relatedByTool: Partial<Record<ToolSlug, ToolSlug[]>> = {
+    "character-counter": ["text-compare", "remove-spaces", "case-converter", "json-formatter", "csv-json-converter", "url-encoder-decoder"],
+    "remove-spaces": ["character-counter", "case-converter", "text-compare", "json-formatter", "url-encoder-decoder", "base64-converter"],
+    "case-converter": ["character-counter", "remove-spaces", "text-compare", "url-encoder-decoder", "json-formatter", "random-string-generator"],
+    "text-compare": ["character-counter", "remove-spaces", "case-converter", "json-formatter", "csv-json-converter", "url-encoder-decoder"],
 
-  if (["image-resizer", "image-compressor", "webp-converter", "image-cropper", "image-rotate-flip", "image-format-converter", "image-mosaic", "image-watermark", "remove-image-metadata", "image-color-picker", "image-color-replacer", "make-color-transparent"].includes(slug)) {
-    const relatedByImageTool: Record<string, string[]> = {
-      "image-cropper": ["image-resizer", "image-compressor", "webp-converter"],
-      "image-rotate-flip": ["image-resizer", "image-cropper", "webp-converter"],
-      "image-format-converter": ["webp-converter", "image-compressor", "image-resizer"],
-      "image-mosaic": ["image-cropper", "image-resizer", "image-compressor", "image-format-converter"],
-      "image-watermark": ["image-resizer", "image-compressor", "image-format-converter"],
-      "remove-image-metadata": ["image-compressor", "image-format-converter", "webp-converter"],
-      "image-color-picker": ["image-cropper", "image-resizer", "image-format-converter"],
-      "image-color-replacer": ["image-color-picker", "make-color-transparent", "image-format-converter", "image-compressor", "image-resizer"],
-      "make-color-transparent": ["image-color-replacer", "image-color-picker", "image-format-converter", "image-compressor", "image-resizer"],
-    };
-    return (relatedByImageTool[slug] ?? ["image-resizer", "image-compressor", "webp-converter"])
-      .filter((toolSlug) => toolSlug !== slug)
-      .map((toolSlug) => getTool(lang, toolSlug))
-      .filter((tool): tool is NonNullable<ReturnType<typeof getTool>> => Boolean(tool));
-  }
+    "percent-calculator": ["discount-calculator", "vat-calculator", "margin-calculator", "compound-interest-calculator", "loan-interest-calculator", "salary-net-calculator"],
+    "discount-calculator": ["percent-calculator", "vat-calculator", "margin-calculator", "salary-net-calculator", "compound-interest-calculator", "loan-interest-calculator"],
+    "vat-calculator": ["percent-calculator", "discount-calculator", "margin-calculator", "salary-net-calculator", "loan-interest-calculator", "unit-converter"],
+    "margin-calculator": ["percent-calculator", "discount-calculator", "vat-calculator", "compound-interest-calculator", "loan-interest-calculator", "salary-net-calculator"],
+    "compound-interest-calculator": ["loan-interest-calculator", "percent-calculator", "margin-calculator", "discount-calculator", "salary-net-calculator", "date-calculator"],
+    "loan-interest-calculator": ["compound-interest-calculator", "percent-calculator", "date-calculator", "margin-calculator", "salary-net-calculator", "discount-calculator"],
+    "salary-net-calculator": ["percent-calculator", "vat-calculator", "discount-calculator", "loan-interest-calculator", "margin-calculator", "compound-interest-calculator"],
+    "date-calculator": ["dday-calculator", "age-calculator", "time-zone-converter", "unix-timestamp-converter", "loan-interest-calculator", "compound-interest-calculator"],
+    "dday-calculator": ["date-calculator", "age-calculator", "time-zone-converter", "unix-timestamp-converter", "character-counter", "random-wheel"],
+    "age-calculator": ["date-calculator", "dday-calculator", "bmi-calculator", "time-zone-converter", "unit-converter", "salary-net-calculator"],
+    "bmi-calculator": ["age-calculator", "unit-converter", "percent-calculator", "date-calculator", "salary-net-calculator", "loan-interest-calculator"],
 
-  if (slug === "filter-calculator") {
-    return ["rc-time-constant-calculator", "reactance-calculator", "capacitance-converter", "ohms-law-calculator"]
-      .map((toolSlug) => getTool(lang, toolSlug))
-      .filter((tool): tool is NonNullable<ReturnType<typeof getTool>> => Boolean(tool));
-  }
+    "unit-converter": ["pyeong-calculator", "time-zone-converter", "unix-timestamp-converter", "frequency-wavelength-converter", "dbm-watt-converter", "awg-wire-size-converter"],
+    "time-zone-converter": ["unix-timestamp-converter", "date-calculator", "dday-calculator", "unit-converter", "pyeong-calculator", "random-wheel"],
+    "unix-timestamp-converter": ["time-zone-converter", "date-calculator", "dday-calculator", "unit-converter", "json-formatter", "url-encoder-decoder"],
+    "pyeong-calculator": ["unit-converter", "percent-calculator", "margin-calculator", "loan-interest-calculator", "date-calculator", "discount-calculator"],
 
-  if (slug === "time-zone-converter") {
-    return ["unix-timestamp-converter", "date-calculator", "dday-calculator", "unit-converter"]
-      .map((toolSlug) => getTool(lang, toolSlug))
-      .filter((tool): tool is NonNullable<ReturnType<typeof getTool>> => Boolean(tool));
-  }
+    "password-generator": ["random-string-generator", "uuid-generator", "qr-code-generator", "random-number-generator", "base64-converter", "url-encoder-decoder"],
+    "random-number-generator": ["random-wheel", "lotto-number-generator", "random-string-generator", "uuid-generator", "password-generator", "ladder-game"],
+    "random-string-generator": ["password-generator", "random-number-generator", "uuid-generator", "qr-code-generator", "base64-converter", "url-encoder-decoder"],
+    "uuid-generator": ["random-string-generator", "password-generator", "random-number-generator", "qr-code-generator", "json-formatter", "base64-converter"],
+    "qr-code-generator": ["url-encoder-decoder", "base64-converter", "password-generator", "random-string-generator", "uuid-generator", "image-format-converter"],
 
-  if (["audio-converter", "audio-cutter", "audio-compressor", "audio-volume-editor", "iphone-ringtone-maker", "audio-merger"].includes(slug)) {
-    const relatedByAudioTool: Record<string, string[]> = {
-      "audio-converter": ["audio-cutter", "audio-merger", "iphone-ringtone-maker", "audio-compressor", "audio-volume-editor"],
-      "audio-cutter": ["audio-merger", "iphone-ringtone-maker", "audio-converter", "audio-compressor", "audio-volume-editor"],
-      "audio-compressor": ["audio-converter", "audio-merger", "audio-cutter", "iphone-ringtone-maker", "audio-volume-editor"],
-      "audio-volume-editor": ["audio-converter", "audio-merger", "audio-cutter", "iphone-ringtone-maker", "audio-compressor"],
-      "iphone-ringtone-maker": ["audio-cutter", "audio-merger", "audio-converter", "audio-compressor", "audio-volume-editor"],
-      "audio-merger": ["audio-cutter", "iphone-ringtone-maker", "audio-converter", "audio-compressor", "audio-volume-editor"],
-    };
-    return (relatedByAudioTool[slug] ?? ["audio-converter", "audio-cutter", "audio-compressor", "audio-volume-editor", "iphone-ringtone-maker", "audio-merger"])
-      .map((toolSlug) => getTool(lang, toolSlug))
-      .filter((tool): tool is NonNullable<ReturnType<typeof getTool>> => Boolean(tool));
-  }
+    "json-formatter": ["csv-json-converter", "base64-converter", "url-encoder-decoder", "text-compare", "character-counter", "remove-spaces"],
+    "base64-converter": ["url-encoder-decoder", "json-formatter", "csv-json-converter", "password-generator", "random-string-generator", "qr-code-generator"],
+    "url-encoder-decoder": ["base64-converter", "json-formatter", "qr-code-generator", "csv-json-converter", "character-counter", "remove-spaces"],
+    "csv-json-converter": ["json-formatter", "text-compare", "character-counter", "base64-converter", "url-encoder-decoder", "remove-spaces"],
 
-  if (["pdf-merger", "pdf-splitter", "pdf-page-extractor", "image-to-pdf", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg", "pdf-watermark", "pdf-page-numbers", "pdf-organizer"].includes(slug)) {
-    const relatedByPdfTool: Record<string, string[]> = {
-      "pdf-merger": ["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "image-to-pdf"],
-      "pdf-splitter": ["pdf-merger", "pdf-page-extractor", "pdf-rotate"],
-      "pdf-page-extractor": ["pdf-splitter", "pdf-merger", "pdf-rotate"],
-      "image-to-pdf": ["image-compressor", "image-resizer", "pdf-merger", "pdf-rotate"],
-      "pdf-rotate": ["pdf-merger", "pdf-splitter", "pdf-page-extractor"],
-      "pdf-page-delete": ["pdf-organizer", "pdf-page-extractor", "pdf-splitter", "pdf-rotate"],
-      "pdf-to-jpg": ["image-to-pdf", "pdf-merger", "pdf-page-extractor", "image-compressor"],
-      "pdf-watermark": ["pdf-page-numbers", "pdf-organizer", "pdf-merger", "pdf-rotate"],
-      "pdf-page-numbers": ["pdf-watermark", "pdf-organizer", "pdf-merger"],
-      "pdf-organizer": ["pdf-page-delete", "pdf-rotate", "pdf-page-extractor", "pdf-merger"],
-    };
-    return (relatedByPdfTool[slug] ?? ["pdf-merger", "pdf-splitter", "pdf-page-extractor", "pdf-rotate"])
-      .map((toolSlug) => getTool(lang, toolSlug))
-      .filter((tool): tool is NonNullable<ReturnType<typeof getTool>> => Boolean(tool));
-  }
+    "ohms-law-calculator": ["voltage-divider-calculator", "led-resistor-calculator", "series-parallel-resistor-calculator", "resistor-color-code-calculator", "reactance-calculator", "unit-converter"],
+    "led-resistor-calculator": ["ohms-law-calculator", "resistor-color-code-calculator", "voltage-divider-calculator", "series-parallel-resistor-calculator", "battery-life-calculator", "unit-converter"],
+    "voltage-divider-calculator": ["ohms-law-calculator", "series-parallel-resistor-calculator", "resistor-color-code-calculator", "led-resistor-calculator", "reactance-calculator", "filter-calculator"],
+    "battery-life-calculator": ["ohms-law-calculator", "led-resistor-calculator", "unit-converter", "dbm-watt-converter", "awg-wire-size-converter", "voltage-divider-calculator"],
+    "resistor-color-code-calculator": ["series-parallel-resistor-calculator", "ohms-law-calculator", "led-resistor-calculator", "voltage-divider-calculator", "filter-calculator", "reactance-calculator"],
+    "capacitance-converter": ["reactance-calculator", "filter-calculator", "rc-time-constant-calculator", "unit-converter", "frequency-wavelength-converter", "ohms-law-calculator"],
+    "series-parallel-resistor-calculator": ["resistor-color-code-calculator", "ohms-law-calculator", "voltage-divider-calculator", "led-resistor-calculator", "filter-calculator", "reactance-calculator"],
+    "filter-calculator": ["rc-time-constant-calculator", "reactance-calculator", "capacitance-converter", "frequency-wavelength-converter", "ohms-law-calculator", "voltage-divider-calculator"],
+    "awg-wire-size-converter": ["unit-converter", "ohms-law-calculator", "led-resistor-calculator", "battery-life-calculator", "dbm-watt-converter", "frequency-wavelength-converter"],
+    "dbm-watt-converter": ["unit-converter", "frequency-wavelength-converter", "awg-wire-size-converter", "battery-life-calculator", "ohms-law-calculator", "reactance-calculator"],
+    "frequency-wavelength-converter": ["unit-converter", "reactance-calculator", "filter-calculator", "dbm-watt-converter", "capacitance-converter", "rc-time-constant-calculator"],
+    "rc-time-constant-calculator": ["filter-calculator", "reactance-calculator", "capacitance-converter", "frequency-wavelength-converter", "ohms-law-calculator", "voltage-divider-calculator"],
+    "reactance-calculator": ["filter-calculator", "capacitance-converter", "rc-time-constant-calculator", "frequency-wavelength-converter", "ohms-law-calculator", "unit-converter"],
+
+    "image-resizer": ["image-cropper", "image-compressor", "image-format-converter", "webp-converter", "image-rotate-flip", "image-to-pdf"],
+    "image-compressor": ["image-resizer", "image-format-converter", "webp-converter", "remove-image-metadata", "image-cropper", "image-to-pixel-art"],
+    "webp-converter": ["image-format-converter", "image-compressor", "image-resizer", "image-cropper", "remove-image-metadata", "image-to-pdf"],
+    "image-cropper": ["image-resizer", "image-compressor", "image-rotate-flip", "image-format-converter", "webp-converter", "image-watermark"],
+    "image-rotate-flip": ["image-cropper", "image-resizer", "image-compressor", "image-format-converter", "webp-converter", "image-watermark"],
+    "image-format-converter": ["webp-converter", "image-compressor", "image-resizer", "image-cropper", "image-to-pdf", "remove-image-metadata"],
+    "image-mosaic": ["image-to-pixel-art", "image-to-ascii-art", "image-cropper", "image-resizer", "image-compressor", "image-format-converter"],
+    "image-watermark": ["image-cropper", "image-resizer", "image-compressor", "image-format-converter", "image-color-picker", "remove-image-metadata"],
+    "remove-image-metadata": ["image-compressor", "image-format-converter", "webp-converter", "image-resizer", "image-cropper", "image-watermark"],
+    "image-color-picker": ["image-color-replacer", "make-color-transparent", "image-format-converter", "image-compressor", "image-to-ascii-art", "image-watermark"],
+    "image-color-replacer": ["image-color-picker", "make-color-transparent", "image-format-converter", "image-compressor", "image-resizer", "image-to-pixel-art"],
+    "make-color-transparent": ["image-color-replacer", "image-color-picker", "image-format-converter", "image-compressor", "image-resizer", "image-cropper"],
+
+    "image-to-ascii-art": ["image-to-pixel-art", "image-mosaic", "image-color-picker", "image-resizer", "image-compressor", "image-format-converter"],
+    "image-to-pixel-art": ["image-to-ascii-art", "image-mosaic", "image-resizer", "image-compressor", "image-format-converter", "image-color-picker"],
+    "random-wheel": ["ladder-game", "lotto-number-generator", "random-number-generator", "random-string-generator", "password-generator", "uuid-generator"],
+    "ladder-game": ["random-wheel", "lotto-number-generator", "random-number-generator", "random-string-generator", "password-generator", "uuid-generator"],
+    "lotto-number-generator": ["random-wheel", "ladder-game", "random-number-generator", "random-string-generator", "uuid-generator", "password-generator"],
+
+    "audio-converter": ["audio-cutter", "audio-merger", "audio-compressor", "audio-volume-editor", "iphone-ringtone-maker", "audio-compressor"],
+    "audio-cutter": ["audio-merger", "iphone-ringtone-maker", "audio-converter", "audio-compressor", "audio-volume-editor", "audio-compressor"],
+    "audio-compressor": ["audio-converter", "audio-cutter", "audio-merger", "audio-volume-editor", "iphone-ringtone-maker", "audio-cutter"],
+    "audio-volume-editor": ["audio-compressor", "audio-cutter", "audio-merger", "audio-converter", "iphone-ringtone-maker", "audio-compressor"],
+    "iphone-ringtone-maker": ["audio-cutter", "audio-converter", "audio-merger", "audio-compressor", "audio-volume-editor", "audio-cutter"],
+    "audio-merger": ["audio-cutter", "audio-volume-editor", "audio-converter", "audio-compressor", "iphone-ringtone-maker", "audio-cutter"],
+
+    "pdf-merger": ["pdf-splitter", "pdf-page-extractor", "pdf-organizer", "pdf-page-delete", "pdf-rotate", "image-to-pdf"],
+    "pdf-splitter": ["pdf-page-extractor", "pdf-merger", "pdf-organizer", "pdf-page-delete", "pdf-to-jpg", "pdf-rotate"],
+    "pdf-page-extractor": ["pdf-splitter", "pdf-merger", "pdf-page-delete", "pdf-organizer", "pdf-to-jpg", "pdf-rotate"],
+    "image-to-pdf": ["pdf-merger", "pdf-organizer", "pdf-to-jpg", "image-resizer", "image-compressor", "image-format-converter"],
+    "pdf-rotate": ["pdf-organizer", "pdf-page-delete", "pdf-merger", "pdf-splitter", "pdf-page-extractor", "pdf-watermark"],
+    "pdf-page-delete": ["pdf-organizer", "pdf-page-extractor", "pdf-splitter", "pdf-rotate", "pdf-merger", "pdf-page-numbers"],
+    "pdf-to-jpg": ["image-to-pdf", "pdf-page-extractor", "pdf-splitter", "pdf-merger", "image-compressor", "image-format-converter"],
+    "pdf-watermark": ["pdf-page-numbers", "pdf-organizer", "pdf-rotate", "pdf-merger", "pdf-page-delete", "image-to-pdf"],
+    "pdf-page-numbers": ["pdf-watermark", "pdf-organizer", "pdf-rotate", "pdf-merger", "pdf-page-delete", "pdf-page-extractor"],
+    "pdf-organizer": ["pdf-page-delete", "pdf-rotate", "pdf-page-extractor", "pdf-merger", "pdf-page-numbers", "pdf-watermark"],
+  };
 
   const tool = getTool(lang, slug);
   if (!tool) return [];
 
-  return getTools(lang).filter((item) => item.category === tool.category && item.slug !== slug).slice(0, limit);
+  const categoryFallback = getTools(lang)
+    .filter((item) => item.category === tool.category && item.slug !== slug)
+    .map((item) => item.slug as ToolSlug);
+  const preferred = relatedByTool[slug as ToolSlug] ?? [];
+  const slugs = [...new Set([...preferred, ...categoryFallback])].filter((toolSlug) => toolSlug !== slug);
+
+  return slugs
+    .slice(0, limit)
+    .map((toolSlug) => getTool(lang, toolSlug))
+    .filter((item): item is NonNullable<ReturnType<typeof getTool>> => Boolean(item));
 }
