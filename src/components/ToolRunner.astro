@@ -6588,6 +6588,36 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
       return input.value.trim() !== "";
     });
   };
+  const getResizeOriginalSize = (root) => {
+    const width = Number(root.dataset.resizeOriginalWidth);
+    const height = Number(root.dataset.resizeOriginalHeight);
+    return {
+      width: Number.isFinite(width) && width > 0 ? width : 0,
+      height: Number.isFinite(height) && height > 0 ? height : 0,
+    };
+  };
+  const syncResizeDimensions = (root, changedField = "") => {
+    const widthInput = root.querySelector("#width");
+    const heightInput = root.querySelector("#height");
+    const keepRatio = root.querySelector("#keep-ratio");
+    if (!widthInput || !heightInput || !keepRatio?.checked) return;
+    const { width: originalWidth, height: originalHeight } = getResizeOriginalSize(root);
+    if (!originalWidth || !originalHeight) return;
+
+    const width = Number(widthInput.value);
+    const height = Number(heightInput.value);
+    const basis = changedField || root.dataset.resizeBasis || "width";
+    root.dataset.resizeBasis = basis;
+
+    if (basis === "height") {
+      if (!Number.isFinite(height) || height <= 0) return;
+      widthInput.value = String(Math.max(1, Math.round(height * originalWidth / originalHeight)));
+      return;
+    }
+
+    if (!Number.isFinite(width) || width <= 0) return;
+    heightInput.value = String(Math.max(1, Math.round(width * originalHeight / originalWidth)));
+  };
   const syncDynamicInputs = (root) => {
     syncDateCalculatorMode(root);
     syncTimestampConverterMode(root);
@@ -6700,12 +6730,22 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
           const widthInput = root.querySelector("#width");
           const heightInput = root.querySelector("#height");
           const keepRatio = root.querySelector("#keep-ratio").checked;
+          root.dataset.resizeOriginalWidth = String(originalWidth);
+          root.dataset.resizeOriginalHeight = String(originalHeight);
           const rawWidth = Number(widthInput.value);
           const rawHeight = Number(heightInput.value);
           outputWidth = Number.isFinite(rawWidth) && rawWidth > 0 ? Math.round(rawWidth) : originalWidth;
           outputHeight = Number.isFinite(rawHeight) && rawHeight > 0 ? Math.round(rawHeight) : originalHeight;
+          if (!widthInput.value && !heightInput.value) {
+            widthInput.value = String(outputWidth);
+            heightInput.value = String(outputHeight);
+          }
           if (keepRatio) {
-            if (widthInput.value) {
+            const resizeBasis = root.dataset.resizeBasis === "height" ? "height" : "width";
+            if (resizeBasis === "height" && heightInput.value) {
+              outputWidth = Math.max(1, Math.round(outputHeight * originalWidth / originalHeight));
+              widthInput.value = String(outputWidth);
+            } else if (widthInput.value) {
               outputHeight = Math.max(1, Math.round(outputWidth * originalHeight / originalWidth));
               heightInput.value = String(outputHeight);
             } else if (heightInput.value) {
@@ -7437,7 +7477,12 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
       if (action === "run") run(root);
     });
     root.querySelectorAll("input, textarea, select").forEach((control) => {
-      control.addEventListener("input", autoRun);
+      control.addEventListener("input", () => {
+        if (slug === "image-resizer" && (control.id === "width" || control.id === "height")) {
+          syncResizeDimensions(root, control.id);
+        }
+        autoRun();
+      });
       control.addEventListener("change", () => {
         if (control.id === "mode") {
           syncDateCalculatorMode(root);
@@ -7457,6 +7502,7 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
           renderCropEditor(root);
           scheduleCropperOutput(root);
         } else if (control.id === "aspect-ratio" || control.id === "crop-width") syncCropAspectRatio(root);
+        if (slug === "image-resizer" && control.id === "keep-ratio") syncResizeDimensions(root, root.dataset.resizeBasis || "width");
         if (control.id === "unit-kind") syncUnitConverterOptions(root);
         if (pdfToolSlugs.includes(slug) && ["pdf-files", "pdf-image-files"].includes(control.id)) {
           loadPdfFileItems(root).catch((error) => {
