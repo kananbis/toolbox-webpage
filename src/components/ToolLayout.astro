@@ -48,6 +48,85 @@ const privacyNote = isImageTool
         ? "선택한 파일은 서버로 업로드되지 않으며, 현재 브라우저 안에서만 처리됩니다."
         : "Selected files are not uploaded to a server and are processed only in your browser."
       : t.common.privacyNote;
+const aspectRatioReference = lang === "ko"
+  ? {
+      title: "자주 쓰는 SNS 이미지 비율 참고",
+      note: "SNS와 서비스의 권장 이미지 크기는 변경될 수 있습니다. 아래 표는 자르기 비율을 빠르게 고르기 위한 참고용이며, 정확한 업로드 기준은 각 서비스의 최신 안내를 확인하세요.",
+      platform: "플랫폼",
+      use: "용도",
+      ratio: "비율",
+      size: "예시 크기",
+      rows: [
+        ["인스타그램", "정사각형 피드", "1:1", "1080×1080"],
+        ["인스타그램", "세로형 피드", "4:5", "1080×1350"],
+        ["인스타그램", "가로형 피드", "1.91:1", "1080×566"],
+        ["인스타그램", "스토리 / 릴스", "9:16", "1080×1920"],
+        ["인스타그램", "프로필", "1:1", "320×320"],
+        ["유튜브", "동영상 썸네일", "16:9", "1280×720"],
+        ["유튜브", "채널 아트 배너", "16:9", "안전영역 중앙 1546×423 참고"],
+        ["유튜브", "쇼츠", "9:16", "1080×1920"],
+        ["유튜브", "프로필", "1:1", "800×800"],
+        ["틱톡", "동영상 / 썸네일", "9:16", "1080×1920"],
+        ["틱톡", "프로필", "1:1", "200×200"],
+        ["틱톡", "PC 배너 광고", "7.5:1", "900×120"],
+        ["페이스북", "피드 이미지 가로", "1.91:1", "1200×630"],
+        ["페이스북", "피드 이미지 정사각", "1:1", "1200×1200"],
+        ["페이스북", "스토리", "9:16", "1080×1920"],
+        ["페이스북", "커버 사진", "약 2.63:1", "820×312"],
+        ["페이스북", "프로필", "1:1", "170×170"],
+        ["트위터(X)", "인스트림 이미지", "16:9", "1600×900"],
+        ["트위터(X)", "링크 카드", "1.91:1", "1200×628"],
+        ["트위터(X)", "헤더 배너", "3:1", "1500×500"],
+        ["트위터(X)", "프로필", "1:1", "400×400"],
+        ["링크드인", "개인 배너", "4:1", "1584×396"],
+        ["링크드인", "회사 페이지 배너", "약 6:1", "1128×191"],
+        ["링크드인", "공유 게시물 이미지", "1.91:1", "1200×627"],
+        ["링크드인", "프로필", "1:1", "400×400"],
+        ["핀터레스트", "표준 핀", "2:3", "1000×1500"],
+        ["핀터레스트", "정사각 핀", "1:1", "1000×1000"],
+        ["핀터레스트", "아이디어 핀 / 스토리", "9:16", "1080×1920"],
+        ["핀터레스트", "프로필", "1:1", "165×165"],
+      ],
+    }
+  : {
+      title: "Common Social Media Image Ratios",
+      note: "Recommended sizes can change by platform. Use this table as a quick reference for choosing an aspect ratio, and check each service's latest guidance for exact upload requirements.",
+      platform: "Platform",
+      use: "Use",
+      ratio: "Ratio",
+      size: "Example size",
+      rows: [
+        ["Instagram", "Square feed", "1:1", "1080×1080"],
+        ["Instagram", "Portrait feed", "4:5", "1080×1350"],
+        ["Instagram", "Landscape feed", "1.91:1", "1080×566"],
+        ["Instagram", "Stories / Reels", "9:16", "1080×1920"],
+        ["Instagram", "Profile", "1:1", "320×320"],
+        ["YouTube", "Video thumbnail", "16:9", "1280×720"],
+        ["YouTube", "Channel art banner", "16:9", "Central safe area 1546×423"],
+        ["YouTube", "Shorts", "9:16", "1080×1920"],
+        ["YouTube", "Profile", "1:1", "800×800"],
+        ["TikTok", "Video / thumbnail", "9:16", "1080×1920"],
+        ["TikTok", "Profile", "1:1", "200×200"],
+        ["TikTok", "PC banner ad", "7.5:1", "900×120"],
+        ["Facebook", "Landscape feed image", "1.91:1", "1200×630"],
+        ["Facebook", "Square feed image", "1:1", "1200×1200"],
+        ["Facebook", "Story", "9:16", "1080×1920"],
+        ["Facebook", "Cover photo", "About 2.63:1", "820×312"],
+        ["Facebook", "Profile", "1:1", "170×170"],
+        ["X / Twitter", "In-stream image", "16:9", "1600×900"],
+        ["X / Twitter", "Link card", "1.91:1", "1200×628"],
+        ["X / Twitter", "Header banner", "3:1", "1500×500"],
+        ["X / Twitter", "Profile", "1:1", "400×400"],
+        ["LinkedIn", "Personal banner", "4:1", "1584×396"],
+        ["LinkedIn", "Company page banner", "About 6:1", "1128×191"],
+        ["LinkedIn", "Shared post image", "1.91:1", "1200×627"],
+        ["LinkedIn", "Profile", "1:1", "400×400"],
+        ["Pinterest", "Standard pin", "2:3", "1000×1500"],
+        ["Pinterest", "Square pin", "1:1", "1000×1000"],
+        ["Pinterest", "Idea pin / story", "9:16", "1080×1920"],
+        ["Pinterest", "Profile", "1:1", "165×165"],
+      ],
+    };
 ---
 
 <Layout
@@ -111,6 +190,37 @@ const privacyNote = isImageTool
       <ul class="mt-3 list-disc space-y-2 pl-6">
         {tool.examples.map((item) => <li>{item}</li>)}
       </ul>
+
+      {
+        tool.slug === "image-cropper" && (
+          <>
+            <h2>{aspectRatioReference.title}</h2>
+            <p>{aspectRatioReference.note}</p>
+            <div class="mt-4 overflow-x-auto rounded-lg border border-line">
+              <table class="min-w-[720px] w-full border-collapse text-left text-sm">
+                <thead class="bg-slate-50 text-slate-700">
+                  <tr>
+                    <th class="border-b border-line px-3 py-2">{aspectRatioReference.platform}</th>
+                    <th class="border-b border-line px-3 py-2">{aspectRatioReference.use}</th>
+                    <th class="border-b border-line px-3 py-2">{aspectRatioReference.ratio}</th>
+                    <th class="border-b border-line px-3 py-2">{aspectRatioReference.size}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {aspectRatioReference.rows.map((row) => (
+                    <tr>
+                      <td class="border-t border-line px-3 py-2 font-medium text-ink">{row[0]}</td>
+                      <td class="border-t border-line px-3 py-2">{row[1]}</td>
+                      <td class="border-t border-line px-3 py-2 font-semibold">{row[2]}</td>
+                      <td class="border-t border-line px-3 py-2">{row[3]}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )
+      }
 
       <h2>{t.common.basis}</h2>
       <p class="whitespace-pre-line">{formattedBasis}</p>
