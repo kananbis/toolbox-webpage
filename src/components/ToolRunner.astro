@@ -472,14 +472,16 @@ const timeZonePresets = [
         <div class="grid gap-4">
           <fieldset class="grid gap-3 rounded-md border border-line bg-slate-50 p-3">
             <legend class="px-1 text-sm font-semibold text-slate-700">{lang === "ko" ? "비율 맞춤 방식" : "Fit mode"}</legend>
-            <label class="flex cursor-pointer items-start gap-3 rounded-md border border-line bg-white p-3">
-              <input id="crop-mode-crop" class="mt-1 h-4 w-4 shrink-0 accent-brand" name="crop-fit-mode" type="radio" value="crop" checked />
-              <span><span class="font-semibold">{lang === "ko" ? "잘라서 채우기" : "Crop to fill"}</span><span class="mt-1 block text-sm text-slate-600">{lang === "ko" ? "선택한 비율에 맞게 이미지 일부를 잘라냅니다. 선택 영역을 드래그해 위치와 크기를 조절하세요." : "Crop part of the image to match the selected ratio. Drag the crop area and handles to adjust it."}</span></span>
-            </label>
-            <label class="flex cursor-pointer items-start gap-3 rounded-md border border-line bg-white p-3">
-              <input class="mt-1 h-4 w-4 shrink-0 accent-brand" name="crop-fit-mode" type="radio" value="keep" />
-              <span><span class="font-semibold">{lang === "ko" ? "이미지 전체 유지" : "Keep full image"}</span><span class="mt-1 block text-sm text-slate-600">{lang === "ko" ? "원본을 자르거나 확대하지 않고 목표 비율에 맞게 결과 캔버스를 확장합니다." : "Expand the output canvas to match the selected ratio without cropping or enlarging the original image."}</span></span>
-            </label>
+            <div class="grid gap-3 md:grid-cols-2">
+              <label class="flex cursor-pointer items-start gap-3 rounded-md border border-line bg-white p-3">
+                <input id="crop-mode-crop" class="mt-1 h-4 w-4 shrink-0 accent-brand" name="crop-fit-mode" type="radio" value="crop" checked />
+                <span><span class="font-semibold">{lang === "ko" ? "잘라서 채우기" : "Crop to fill"}</span><span class="mt-1 block text-sm text-slate-600">{lang === "ko" ? "선택한 비율에 맞게 이미지 일부를 잘라냅니다. 선택 영역을 드래그해 위치와 크기를 조절하세요." : "Crop part of the image to match the selected ratio. Drag the crop area and handles to adjust it."}</span></span>
+              </label>
+              <label class="flex cursor-pointer items-start gap-3 rounded-md border border-line bg-white p-3">
+                <input class="mt-1 h-4 w-4 shrink-0 accent-brand" name="crop-fit-mode" type="radio" value="keep" />
+                <span><span class="font-semibold">{lang === "ko" ? "이미지 전체 유지" : "Keep full image"}</span><span class="mt-1 block text-sm text-slate-600">{lang === "ko" ? "원본을 자르거나 확대하지 않고 목표 비율에 맞게 결과 캔버스를 확장합니다." : "Expand the output canvas to match the selected ratio without cropping or enlarging the original image."}</span></span>
+              </label>
+            </div>
           </fieldset>
           <div class="grid gap-4 md:grid-cols-3">
             <label>{ui.labels.aspectRatio}<select id="aspect-ratio"><option value="free">{lang === "ko" ? "자유 비율" : "Free"}</option><option value="original">{lang === "ko" ? "원본 비율" : "Original"}</option><option value="1:1">1:1</option><option value="4:5">4:5</option><option value="5:4">5:4</option><option value="4:3">4:3</option><option value="3:4">3:4</option><option value="3:2">3:2</option><option value="2:3">2:3</option><option value="16:9">16:9</option><option value="9:16">9:16</option><option value="1.91:1">1.91:1</option><option value="2.63:1">2.63:1</option><option value="3:1">3:1</option><option value="4:1">4:1</option><option value="6:1">6:1</option><option value="7.5:1">7.5:1</option></select></label>
@@ -527,13 +529,62 @@ const timeZonePresets = [
       )}
 
       {slug === "image-rotate-flip" && (
-        <div class="flex flex-wrap gap-2">
-          <button class="btn-secondary" data-action="rotate-left">{lang === "ko" ? "왼쪽으로 90도" : "Rotate Left 90"}</button>
-          <button class="btn-secondary" data-action="rotate-right">{lang === "ko" ? "오른쪽으로 90도" : "Rotate Right 90"}</button>
-          <button class="btn-secondary" data-action="rotate-180">{lang === "ko" ? "180도 회전" : "Rotate 180"}</button>
-          <button class="btn-secondary" data-action="flip-horizontal">{lang === "ko" ? "좌우 뒤집기" : "Flip Horizontal"}</button>
-          <button class="btn-secondary" data-action="flip-vertical">{lang === "ko" ? "상하 뒤집기" : "Flip Vertical"}</button>
-          <button class="btn-secondary" data-action="reset">{ui.reset}</button>
+        <div class="grid gap-4 rounded-md border border-line bg-slate-50 p-4">
+          <div class="grid gap-3">
+            <p class="text-sm font-semibold text-slate-700">{lang === "ko" ? "빠른 회전 / 반전" : "Quick rotation / flip"}</p>
+            <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
+              <button class="btn-secondary" type="button" data-action="rotate-left">{lang === "ko" ? "왼쪽으로 90도" : "Rotate Left 90"}</button>
+              <button class="btn-secondary" type="button" data-action="rotate-right">{lang === "ko" ? "오른쪽으로 90도" : "Rotate Right 90"}</button>
+              <button class="btn-secondary" type="button" data-action="rotate-180">{lang === "ko" ? "180도 회전" : "Rotate 180"}</button>
+              <button class="btn-secondary" type="button" data-action="reset-rotation">{lang === "ko" ? "0도 초기화" : "Reset to 0"}</button>
+              <button class="btn-secondary" type="button" data-action="flip-horizontal" aria-pressed="false">{lang === "ko" ? "좌우 뒤집기" : "Flip Horizontal"}</button>
+              <button class="btn-secondary" type="button" data-action="flip-vertical" aria-pressed="false">{lang === "ko" ? "상하 뒤집기" : "Flip Vertical"}</button>
+            </div>
+          </div>
+          <div class="grid gap-3">
+            <div class="grid items-end gap-3 lg:grid-cols-[minmax(0,1fr)_140px_auto_auto_auto]">
+              <label class="grid gap-2 lg:col-span-1" for="rotation-angle">
+                <span class="flex items-center justify-between gap-3">
+                  <span>{lang === "ko" ? "각도" : "Angle"}</span>
+                  <span id="rotation-angle-value" class="rounded-full bg-white px-2 py-1 text-sm font-semibold text-slate-700">0°</span>
+                </span>
+                <input id="rotation-angle" type="range" min="-180" max="180" step="1" value="0" aria-valuemin="-180" aria-valuemax="180" aria-valuenow="0" aria-valuetext="0 degrees" />
+              </label>
+              <label class="grid gap-2" for="rotation-angle-input">
+                <span>{lang === "ko" ? "직접 입력" : "Direct input"}</span>
+                <input id="rotation-angle-input" type="number" min="-180" max="180" step="1" value="0" inputmode="numeric" />
+              </label>
+              <button class="btn-secondary" type="button" data-action="rotate-step" data-step="-1">-1°</button>
+              <button class="btn-secondary" type="button" data-action="reset-rotation">0°</button>
+              <button class="btn-secondary" type="button" data-action="rotate-step" data-step="1">+1°</button>
+            </div>
+          </div>
+          <fieldset class="grid gap-3">
+            <legend class="text-sm font-semibold text-slate-700">{lang === "ko" ? "회전 후 결과 방식" : "Output canvas mode"}</legend>
+            <div class="grid gap-3 md:grid-cols-2">
+              <label class="flex items-start gap-3 rounded-md border border-line bg-white p-3">
+                <input class="mt-1 h-4 w-4 shrink-0" type="radio" name="rotate-canvas-mode" value="expand" checked />
+                <span>
+                  <span class="block font-semibold">{lang === "ko" ? "전체 이미지 유지" : "Keep full image"}</span>
+                  <span class="mt-1 block text-sm text-slate-600">{lang === "ko" ? "회전된 이미지가 잘리지 않도록 결과 캔버스를 자동 확장합니다." : "Expand the output canvas so the rotated image is not cropped."}</span>
+                </span>
+              </label>
+              <label class="flex items-start gap-3 rounded-md border border-line bg-white p-3">
+                <input class="mt-1 h-4 w-4 shrink-0" type="radio" name="rotate-canvas-mode" value="original" />
+                <span>
+                  <span class="block font-semibold">{lang === "ko" ? "원본 캔버스 유지" : "Keep original canvas size"}</span>
+                  <span class="mt-1 block text-sm text-slate-600">{lang === "ko" ? "결과 크기를 원본과 같게 유지하며 모서리가 잘릴 수 있습니다." : "Keep the original size. Corners may be cropped."}</span>
+                </span>
+              </label>
+            </div>
+          </fieldset>
+          <div class="grid gap-3 md:grid-cols-3">
+            <label>{lang === "ko" ? "출력 형식" : "Output format"}<select id="rotate-output-format"><option value="original">{lang === "ko" ? "원본 형식 유지" : "Keep original format"}</option><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select></label>
+            <label>{lang === "ko" ? "배경 방식" : "Background"}<select id="rotate-background-mode"><option value="transparent">{lang === "ko" ? "투명" : "Transparent"}</option><option value="white">{lang === "ko" ? "흰색" : "White"}</option><option value="black">{lang === "ko" ? "검은색" : "Black"}</option><option value="custom">{lang === "ko" ? "사용자 지정 색상" : "Custom color"}</option></select></label>
+            <label>{lang === "ko" ? "배경색" : "Background color"}<input id="rotate-background-color" type="color" value="#ffffff" /></label>
+          </div>
+          <p id="rotate-format-note" class="text-sm text-slate-600" aria-live="polite"></p>
+          <button class="btn-secondary w-fit" type="button" data-action="reset">{ui.reset}</button>
         </div>
       )}
 
@@ -5206,6 +5257,67 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
     const value = root.querySelector("#quality-value");
     if (value) value.textContent = `${percent}%`;
   };
+  const normalizeImageRotationAngle = (angle) => {
+    let value = Math.round(Number(angle) || 0) % 360;
+    if (value > 180) value -= 360;
+    if (value <= -180) value += 360;
+    return value;
+  };
+  const syncImageRotationControls = (root, angle) => {
+    const normalized = normalizeImageRotationAngle(angle);
+    root.dataset.rotation = String(normalized);
+    const range = root.querySelector("#rotation-angle");
+    const input = root.querySelector("#rotation-angle-input");
+    const value = root.querySelector("#rotation-angle-value");
+    if (range) {
+      range.value = String(normalized);
+      range.setAttribute("aria-valuenow", String(normalized));
+      range.setAttribute("aria-valuetext", `${normalized} degrees`);
+    }
+    if (input) input.value = String(normalized);
+    if (value) value.textContent = `${normalized}°`;
+    const flipHorizontal = root.querySelector('[data-action="flip-horizontal"]');
+    const flipVertical = root.querySelector('[data-action="flip-vertical"]');
+    if (flipHorizontal) flipHorizontal.setAttribute("aria-pressed", root.dataset.flipX === "true" ? "true" : "false");
+    if (flipVertical) flipVertical.setAttribute("aria-pressed", root.dataset.flipY === "true" ? "true" : "false");
+    syncImageRotationOptions(root);
+  };
+  const getImageRotationBackground = (root, outputType) => {
+    const mode = root.querySelector("#rotate-background-mode")?.value || "transparent";
+    const customColor = root.querySelector("#rotate-background-color")?.value || "#ffffff";
+    if (mode === "black") return "#000000";
+    if (mode === "custom") return customColor;
+    if (mode === "transparent" && outputType !== "image/jpeg") return "";
+    return "#ffffff";
+  };
+  const syncImageRotationOptions = (root) => {
+    const lang = root.dataset.lang || "ko";
+    const outputSelect = root.querySelector("#rotate-output-format");
+    const file = root.querySelector("#image-file")?.files?.[0];
+    const outputType = outputSelect?.value === "original" ? file?.type || "image/png" : outputSelect?.value || "image/png";
+    const bgMode = root.querySelector("#rotate-background-mode")?.value || "transparent";
+    const colorInput = root.querySelector("#rotate-background-color");
+    if (colorInput) colorInput.disabled = bgMode !== "custom";
+    const note = root.querySelector("#rotate-format-note");
+    if (note) {
+      note.textContent = bgMode === "transparent" && outputType === "image/jpeg"
+        ? (lang === "ko" ? "JPG는 투명 배경을 지원하지 않아 흰색 배경으로 저장됩니다." : "JPG does not support transparency, so a white background is used.")
+        : "";
+    }
+  };
+  const getExpandedRotationSize = (width, height, angle) => {
+    const normalized = normalizeImageRotationAngle(angle);
+    const abs = Math.abs(normalized);
+    if (abs === 0 || abs === 180) return { width, height };
+    if (abs === 90) return { width: height, height: width };
+    const radians = normalized * Math.PI / 180;
+    const cos = Math.abs(Math.cos(radians));
+    const sin = Math.abs(Math.sin(radians));
+    return {
+      width: Math.ceil(width * cos + height * sin),
+      height: Math.ceil(width * sin + height * cos),
+    };
+  };
   const setOriginalImagePreview = (root, file) => {
     const preview = root.querySelector("#original-preview");
     if (!preview) return;
@@ -7861,10 +7973,34 @@ self.onmessage = async (event) => {
           outputHeight = sourceHeight;
           outputName = `${outputName}-cropped`;
         } else if (slug === "image-rotate-flip") {
-          const rotation = Number(root.dataset.rotation || "0") % 360;
-          outputWidth = rotation === 90 || rotation === 270 ? originalHeight : originalWidth;
-          outputHeight = rotation === 90 || rotation === 270 ? originalWidth : originalHeight;
-          outputName = `${outputName}-rotated`;
+          const rotation = normalizeImageRotationAngle(root.dataset.rotation || "0");
+          syncImageRotationControls(root, rotation);
+          const selectedOutputType = root.querySelector("#rotate-output-format")?.value || "original";
+          outputType = selectedOutputType === "original" ? file.type : selectedOutputType;
+          if (!["image/jpeg", "image/png", "image/webp"].includes(outputType)) outputType = "image/png";
+          const canvasMode = root.querySelector('input[name="rotate-canvas-mode"]:checked')?.value || "expand";
+          if (canvasMode === "expand") {
+            const expanded = getExpandedRotationSize(originalWidth, originalHeight, rotation);
+            outputWidth = expanded.width;
+            outputHeight = expanded.height;
+          } else {
+            outputWidth = originalWidth;
+            outputHeight = originalHeight;
+          }
+          const backgroundMode = root.querySelector("#rotate-background-mode")?.value || "transparent";
+          const backgroundColor = getImageRotationBackground(root, outputType);
+          const backgroundLabel = backgroundMode === "transparent" && outputType !== "image/jpeg"
+            ? (lang === "ko" ? "투명" : "Transparent")
+            : backgroundColor;
+          note = [
+            "",
+            `${lang === "ko" ? "회전 각도" : "Rotation angle"}: ${rotation}°`,
+            `${lang === "ko" ? "좌우 반전" : "Horizontal flip"}: ${root.dataset.flipX === "true" ? (lang === "ko" ? "적용" : "Applied") : (lang === "ko" ? "미적용" : "Not applied")}`,
+            `${lang === "ko" ? "상하 반전" : "Vertical flip"}: ${root.dataset.flipY === "true" ? (lang === "ko" ? "적용" : "Applied") : (lang === "ko" ? "미적용" : "Not applied")}`,
+            `${lang === "ko" ? "결과 방식" : "Canvas mode"}: ${canvasMode === "expand" ? (lang === "ko" ? "전체 이미지 유지" : "Keep full image") : (lang === "ko" ? "원본 캔버스 유지" : "Keep original canvas size")}`,
+            `${lang === "ko" ? "배경" : "Background"}: ${backgroundLabel}`,
+          ].join("\n");
+          outputName = `${outputName}-rotated-${rotation}deg`;
         } else if (slug === "image-format-converter") {
           quality = Math.max(0.1, Math.min(1, Number(root.querySelector("#quality").value) / 100 || 0.8));
           outputType = root.querySelector("#output-format").value;
@@ -7879,14 +8015,22 @@ self.onmessage = async (event) => {
 
         canvas.width = outputWidth;
         canvas.height = outputHeight;
-        if (outputType === "image/jpeg") {
+        if (slug === "image-rotate-flip") {
+          const backgroundColor = getImageRotationBackground(root, outputType);
+          if (backgroundColor) {
+            context.fillStyle = backgroundColor;
+            context.fillRect(0, 0, outputWidth, outputHeight);
+          }
+        } else if (outputType === "image/jpeg") {
           context.fillStyle = "#ffffff";
           context.fillRect(0, 0, outputWidth, outputHeight);
         }
         if (slug === "image-rotate-flip") {
-          const rotation = Number(root.dataset.rotation || "0") % 360;
+          const rotation = normalizeImageRotationAngle(root.dataset.rotation || "0");
           const flipX = root.dataset.flipX === "true";
           const flipY = root.dataset.flipY === "true";
+          context.imageSmoothingEnabled = true;
+          context.imageSmoothingQuality = "high";
           context.translate(outputWidth / 2, outputHeight / 2);
           context.rotate(rotation * Math.PI / 180);
           context.scale(flipX ? -1 : 1, flipY ? -1 : 1);
@@ -8295,6 +8439,7 @@ self.onmessage = async (event) => {
     const slug = root.dataset.tool;
     syncUnitConverterOptions(root);
     syncImageQualityLabel(root);
+    if (slug === "image-rotate-flip") syncImageRotationControls(root, root.dataset.rotation || "0");
     if (imageToolSlugs.includes(slug)) setupImageDropZone(root);
     if (slug === "image-compressor") setupImageComparisonViewer(root);
     if (slug === "image-cropper") setupCropperEditor(root);
@@ -8368,6 +8513,17 @@ self.onmessage = async (event) => {
         root.dataset.rotation = "0";
         root.dataset.flipX = "false";
         root.dataset.flipY = "false";
+        if (slug === "image-rotate-flip") {
+          const canvasMode = root.querySelector('input[name="rotate-canvas-mode"][value="expand"]');
+          if (canvasMode) canvasMode.checked = true;
+          const outputFormat = root.querySelector("#rotate-output-format");
+          if (outputFormat) outputFormat.value = "original";
+          const backgroundMode = root.querySelector("#rotate-background-mode");
+          if (backgroundMode) backgroundMode.value = "transparent";
+          const backgroundColor = root.querySelector("#rotate-background-color");
+          if (backgroundColor) backgroundColor.value = "#ffffff";
+          syncImageRotationControls(root, 0);
+        }
         stopRingtonePlayback(root);
         delete root._cutterState;
         delete root._compressorState;
@@ -8465,13 +8621,16 @@ self.onmessage = async (event) => {
         root._pdfOrganizerPages = pages;
         renderPdfOrganizer(root);
       }
-      if (slug === "image-rotate-flip" && ["rotate-left", "rotate-right", "rotate-180", "flip-horizontal", "flip-vertical"].includes(action)) {
-        const rotation = Number(root.dataset.rotation || "0");
-        if (action === "rotate-left") root.dataset.rotation = String((rotation + 270) % 360);
-        if (action === "rotate-right") root.dataset.rotation = String((rotation + 90) % 360);
-        if (action === "rotate-180") root.dataset.rotation = String((rotation + 180) % 360);
+      if (slug === "image-rotate-flip" && ["rotate-left", "rotate-right", "rotate-180", "rotate-step", "reset-rotation", "flip-horizontal", "flip-vertical"].includes(action)) {
+        const rotation = normalizeImageRotationAngle(root.dataset.rotation || "0");
+        if (action === "rotate-left") syncImageRotationControls(root, rotation - 90);
+        if (action === "rotate-right") syncImageRotationControls(root, rotation + 90);
+        if (action === "rotate-180") syncImageRotationControls(root, rotation + 180);
+        if (action === "rotate-step") syncImageRotationControls(root, rotation + Number(button.dataset.step || 0));
+        if (action === "reset-rotation") syncImageRotationControls(root, 0);
         if (action === "flip-horizontal") root.dataset.flipX = root.dataset.flipX === "true" ? "false" : "true";
         if (action === "flip-vertical") root.dataset.flipY = root.dataset.flipY === "true" ? "false" : "true";
+        syncImageRotationControls(root, root.dataset.rotation || "0");
         run(root);
       }
       if (slug === "image-mosaic" && action === "apply-mosaic") {
@@ -8573,6 +8732,12 @@ self.onmessage = async (event) => {
         if (slug === "image-resizer" && (control.id === "width" || control.id === "height")) {
           syncResizeDimensions(root, control.id);
         }
+        if (slug === "image-rotate-flip" && (control.id === "rotation-angle" || control.id === "rotation-angle-input")) {
+          syncImageRotationControls(root, control.value);
+        }
+        if (slug === "image-rotate-flip" && (control.id === "rotate-background-mode" || control.id === "rotate-background-color" || control.id === "rotate-output-format" || control.name === "rotate-canvas-mode")) {
+          syncImageRotationOptions(root);
+        }
         autoRun();
       });
       control.addEventListener("change", () => {
@@ -8594,6 +8759,12 @@ self.onmessage = async (event) => {
           renderCropEditor(root);
           scheduleCropperOutput(root);
         } else if (control.id === "aspect-ratio" || control.id === "crop-width") syncCropAspectRatio(root);
+        if (slug === "image-rotate-flip" && (control.id === "rotation-angle" || control.id === "rotation-angle-input")) {
+          syncImageRotationControls(root, control.value);
+        }
+        if (slug === "image-rotate-flip" && (control.id === "rotate-background-mode" || control.id === "rotate-background-color" || control.id === "rotate-output-format" || control.name === "rotate-canvas-mode")) {
+          syncImageRotationOptions(root);
+        }
         if (slug === "image-resizer" && control.id === "keep-ratio") syncResizeDimensions(root, root.dataset.resizeBasis || "width");
         if (control.id === "unit-kind") syncUnitConverterOptions(root);
         if (pdfToolSlugs.includes(slug) && ["pdf-files", "pdf-image-files"].includes(control.id)) {
@@ -8842,4 +9013,3 @@ self.onmessage = async (event) => {
     if (selectOnlyAutoRunSlugs.has(slug)) autoRun();
   });
 </script>
-
