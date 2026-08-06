@@ -126,6 +126,41 @@ const aspectRatioReference = lang === "ko"
         ["Pinterest", "Idea pin / story", "9:16", "1080×1920"],
         ["Pinterest", "Profile", "1:1", "165×165"],
       ],
+  };
+const imageConverterSupport = lang === "ko"
+  ? {
+      title: "지원 형식",
+      headers: ["형식", "입력", "출력", "비고"],
+      rows: [
+        ["JPG/JPEG/JFIF", "지원", "지원", "손실 압축, 투명도 없음"],
+        ["PNG", "지원", "지원", "투명도 유지 가능"],
+        ["APNG", "입력 지원", "PNG ZIP", "애니메이션 PNG 전체 프레임을 PNG ZIP으로 추출"],
+        ["WebP", "브라우저 지원 시", "브라우저 지원 시", "정지 WebP 기준. 애니메이션 WebP 전체 프레임 추출은 아직 미지원"],
+        ["AVIF", "브라우저 지원 시", "지원", "브라우저 미지원 시 외부 AVIF 인코더 지연 로드"],
+        ["GIF", "프레임 선택 / 전체 프레임 ZIP", "PNG ZIP", "정지 출력은 선택 프레임, PNG ZIP은 전체 프레임 추출"],
+        ["BMP", "브라우저 지원 시", "지원", "24비트 BMP로 저장"],
+        ["SVG", "래스터 입력", "미지원", "스크립트와 외부 리소스 제거 후 변환"],
+        ["ICO", "PNG 기반 입력", "ICO / PNG ZIP", "다중 크기 ICO 생성, 포함된 PNG 크기 ZIP 추출"],
+        ["HEIC/HEIF", "입력 지원", "미지원", "필요 시 외부 CDN HEIC 코덱 지연 로드"],
+        ["TIFF/TIF", "입력 지원", "PNG ZIP", "페이지 선택 변환 또는 전체 페이지 PNG ZIP"],
+      ],
+    }
+  : {
+      title: "Supported Formats",
+      headers: ["Format", "Input", "Output", "Notes"],
+      rows: [
+        ["JPG/JPEG/JFIF", "Supported", "Supported", "Lossy compression, no transparency"],
+        ["PNG", "Supported", "Supported", "Can preserve transparency"],
+        ["APNG", "Input supported", "PNG ZIP", "Extracts animated PNG frames as a PNG ZIP"],
+        ["WebP", "When browser supports it", "When browser supports it", "Still WebP only. Animated WebP frame extraction is not supported yet"],
+        ["AVIF", "When browser supports it", "Supported", "Lazy-loads the external AVIF encoder when native output is unavailable"],
+        ["GIF", "Frame selection / frame ZIP", "PNG ZIP", "Still output uses the selected frame; PNG ZIP extracts all frames"],
+        ["BMP", "When browser supports it", "Supported", "Saved as 24-bit BMP"],
+        ["SVG", "Raster input", "Not supported", "Scripts and external resources are removed before conversion"],
+        ["ICO", "PNG-based input", "ICO / PNG ZIP", "Creates multi-size ICO and extracts embedded PNG sizes as ZIP"],
+        ["HEIC/HEIF", "Input supported", "Not supported", "Lazy-loads the external HEIC codec when needed"],
+        ["TIFF/TIF", "Input supported", "PNG ZIP", "Selected-page conversion or all pages as PNG ZIP"],
+      ],
     };
 ---
 
@@ -185,6 +220,35 @@ const aspectRatioReference = lang === "ko"
       <ol class="mt-3 list-decimal space-y-2 pl-6">
         {tool.usage.map((item) => <li>{item}</li>)}
       </ol>
+
+      {
+        tool.slug === "image-format-converter" && (
+          <>
+            <h2>{imageConverterSupport.title}</h2>
+            <div class="mt-4 overflow-x-auto rounded-lg border border-line">
+              <table class="min-w-[720px] w-full border-collapse text-left text-sm">
+                <thead class="bg-slate-50 text-slate-700">
+                  <tr>
+                    {imageConverterSupport.headers.map((header) => (
+                      <th class="border-b border-line px-3 py-2">{header}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {imageConverterSupport.rows.map((row) => (
+                    <tr>
+                      <td class="border-t border-line px-3 py-2 font-medium text-ink">{row[0]}</td>
+                      <td class="border-t border-line px-3 py-2">{row[1]}</td>
+                      <td class="border-t border-line px-3 py-2">{row[2]}</td>
+                      <td class="border-t border-line px-3 py-2">{row[3]}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )
+      }
 
       <h2>{t.common.examples}</h2>
       <ul class="mt-3 list-disc space-y-2 pl-6">
