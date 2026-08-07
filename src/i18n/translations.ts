@@ -417,6 +417,59 @@ const audioToolText = {
   },
 } satisfies Record<Lang, Partial<Record<ToolSlug, ToolText>>>;
 
+const watermarkToolTextOverrides: Record<Lang, ToolText> = {
+  ko: {
+    name: "이미지 워터마크 넣기",
+    description: "이미지에 텍스트 워터마크를 넣고 글꼴, 크기, 색상, 투명도와 회전을 설정하세요. 한 곳에 배치하거나 이미지 전체에 반복 배열로 넣을 수 있습니다.",
+    seoTitle: "이미지 워터마크 넣기 - 반복 워터마크 글꼴 투명도 설정",
+    intro: "이미지에 텍스트 워터마크를 추가하고 한 곳에 배치하거나 이미지 전체에 반복해서 넣을 수 있습니다.",
+    usage: [
+      "워터마크를 넣을 이미지 파일을 선택합니다. 이미지가 선택되면 바로 아래 미리보기에서 결과를 확인할 수 있습니다.",
+      "텍스트 입력란에 워터마크로 사용할 문구를 입력합니다.",
+      "폰트, 굵기, 글자 크기, 색상, 투명도, 자간, 줄 간격과 기울임을 설정합니다.",
+      "필요한 경우 외곽선과 그림자를 설정합니다.",
+      "한 곳에 배치에서는 원하는 위치를 선택합니다. 반복 배치에서는 가로와 세로 개수를 입력하면 이미지 크기에 맞춰 자동으로 균등 배치됩니다.",
+      "반복 배치에서는 격자 또는 엇갈림 배열을 선택합니다.",
+      "회전 각도를 조절하고 위 미리보기에서 실제 배치를 확인합니다.",
+      "결과 정보를 확인한 뒤 워터마크가 적용된 이미지를 다운로드합니다.",
+    ],
+    examples: ["사진 중앙에 워터마크 하나 넣기", "상품 이미지 전체에 반복 저작권 표시 넣기", "대각선 엇갈림 배열로 기밀 문구 표시하기"],
+    faq: [
+      { question: "워터마크를 이미지 전체에 반복해서 넣을 수 있나요?", answer: "가능합니다. 반복 배치를 선택한 뒤 가로와 세로 개수를 입력하면 이미지 전체에 워터마크가 자동으로 균등 배치됩니다." },
+      { question: "워터마크 사이 간격도 직접 입력해야 하나요?", answer: "아닙니다. 이미지 크기와 선택한 가로·세로 개수를 기준으로 도구가 간격을 자동 계산합니다." },
+      { question: "격자와 엇갈림 배열의 차이는 무엇인가요?", answer: "격자는 모든 행의 워터마크를 같은 위치에 정렬하고, 엇갈림은 한 줄씩 가로 위치를 반 칸 이동해 자연스러운 반복 패턴을 만듭니다." },
+      { question: "반복 개수를 많이 설정하면 어떻게 되나요?", answer: "글자 크기에 비해 반복 개수가 많으면 워터마크끼리 겹칠 수 있습니다. 미리보기와 경고를 확인한 뒤 글자 크기나 반복 개수를 조절하세요." },
+      { question: "반복 워터마크에도 회전이나 외곽선을 적용할 수 있나요?", answer: "가능합니다. 글꼴, 크기, 색상, 투명도, 회전, 외곽선, 그림자 등 텍스트 스타일 설정이 모든 반복 워터마크에 동일하게 적용됩니다." },
+      { question: "기존처럼 중앙에 워터마크 하나만 넣을 수도 있나요?", answer: "가능합니다. 한 곳에 배치 모드를 선택하면 위치 선택 기능을 그대로 사용할 수 있습니다." },
+    ],
+  },
+  en: {
+    name: "Image Watermark Tool",
+    description: "Add a text watermark to an image, customize the font, size, color, opacity, and rotation, and place it once or repeat it evenly across the image.",
+    seoTitle: "Add Watermark to Image - Repeated Text Watermark",
+    intro: "Add a text watermark to an image and place it once or repeat it evenly across the entire image.",
+    usage: [
+      "Select the image you want to watermark. The preview directly below shows the result as soon as the image is selected.",
+      "Enter the text to use as the watermark.",
+      "Choose the font, weight, size, color, opacity, letter spacing, line height, and italic style.",
+      "Add an outline or shadow if needed.",
+      "For single placement, choose a position. For repeated placement, enter the number of columns and rows to distribute watermarks evenly.",
+      "For repeated placement, choose a grid or staggered pattern.",
+      "Adjust the rotation angle and check the placement in the preview above.",
+      "Check the result details and download the watermarked image.",
+    ],
+    examples: ["Add one watermark at the center of a photo", "Repeat a copyright notice across a product image", "Use a staggered diagonal pattern for a confidential label"],
+    faq: [
+      { question: "Can I repeat a watermark across the whole image?", answer: "Yes. Choose Repeated placement and enter the number of columns and rows to distribute watermarks evenly across the image." },
+      { question: "Do I need to enter the spacing between watermarks?", answer: "No. The tool calculates spacing automatically from the image size and the selected number of columns and rows." },
+      { question: "What is the difference between grid and staggered patterns?", answer: "Grid aligns watermarks in the same positions on every row. Staggered shifts every other row by half a cell for a more natural repeated pattern." },
+      { question: "What happens if I set a high repeat count?", answer: "Watermarks can overlap when the text is large relative to the cells. Check the preview and warning, then reduce the font size or repeat count if needed." },
+      { question: "Do repeated watermarks support rotation and outlines?", answer: "Yes. The same font, size, color, opacity, rotation, outline, and shadow settings are applied to every repeated watermark." },
+      { question: "Can I still place one watermark in the center?", answer: "Yes. Choose Single placement to keep the existing position controls." },
+    ],
+  },
+};
+
 const audioToolBasis = {
   ko: {
     "iphone-ringtone-maker": "아이폰 벨소리 만들기는 선택한 오디오 파일을 브라우저에서 한 번 디코딩해 파형을 표시하고, 사용자가 선택한 시작 시간과 종료 시간을 기준으로 FFmpeg WASM에서 AAC 오디오가 포함된 M4R 파일을 생성합니다. 파형 조절과 미리듣기는 Web Audio API로 처리하며, 실제 인코딩은 M4R 만들기 버튼을 눌렀을 때만 실행됩니다. 벨소리는 30초 이하를 권장하며 이 도구는 최대 40초까지 생성할 수 있습니다. 선택한 파일은 서버로 업로드되지 않고 현재 브라우저 안에서만 처리됩니다.",
@@ -548,6 +601,11 @@ const toolBasis = {
 } satisfies Record<Lang, Partial<Record<ToolSlug, string>>>;
 
 export function getToolBasis(lang: Lang, slug: ToolSlug) {
+  if (slug === "image-watermark") {
+    return lang === "ko"
+      ? "이미지 워터마크는 원본 이미지를 브라우저 Canvas에 그린 뒤 현재 텍스트 스타일과 배치 설정을 합성하는 방식으로 처리합니다. 반복 배치에서는 가로와 세로 개수로 나눈 각 셀의 중앙에 텍스트를 배치하며, 격자 또는 엇갈림 배열을 선택할 수 있습니다. 선택한 이미지는 서버로 업로드되지 않습니다.\n시스템 폰트는 기기에 따라 모양이 다를 수 있습니다. 웹폰트는 선택할 때 필요한 파일만 불러오며, 영문 전용 폰트는 한글이 시스템 대체 폰트로 표시될 수 있습니다."
+      : "Image watermarking draws the source image onto a browser canvas and composites text with the current style and placement settings. Repeated placement draws text at the center of each cell defined by the selected columns and rows, using a grid or staggered pattern. Selected images are not uploaded to a server.\nSystem fonts may look different across devices. Web fonts are loaded only when selected, and Latin-only fonts may use a system fallback for Korean text.";
+  }
   const localizedPdfBasis = pdfToolBasis[lang] as Partial<Record<ToolSlug, string>>;
   const localizedAudioBasis = audioToolBasis[lang] as Partial<Record<ToolSlug, string>>;
   const localizedToolBasis = toolBasis[lang] as Partial<Record<ToolSlug, string>>;
@@ -628,7 +686,7 @@ export function getTools(lang: Lang) {
     ...tool,
     category: tool.category as CategorySlug,
     path: `/${lang}/tools/${tool.slug}/`,
-    ...(localizedPdfToolText[tool.slug] ?? localizedAudioToolText[tool.slug] ?? localizedToolText[tool.slug]),
+    ...(tool.slug === "image-watermark" ? watermarkToolTextOverrides[lang] : (localizedPdfToolText[tool.slug] ?? localizedAudioToolText[tool.slug] ?? localizedToolText[tool.slug])),
   }));
 }
 
