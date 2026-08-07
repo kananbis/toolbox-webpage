@@ -662,6 +662,8 @@ const timeZonePresets = [
           </div>
           <div class="flex flex-wrap gap-2">
             <button class="btn-primary" data-action="apply-mosaic">{lang === "ko" ? "모자이크 적용" : "Apply Mosaic"}</button>
+            <button class="btn-secondary" type="button" data-action="mosaic-undo" disabled>{lang === "ko" ? "이전 단계" : "Undo"}</button>
+            <button class="btn-secondary" type="button" data-action="mosaic-redo" disabled>{lang === "ko" ? "다시 적용" : "Redo"}</button>
             <button class="btn-secondary" data-action="reset">{ui.reset}</button>
           </div>
         </div>
@@ -6674,6 +6676,45 @@ self.onmessage = async (event) => {
   };
   const getMosaicMode = (root) => root.querySelector('input[name="mosaic-mode"]:checked')?.value || "rect";
   const getMosaicBrushSize = (root) => Math.max(4, Math.round(Number(root.querySelector("#mosaic-brush-size")?.value) || 32));
+  const mosaicHistoryLimit = 10;
+  const updateMosaicHistoryControls = (root) => {
+    const state = root._mosaicState;
+    const undoButton = root.querySelector('[data-action="mosaic-undo"]');
+    const redoButton = root.querySelector('[data-action="mosaic-redo"]');
+    if (undoButton) undoButton.disabled = !state?.history?.length;
+    if (redoButton) redoButton.disabled = !state?.redoHistory?.length;
+  };
+  const createMosaicSnapshot = (state) => {
+    const context = state?.workCanvas?.getContext("2d");
+    if (!context) return null;
+    return context.getImageData(0, 0, state.width, state.height);
+  };
+  const storeMosaicSnapshot = (history, snapshot) => {
+    if (!snapshot) return;
+    history.push(snapshot);
+    if (history.length > mosaicHistoryLimit) history.shift();
+  };
+  const restoreMosaicSnapshot = async (root, direction) => {
+    const state = root._mosaicState;
+    const lang = root.dataset.lang || "ko";
+    if (!state?.workCanvas) return;
+    const source = direction === "undo" ? state.history : state.redoHistory;
+    const target = direction === "undo" ? state.redoHistory : state.history;
+    const snapshot = source?.pop();
+    if (!snapshot) return;
+    const current = createMosaicSnapshot(state);
+    if (current) storeMosaicSnapshot(target, current);
+    const context = state.workCanvas.getContext("2d");
+    if (!context) return;
+    context.putImageData(snapshot, 0, 0);
+    clearMosaicBrushMask(root);
+    setMosaicSelection(root, { x: 0, y: 0, width: 0, height: 0 });
+    drawMosaicPreview(root);
+    updateMosaicHistoryControls(root);
+    await refreshMosaicOutput(root, direction === "undo"
+      ? (lang === "ko" ? "이전 모자이크 적용을 되돌렸습니다." : "The previous mosaic change was undone.")
+      : (lang === "ko" ? "되돌린 모자이크 적용을 다시 적용했습니다." : "The mosaic change was restored."));
+  };
   const clampMosaicSelection = (selection, width, height) => {
     const x = Math.max(0, Math.min(width, Math.round(selection.x)));
     const y = Math.max(0, Math.min(height, Math.round(selection.y)));
@@ -6893,6 +6934,8 @@ self.onmessage = async (event) => {
     const blockSize = Math.max(4, Math.round(Number(root.querySelector("#mosaic-size")?.value) || 12));
     const workContext = state.workCanvas.getContext("2d");
     if (!workContext) throw new Error(messages[lang].cannotCalculate);
+    const historySnapshot = createMosaicSnapshot(state);
+    if (!historySnapshot) throw new Error(messages[lang].cannotCalculate);
     const tinyCanvas = document.createElement("canvas");
     tinyCanvas.width = Math.max(1, Math.ceil(selection.width / blockSize));
     tinyCanvas.height = Math.max(1, Math.ceil(selection.height / blockSize));
@@ -6911,6 +6954,8 @@ self.onmessage = async (event) => {
       mosaicContext.globalCompositeOperation = "destination-in";
       mosaicContext.drawImage(state.brushMaskCanvas, selection.x, selection.y, selection.width, selection.height, 0, 0, selection.width, selection.height);
     }
+    storeMosaicSnapshot(state.history, historySnapshot);
+    state.redoHistory = [];
     workContext.save();
     workContext.imageSmoothingEnabled = false;
     if (mode === "circle") {
@@ -6925,6 +6970,7 @@ self.onmessage = async (event) => {
       setMosaicSelection(root, { x: 0, y: 0, width: 0, height: 0 });
     }
     drawMosaicPreview(root);
+    updateMosaicHistoryControls(root);
     await refreshMosaicOutput(root, mosaicText(lang, "applied"));
   };
   const hexToRgb = (hex) => {
@@ -8458,9 +8504,12 @@ self.onmessage = async (event) => {
             panX: 0,
             panY: 0,
             panEnabled: false,
+            history: [],
+            redoHistory: [],
           };
           setMosaicSelection(root, { x: 0, y: 0, width: 0, height: 0 });
           drawMosaicPreview(root);
+          updateMosaicHistoryControls(root);
           await refreshMosaicOutput(root);
           return;
         }
@@ -9104,6 +9153,7 @@ self.onmessage = async (event) => {
           if (context) context.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
         }
         delete root._mosaicState;
+        updateMosaicHistoryControls(root);
         setMosaicSelection(root, { x: 0, y: 0, width: 0, height: 0 });
         const mosaicCanvas = root.querySelector("#mosaic-canvas");
         if (mosaicCanvas) {
@@ -9199,6 +9249,16 @@ self.onmessage = async (event) => {
       }
       if (slug === "image-mosaic" && action === "apply-mosaic") {
         applyMosaic(root).catch((error) => {
+          root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+        });
+      }
+      if (slug === "image-mosaic" && action === "mosaic-undo") {
+        restoreMosaicSnapshot(root, "undo").catch((error) => {
+          root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+        });
+      }
+      if (slug === "image-mosaic" && action === "mosaic-redo") {
+        restoreMosaicSnapshot(root, "redo").catch((error) => {
           root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
         });
       }
