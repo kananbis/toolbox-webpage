@@ -487,7 +487,7 @@ const timeZonePresets = [
             <label>{ui.labels.aspectRatio}<select id="aspect-ratio"><option value="free">{lang === "ko" ? "자유 비율" : "Free"}</option><option value="original">{lang === "ko" ? "원본 비율" : "Original"}</option><option value="1:1">1:1</option><option value="4:5">4:5</option><option value="5:4">5:4</option><option value="4:3">4:3</option><option value="3:4">3:4</option><option value="3:2">3:2</option><option value="2:3">2:3</option><option value="16:9">16:9</option><option value="9:16">9:16</option><option value="1.91:1">1.91:1</option><option value="2.63:1">2.63:1</option><option value="3:1">3:1</option><option value="4:1">4:1</option><option value="6:1">6:1</option><option value="7.5:1">7.5:1</option></select></label>
             <label>{lang === "ko" ? "출력 형식" : "Output format"}<select id="crop-output-format"><option value="original">{lang === "ko" ? "원본 형식 유지" : "Keep original"}</option><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select></label>
             <label class="crop-keep-option">{lang === "ko" ? "배경 방식" : "Background"}<select id="crop-background-mode"><option value="solid">{lang === "ko" ? "단색" : "Solid color"}</option><option value="transparent">{lang === "ko" ? "투명" : "Transparent"}</option><option value="blur">{lang === "ko" ? "흐림 배경" : "Blurred background"}</option></select></label>
-            <label class="crop-keep-option">{lang === "ko" ? "배경색" : "Background color"}<input id="crop-background-color" type="color" value="#ffffff" /></label>
+            <label class="crop-keep-option">{lang === "ko" ? "배경색" : "Background color"}<span class="color-control"><input id="crop-background-color" type="color" value="#ffffff" /><input class="color-hex" data-color-hex-for="crop-background-color" type="text" value="#FFFFFF" maxlength="7" spellcheck="false" aria-label={lang === "ko" ? "배경색 HEX 값" : "Background color HEX value"} /></span></label>
             <label class="crop-keep-option">{lang === "ko" ? "정렬 위치" : "Alignment"}<select id="crop-alignment"><option value="center">{lang === "ko" ? "중앙" : "Center"}</option><option value="top">{lang === "ko" ? "위쪽" : "Top"}</option><option value="bottom">{lang === "ko" ? "아래쪽" : "Bottom"}</option><option value="left">{lang === "ko" ? "왼쪽" : "Left"}</option><option value="right">{lang === "ko" ? "오른쪽" : "Right"}</option></select></label>
           </div>
           <div class="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(280px,0.8fr)]">
@@ -581,7 +581,7 @@ const timeZonePresets = [
           <div class="grid gap-3 md:grid-cols-3">
             <label>{lang === "ko" ? "출력 형식" : "Output format"}<select id="rotate-output-format"><option value="original">{lang === "ko" ? "원본 형식 유지" : "Keep original format"}</option><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select></label>
             <label>{lang === "ko" ? "배경 방식" : "Background"}<select id="rotate-background-mode"><option value="transparent">{lang === "ko" ? "투명" : "Transparent"}</option><option value="white">{lang === "ko" ? "흰색" : "White"}</option><option value="black">{lang === "ko" ? "검은색" : "Black"}</option><option value="custom">{lang === "ko" ? "사용자 지정 색상" : "Custom color"}</option></select></label>
-            <label>{lang === "ko" ? "배경색" : "Background color"}<input id="rotate-background-color" type="color" value="#ffffff" /></label>
+            <label>{lang === "ko" ? "배경색" : "Background color"}<span class="color-control"><input id="rotate-background-color" type="color" value="#ffffff" /><input class="color-hex" data-color-hex-for="rotate-background-color" type="text" value="#FFFFFF" maxlength="7" spellcheck="false" aria-label={lang === "ko" ? "배경색 HEX 값" : "Background color HEX value"} /></span></label>
           </div>
           <p id="rotate-format-note" class="text-sm text-slate-600" aria-live="polite"></p>
           <button class="btn-secondary w-fit" type="button" data-action="reset">{ui.reset}</button>
@@ -599,7 +599,7 @@ const timeZonePresets = [
               </span>
               <input id="quality" type="range" min="10" max="100" step="1" value="100" aria-valuemin="10" aria-valuemax="100" aria-valuenow="100" aria-valuetext="100%" />
             </label>
-            <label>{lang === "ko" ? "투명 영역 배경색" : "Transparency background"}<input id="converter-background-color" type="color" value="#ffffff" /></label>
+            <label>{lang === "ko" ? "투명 영역 배경색" : "Transparency background"}<span class="color-control"><input id="converter-background-color" type="color" value="#ffffff" /><input class="color-hex" data-color-hex-for="converter-background-color" type="text" value="#FFFFFF" maxlength="7" spellcheck="false" aria-label={lang === "ko" ? "투명 영역 배경색 HEX 값" : "Transparency background HEX value"} /></span></label>
           </div>
           <div id="gif-frame-options" class="hidden rounded-md border border-line bg-white p-3">
             <label>{lang === "ko" ? "저장할 GIF 프레임" : "GIF frame to save"}<select id="gif-frame-select"></select></label>
@@ -620,16 +620,45 @@ const timeZonePresets = [
 
       {slug === "image-mosaic" && (
         <div class="grid gap-4">
-          <div class="grid gap-4 md:grid-cols-5">
+          <fieldset class="grid gap-3 rounded-md border border-line bg-slate-50 p-3">
+            <legend class="px-1 text-sm font-semibold text-slate-700">{lang === "ko" ? "선택 방식" : "Selection mode"}</legend>
+            <div class="grid gap-3 md:grid-cols-3">
+              <label class="flex cursor-pointer items-start gap-3 rounded-md border border-line bg-white p-3">
+                <input id="mosaic-mode-rect" class="mt-1 h-4 w-4 shrink-0 accent-brand" name="mosaic-mode" type="radio" value="rect" checked />
+                <span><span class="font-semibold">{lang === "ko" ? "사각형" : "Rectangle"}</span><span class="mt-1 block text-sm text-slate-600">{lang === "ko" ? "드래그한 직사각형 영역을 모자이크합니다." : "Pixelate the rectangle you drag."}</span></span>
+              </label>
+              <label class="flex cursor-pointer items-start gap-3 rounded-md border border-line bg-white p-3">
+                <input class="mt-1 h-4 w-4 shrink-0 accent-brand" name="mosaic-mode" type="radio" value="circle" />
+                <span><span class="font-semibold">{lang === "ko" ? "원형" : "Circle"}</span><span class="mt-1 block text-sm text-slate-600">{lang === "ko" ? "드래그한 영역 안의 원형 또는 타원 영역을 모자이크합니다." : "Pixelate the circular or oval area inside your drag box."}</span></span>
+              </label>
+              <label class="flex cursor-pointer items-start gap-3 rounded-md border border-line bg-white p-3">
+                <input class="mt-1 h-4 w-4 shrink-0 accent-brand" name="mosaic-mode" type="radio" value="brush" />
+                <span><span class="font-semibold">{lang === "ko" ? "브러시" : "Brush"}</span><span class="mt-1 block text-sm text-slate-600">{lang === "ko" ? "손으로 칠한 부분만 모자이크합니다." : "Pixelate only the area you paint."}</span></span>
+              </label>
+            </div>
+          </fieldset>
+          <div class="grid gap-4 md:grid-cols-6">
             <label>{ui.labels.mosaicSize}<select id="mosaic-size"><option value="4">4px</option><option value="8">8px</option><option value="12" selected>12px</option><option value="16">16px</option><option value="24">24px</option><option value="32">32px</option><option value="40">40px</option></select></label>
+            <label>{lang === "ko" ? "브러시 크기" : "Brush size"}<select id="mosaic-brush-size"><option value="12">12px</option><option value="20">20px</option><option value="32" selected>32px</option><option value="48">48px</option><option value="64">64px</option><option value="96">96px</option></select></label>
             <label>{ui.labels.selectionX}<input id="mosaic-x" type="number" readonly value="0" /></label>
             <label>{ui.labels.selectionY}<input id="mosaic-y" type="number" readonly value="0" /></label>
             <label>{ui.labels.selectionWidth}<input id="mosaic-width" type="number" readonly value="0" /></label>
             <label>{ui.labels.selectionHeight}<input id="mosaic-height" type="number" readonly value="0" /></label>
           </div>
-          <p class="text-sm text-slate-600">{lang === "ko" ? "미리보기 위에서 사각형 영역을 드래그해 선택합니다. 모바일에서는 손가락으로 드래그할 수 있습니다." : "Drag a rectangle over the preview. Touch dragging is supported on mobile browsers where available."}</p>
-          <div class="overflow-auto rounded-md border border-line bg-white p-2">
-            <canvas id="mosaic-canvas" class="max-h-[560px] max-w-full touch-none"></canvas>
+          <p id="mosaic-mode-help" class="text-sm text-slate-600">{lang === "ko" ? "사각형 또는 원형은 드래그로 영역을 정하고, 브러시는 가리고 싶은 부분을 칠하세요. 모바일 터치도 지원합니다." : "Use Rectangle or Circle by dragging an area, or use Brush to paint over the part you want to hide. Touch is supported on mobile."}</p>
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="text-sm font-semibold text-slate-700">{lang === "ko" ? "미리보기 확대" : "Preview zoom"}</p>
+            <div class="flex flex-wrap items-center gap-2">
+              <button class="btn-secondary" type="button" data-action="mosaic-zoom-fit">{lang === "ko" ? "화면 맞춤" : "Fit"}</button>
+              <button class="btn-secondary" type="button" data-action="mosaic-zoom-actual">100%</button>
+              <button class="btn-secondary waveform-button" type="button" data-action="mosaic-zoom-out" aria-label={lang === "ko" ? "미리보기 축소" : "Zoom out"}>-</button>
+              <button class="btn-secondary waveform-button" type="button" data-action="mosaic-zoom-in" aria-label={lang === "ko" ? "미리보기 확대" : "Zoom in"}>+</button>
+              <button class="btn-secondary" type="button" data-action="mosaic-pan" aria-pressed="false">{lang === "ko" ? "이동" : "Pan"}</button>
+              <span id="mosaic-zoom-label" class="min-w-12 text-right text-sm text-slate-600" aria-live="polite">{lang === "ko" ? "맞춤" : "Fit"}</span>
+            </div>
+          </div>
+          <div id="mosaic-viewer" class="mosaic-viewer rounded-md border border-line bg-white">
+            <canvas id="mosaic-canvas" class="touch-none"></canvas>
           </div>
           <div class="flex flex-wrap gap-2">
             <button class="btn-primary" data-action="apply-mosaic">{lang === "ko" ? "모자이크 적용" : "Apply Mosaic"}</button>
@@ -639,13 +668,47 @@ const timeZonePresets = [
       )}
 
       {slug === "image-watermark" && (
-        <div class="grid gap-4 md:grid-cols-3">
-          <label class="md:col-span-3">{ui.labels.overlayText}<textarea id="overlay-text" placeholder="Toolbox"></textarea></label>
+        <div class="grid gap-4">
+          <label>{ui.labels.overlayText}<textarea id="overlay-text" class="h-20 min-h-0 resize-y" rows="2" placeholder={lang === "ko" ? "워터마크 preview 123" : "Watermark Preview 123"}></textarea></label>
+          <div class="grid gap-4 md:grid-cols-4">
+            <label>{lang === "ko" ? "폰트" : "Font"}<select id="watermark-font">
+              <option value="system-sans">{lang === "ko" ? "시스템 고딕" : "System Sans"} · {lang === "ko" ? "시스템" : "System"}</option>
+              <option value="system-serif">{lang === "ko" ? "시스템 명조" : "System Serif"} · {lang === "ko" ? "시스템" : "System"}</option>
+              <option value="system-mono">{lang === "ko" ? "기본 고정폭" : "System Mono"} · {lang === "ko" ? "시스템" : "System"}</option>
+              <option value="noto-sans-kr">Noto Sans KR · Web · KO/EN</option>
+              <option value="noto-serif-kr">Noto Serif KR · Web · KO/EN</option>
+              <option value="roboto">Roboto · Web · EN</option>
+              <option value="lora">Lora · Web · EN</option>
+              <option value="bebas-neue">Bebas Neue · Web · EN</option>
+            </select></label>
+            <label>{lang === "ko" ? "굵기" : "Weight"}<select id="watermark-font-weight"><option value="400">{lang === "ko" ? "보통 400" : "Regular 400"}</option><option value="700" selected>{lang === "ko" ? "굵게 700" : "Bold 700"}</option></select></label>
           <label>{ui.labels.position}<select id="text-position"><option value="top-left">{lang === "ko" ? "좌상단" : "Top left"}</option><option value="top-right">{lang === "ko" ? "우상단" : "Top right"}</option><option value="center">{lang === "ko" ? "중앙" : "Center"}</option><option value="bottom-left">{lang === "ko" ? "좌하단" : "Bottom left"}</option><option value="bottom-right">{lang === "ko" ? "우하단" : "Bottom right"}</option></select></label>
           <label>{ui.labels.fontSize}<input id="font-size" type="number" min="8" value="36" /></label>
-          <label>{ui.labels.textColor}<input id="text-color" type="color" value="#ffffff" /></label>
+          <label>{ui.labels.textColor}<span class="color-control"><input id="text-color" type="color" value="#ffffff" /><input class="color-hex" data-color-hex-for="text-color" type="text" value="#FFFFFF" maxlength="7" spellcheck="false" aria-label={lang === "ko" ? "글자 색상 HEX 값" : "Text color HEX value"} /></span></label>
           <label>{ui.labels.opacity}<input id="text-opacity" type="range" min="10" max="100" value="60" /></label>
           <label>{ui.labels.rotation}<input id="text-rotation" type="number" min="-180" max="180" value="0" /></label>
+          </div>
+          <div class="rounded-md border border-line bg-white p-3">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <p class="text-sm font-semibold text-slate-700">{lang === "ko" ? "폰트 미리보기" : "Font preview"}</p>
+              <p id="watermark-font-status" class="text-xs text-slate-500" aria-live="polite">{lang === "ko" ? "시스템 폰트는 별도 다운로드 없이 사용합니다." : "System fonts do not require a download."}</p>
+            </div>
+            <p id="watermark-font-preview" class="mt-2 rounded-md bg-slate-50 px-3 py-3 text-2xl text-ink">{lang === "ko" ? "워터마크 preview 123" : "Watermark Preview 123"}</p>
+            <p id="watermark-font-warning" class="mt-2 hidden text-sm text-amber-700"></p>
+          </div>
+          <div class="grid gap-4 md:grid-cols-4">
+            <label>{lang === "ko" ? "자간(px)" : "Letter spacing (px)"}<input id="watermark-letter-spacing" type="number" min="-5" max="30" value="0" /></label>
+            <label>{lang === "ko" ? "줄 간격" : "Line height"}<input id="watermark-line-height" type="number" min="0.8" max="3" step="0.1" value="1.2" /></label>
+            <label>{lang === "ko" ? "텍스트 정렬" : "Text alignment"}<select id="watermark-text-align"><option value="left">{lang === "ko" ? "왼쪽" : "Left"}</option><option value="center" selected>{lang === "ko" ? "가운데" : "Center"}</option><option value="right">{lang === "ko" ? "오른쪽" : "Right"}</option></select></label>
+            <label>{lang === "ko" ? "기울임" : "Italic"}<span class="checkbox-control"><input id="watermark-italic" type="checkbox" /></span></label>
+          </div>
+          <div class="grid gap-4 md:grid-cols-4">
+            <label>{lang === "ko" ? "외곽선 두께(px)" : "Outline width (px)"}<input id="watermark-stroke-width" type="number" min="0" max="20" value="2" /></label>
+            <label>{lang === "ko" ? "외곽선 색상" : "Outline color"}<span class="color-control"><input id="watermark-stroke-color" type="color" value="#000000" /><input class="color-hex" data-color-hex-for="watermark-stroke-color" type="text" value="#000000" maxlength="7" spellcheck="false" aria-label={lang === "ko" ? "외곽선 색상 HEX 값" : "Outline color HEX value"} /></span></label>
+            <label>{lang === "ko" ? "그림자 흐림" : "Shadow blur"}<input id="watermark-shadow-blur" type="number" min="0" max="40" value="0" /></label>
+            <label>{lang === "ko" ? "그림자 색상" : "Shadow color"}<span class="color-control"><input id="watermark-shadow-color" type="color" value="#000000" /><input class="color-hex" data-color-hex-for="watermark-shadow-color" type="text" value="#000000" maxlength="7" spellcheck="false" aria-label={lang === "ko" ? "그림자 색상 HEX 값" : "Shadow color HEX value"} /></span></label>
+          </div>
+          <p class="text-sm text-slate-600">{lang === "ko" ? "시스템 폰트는 기기에 따라 모양이 다를 수 있습니다. 웹폰트는 선택할 때 필요한 파일만 불러오며, 영문 전용 폰트는 한글이 시스템 대체 폰트로 표시될 수 있습니다." : "System fonts may look different across devices. Web fonts are loaded only when selected, and Latin-only fonts may use a system fallback for Korean text."}</p>
         </div>
       )}
 
@@ -704,8 +767,14 @@ const timeZonePresets = [
       <div class={`grid gap-4 ${slug === "image-color-picker" ? "" : "md:grid-cols-2"}`}>
         {slug !== "image-color-picker" && (
           <div>
-            <p class="text-sm font-semibold text-slate-600">{slug === "image-format-converter" ? (lang === "ko" ? "원본 / 변환 결과 미리보기" : "Original / Converted Preview") : (lang === "ko" ? "미리보기" : "Preview")}</p>
-            <img id="image-preview" alt={lang === "ko" ? "처리된 이미지 미리보기" : "Processed image preview"} class={`mt-2 max-h-96 w-full rounded-md border border-line object-contain ${slug === "image-format-converter" ? "hidden" : ""}`} />
+            <p class="text-sm font-semibold text-slate-600">{slug === "image-format-converter" ? (lang === "ko" ? "원본 / 변환 결과 미리보기" : "Original / Converted Preview") : slug === "image-mosaic" ? (lang === "ko" ? "결과 미리보기" : "Result preview") : (lang === "ko" ? "미리보기" : "Preview")}</p>
+            {slug === "image-mosaic" ? (
+              <div id="mosaic-result-viewer" class="mosaic-viewer mt-2 rounded-md border border-line bg-white">
+                <img id="image-preview" alt={lang === "ko" ? "처리된 이미지 미리보기" : "Processed image preview"} class="hidden" draggable="false" />
+              </div>
+            ) : (
+              <img id="image-preview" alt={lang === "ko" ? "처리된 이미지 미리보기" : "Processed image preview"} class={`mt-2 max-h-96 w-full rounded-md border border-line object-contain ${slug === "image-format-converter" ? "hidden" : ""}`} />
+            )}
           </div>
         )}
         <div>
@@ -2083,6 +2152,37 @@ const timeZonePresets = [
     touch-action: none;
   }
 
+  :global(.mosaic-viewer) {
+    position: relative;
+    height: 320px;
+    overflow: hidden;
+    touch-action: none;
+  }
+
+  :global(.mosaic-viewer canvas),
+  :global(.mosaic-viewer img) {
+    position: absolute;
+    max-width: none;
+  }
+
+  :global(.mosaic-viewer canvas) {
+    cursor: crosshair;
+  }
+
+  :global(.mosaic-viewer.is-pan-enabled canvas) {
+    cursor: grab;
+  }
+
+  :global(.mosaic-viewer.is-pan-enabled canvas:active) {
+    cursor: grabbing;
+  }
+
+  @media (min-width: 768px) {
+    :global(.mosaic-viewer) {
+      height: 480px;
+    }
+  }
+
   :global(.waveform-minimap.is-panning) {
     cursor: grabbing;
   }
@@ -3216,20 +3316,18 @@ ${lang === "ko" ? "구간 길이" : "Trimmed duration"}: ${formatSecondsLabel(tr
               <p class="font-semibold">${index + 1}. ${item.file.name}</p>
               <p class="mt-1 text-sm text-slate-600">${fileExtension(item.file.name).toUpperCase()} · ${formatBytes(item.file.size, lang)} · ${formatDuration(item.duration, lang)} · ${lang === "ko" ? "사용 구간" : "Selected"} ${formatDuration(mergerClipDuration(item), lang)}</p>
             </div>
-            <div class="flex flex-wrap gap-2">
+            <div class="waveform-toolbar flex flex-wrap justify-end gap-2">
               <button class="btn-secondary" type="button" data-action="merger-item-play" data-id="${item.id}">${lang === "ko" ? "재생" : "Play"}</button>
               <button class="btn-secondary" type="button" data-action="merger-item-pause" data-id="${item.id}">${lang === "ko" ? "일시정지" : "Pause"}</button>
               <button class="btn-secondary" type="button" data-action="merger-up" data-id="${item.id}" ${index === 0 ? "disabled" : ""}>${lang === "ko" ? "위로" : "Up"}</button>
               <button class="btn-secondary" type="button" data-action="merger-down" data-id="${item.id}" ${index === state.items.length - 1 ? "disabled" : ""}>${lang === "ko" ? "아래로" : "Down"}</button>
               <button class="btn-secondary" type="button" data-action="merger-remove" data-id="${item.id}">${lang === "ko" ? "삭제" : "Remove"}</button>
-            </div>
-          </div>
-          <div class="waveform-toolbar mt-4">
-            <div class="flex flex-wrap items-center gap-2">
               <button class="btn-secondary waveform-button" type="button" data-action="waveform-zoom-out" data-id="${item.id}" aria-label="${lang === "ko" ? "파형 축소" : "Zoom waveform out"}">-</button>
               <button class="btn-secondary waveform-button" type="button" data-action="waveform-zoom-in" data-id="${item.id}" aria-label="${lang === "ko" ? "파형 확대" : "Zoom waveform in"}">+</button>
               <button class="btn-secondary waveform-button" type="button" data-action="waveform-reset" data-id="${item.id}">${lang === "ko" ? "전체 보기" : "Full View"}</button>
             </div>
+          </div>
+          <div class="mt-3 flex justify-end">
             <p class="text-sm text-slate-600" data-waveform-viewport-label="${item.id}" aria-live="polite">${lang === "ko" ? "표시 구간: 전체" : "View: full"}</p>
           </div>
           <div class="ringtone-waveform merger-waveform mt-4" role="application" tabindex="0">
@@ -3456,8 +3554,30 @@ ${lang === "ko" ? "구간 길이" : "Trimmed duration"}: ${formatSecondsLabel(tr
     root.querySelectorAll('input[data-merger-input="volume"]').forEach((input) => {
       if (input.dataset.volumePointerReady === "true") return;
       input.dataset.volumePointerReady = "true";
-      ["pointerdown", "mousedown", "touchstart", "click", "dragstart"].forEach((eventName) => {
+      const restoreCardDrag = () => {
+        const card = input.closest(".merger-file-card");
+        if (!card || card.dataset.dragRestorePending !== "true") return;
+        card.draggable = card.dataset.previousDraggable === "true";
+        delete card.dataset.previousDraggable;
+        delete card.dataset.dragRestorePending;
+      };
+      input.addEventListener("pointerdown", (event) => {
+        event.stopPropagation();
+        const card = input.closest(".merger-file-card");
+        if (card) {
+          card.dataset.previousDraggable = String(card.draggable);
+          card.dataset.dragRestorePending = "true";
+          card.draggable = false;
+        }
+        window.addEventListener("pointerup", restoreCardDrag, { once: true });
+        window.addEventListener("pointercancel", restoreCardDrag, { once: true });
+      });
+      ["mousedown", "touchstart", "click"].forEach((eventName) => {
         input.addEventListener(eventName, (event) => event.stopPropagation());
+      });
+      input.addEventListener("dragstart", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
       });
     });
   };
@@ -6552,6 +6672,64 @@ self.onmessage = async (event) => {
       if (input) input.value = String(Math.max(0, Math.round(value)));
     });
   };
+  const getMosaicMode = (root) => root.querySelector('input[name="mosaic-mode"]:checked')?.value || "rect";
+  const getMosaicBrushSize = (root) => Math.max(4, Math.round(Number(root.querySelector("#mosaic-brush-size")?.value) || 32));
+  const clampMosaicSelection = (selection, width, height) => {
+    const x = Math.max(0, Math.min(width, Math.round(selection.x)));
+    const y = Math.max(0, Math.min(height, Math.round(selection.y)));
+    return {
+      x,
+      y,
+      width: Math.max(0, Math.min(width - x, Math.round(selection.width))),
+      height: Math.max(0, Math.min(height - y, Math.round(selection.height))),
+    };
+  };
+  const clearMosaicBrushMask = (root) => {
+    const state = root._mosaicState;
+    if (!state?.brushMaskCanvas) return;
+    const context = state.brushMaskCanvas.getContext("2d");
+    if (context) context.clearRect(0, 0, state.brushMaskCanvas.width, state.brushMaskCanvas.height);
+    state.brushBounds = null;
+  };
+  const expandMosaicBounds = (bounds, addition, width, height) => {
+    if (!addition) return bounds;
+    if (!bounds) return clampMosaicSelection(addition, width, height);
+    const x1 = Math.min(bounds.x, addition.x);
+    const y1 = Math.min(bounds.y, addition.y);
+    const x2 = Math.max(bounds.x + bounds.width, addition.x + addition.width);
+    const y2 = Math.max(bounds.y + bounds.height, addition.y + addition.height);
+    return clampMosaicSelection({ x: x1, y: y1, width: x2 - x1, height: y2 - y1 }, width, height);
+  };
+  const drawMosaicBrushStroke = (root, from, to) => {
+    const state = root._mosaicState;
+    if (!state?.brushMaskCanvas) return;
+    const context = state.brushMaskCanvas.getContext("2d");
+    if (!context) return;
+    const size = getMosaicBrushSize(root);
+    const radius = size / 2;
+    context.save();
+    context.lineCap = "round";
+    context.lineJoin = "round";
+    context.lineWidth = size;
+    context.strokeStyle = "#fff";
+    context.fillStyle = "#fff";
+    context.beginPath();
+    context.moveTo(from.x, from.y);
+    context.lineTo(to.x, to.y);
+    context.stroke();
+    context.beginPath();
+    context.arc(to.x, to.y, radius, 0, Math.PI * 2);
+    context.fill();
+    context.restore();
+    const bounds = {
+      x: Math.floor(Math.min(from.x, to.x) - radius),
+      y: Math.floor(Math.min(from.y, to.y) - radius),
+      width: Math.ceil(Math.abs(to.x - from.x) + size),
+      height: Math.ceil(Math.abs(to.y - from.y) + size),
+    };
+    state.brushBounds = expandMosaicBounds(state.brushBounds, bounds, state.width, state.height);
+    setMosaicSelection(root, state.brushBounds);
+  };
   const pointOnCanvas = (canvas, event) => {
     const rect = canvas.getBoundingClientRect();
     const x = (event.clientX - rect.left) * canvas.width / rect.width;
@@ -6560,6 +6738,92 @@ self.onmessage = async (event) => {
       x: Math.max(0, Math.min(canvas.width, Math.round(x))),
       y: Math.max(0, Math.min(canvas.height, Math.round(y))),
     };
+  };
+  const mosaicZoomLevels = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 8];
+  const getMosaicFitZoom = (root) => {
+    const state = root._mosaicState;
+    const viewer = root.querySelector("#mosaic-viewer");
+    if (!state?.width || !state?.height || !viewer) return 1;
+    return Math.min(viewer.clientWidth / state.width, viewer.clientHeight / state.height);
+  };
+  const getMosaicEffectiveZoom = (root) => {
+    const state = root._mosaicState;
+    if (!state) return 1;
+    return state.zoomMode === "fit" ? getMosaicFitZoom(root) : state.zoom;
+  };
+  const clampMosaicPan = (root) => {
+    const state = root._mosaicState;
+    const viewer = root.querySelector("#mosaic-viewer");
+    if (!state?.width || !state?.height || !viewer) return;
+    const zoom = getMosaicEffectiveZoom(root);
+    const maxX = Math.max(0, (state.width * zoom - viewer.clientWidth) / 2);
+    const maxY = Math.max(0, (state.height * zoom - viewer.clientHeight) / 2);
+    state.panX = Math.max(-maxX, Math.min(maxX, state.panX || 0));
+    state.panY = Math.max(-maxY, Math.min(maxY, state.panY || 0));
+  };
+  const syncMosaicResultViewport = (root, zoom) => {
+    const state = root._mosaicState;
+    const viewer = root.querySelector("#mosaic-result-viewer");
+    const preview = root.querySelector("#image-preview");
+    if (!state?.width || !state?.height || !viewer || !preview) return;
+    const renderedWidth = state.width * zoom;
+    const renderedHeight = state.height * zoom;
+    const centerX = 0.5 - (state.panX || 0) / renderedWidth;
+    const centerY = 0.5 - (state.panY || 0) / renderedHeight;
+    const maxX = Math.max(0, (renderedWidth - viewer.clientWidth) / 2);
+    const maxY = Math.max(0, (renderedHeight - viewer.clientHeight) / 2);
+    const panX = Math.max(-maxX, Math.min(maxX, (0.5 - centerX) * renderedWidth));
+    const panY = Math.max(-maxY, Math.min(maxY, (0.5 - centerY) * renderedHeight));
+    preview.style.width = `${Math.max(1, renderedWidth)}px`;
+    preview.style.height = `${Math.max(1, renderedHeight)}px`;
+    preview.style.left = `calc(50% + ${panX}px)`;
+    preview.style.top = `calc(50% + ${panY}px)`;
+    preview.style.transform = "translate(-50%, -50%)";
+  };
+  const updateMosaicViewport = (root) => {
+    const state = root._mosaicState;
+    const canvas = root.querySelector("#mosaic-canvas");
+    const viewer = root.querySelector("#mosaic-viewer");
+    if (!state?.width || !state?.height || !canvas || !viewer) return;
+    clampMosaicPan(root);
+    const zoom = getMosaicEffectiveZoom(root);
+    canvas.style.width = `${Math.max(1, state.width * zoom)}px`;
+    canvas.style.height = `${Math.max(1, state.height * zoom)}px`;
+    canvas.style.left = `calc(50% + ${state.panX || 0}px)`;
+    canvas.style.top = `calc(50% + ${state.panY || 0}px)`;
+    canvas.style.transform = "translate(-50%, -50%)";
+    syncMosaicResultViewport(root, zoom);
+    viewer.classList.toggle("is-pan-enabled", Boolean(state.panEnabled));
+    const label = root.querySelector("#mosaic-zoom-label");
+    if (label) label.textContent = state.zoomMode === "fit" ? (root.dataset.lang === "ko" ? "맞춤" : "Fit") : `${Math.round(zoom * 100)}%`;
+    const panButton = root.querySelector('[data-action="mosaic-pan"]');
+    if (panButton) panButton.setAttribute("aria-pressed", state.panEnabled ? "true" : "false");
+    const zoomOut = root.querySelector('[data-action="mosaic-zoom-out"]');
+    const zoomIn = root.querySelector('[data-action="mosaic-zoom-in"]');
+    if (zoomOut) zoomOut.disabled = state.zoomMode === "fit" || zoom <= mosaicZoomLevels[0];
+    if (zoomIn) zoomIn.disabled = zoom >= mosaicZoomLevels[mosaicZoomLevels.length - 1];
+  };
+  const setMosaicZoom = (root, mode) => {
+    const state = root._mosaicState;
+    if (!state) return;
+    if (mode === "fit") {
+      state.zoomMode = "fit";
+      state.panX = 0;
+      state.panY = 0;
+    } else {
+      state.zoomMode = "manual";
+      state.zoom = Math.max(mosaicZoomLevels[0], Math.min(mosaicZoomLevels[mosaicZoomLevels.length - 1], mode));
+    }
+    updateMosaicViewport(root);
+  };
+  const changeMosaicZoom = (root, direction) => {
+    const state = root._mosaicState;
+    if (!state) return;
+    const current = getMosaicEffectiveZoom(root);
+    const next = direction === "in"
+      ? mosaicZoomLevels.find((level) => level > current + 0.01) || mosaicZoomLevels[mosaicZoomLevels.length - 1]
+      : [...mosaicZoomLevels].reverse().find((level) => level < current - 0.01) || mosaicZoomLevels[0];
+    setMosaicZoom(root, next);
   };
   const drawMosaicPreview = (root) => {
     const state = root._mosaicState;
@@ -6571,14 +6835,35 @@ self.onmessage = async (event) => {
     context.drawImage(state.workCanvas, 0, 0);
     const selection = getMosaicSelection(root);
     if (selection.width > 0 && selection.height > 0) {
+      const mode = getMosaicMode(root);
       context.save();
       context.fillStyle = "rgba(37, 99, 235, 0.16)";
       context.strokeStyle = "#2563eb";
       context.lineWidth = Math.max(2, Math.round(canvas.width / 500));
-      context.fillRect(selection.x, selection.y, selection.width, selection.height);
-      context.strokeRect(selection.x, selection.y, selection.width, selection.height);
+      if (mode === "circle") {
+        context.beginPath();
+        context.ellipse(selection.x + selection.width / 2, selection.y + selection.height / 2, selection.width / 2, selection.height / 2, 0, 0, Math.PI * 2);
+        context.fill();
+        context.stroke();
+      } else if (mode === "brush" && state.brushMaskCanvas) {
+        const overlayCanvas = document.createElement("canvas");
+        overlayCanvas.width = canvas.width;
+        overlayCanvas.height = canvas.height;
+        const overlayContext = overlayCanvas.getContext("2d");
+        if (overlayContext) {
+          overlayContext.fillStyle = "rgba(37, 99, 235, 0.22)";
+          overlayContext.fillRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+          overlayContext.globalCompositeOperation = "destination-in";
+          overlayContext.drawImage(state.brushMaskCanvas, 0, 0);
+          context.drawImage(overlayCanvas, 0, 0);
+        }
+      } else {
+        context.fillRect(selection.x, selection.y, selection.width, selection.height);
+        context.strokeRect(selection.x, selection.y, selection.width, selection.height);
+      }
       context.restore();
     }
+    updateMosaicViewport(root);
   };
   const refreshMosaicOutput = async (root, status = "") => {
     const state = root._mosaicState;
@@ -6600,7 +6885,10 @@ self.onmessage = async (event) => {
     const state = root._mosaicState;
     const lang = root.dataset.lang || "ko";
     if (!state?.workCanvas) throw new Error(mosaicText(lang, "chooseArea"));
-    const selection = getMosaicSelection(root);
+    const mode = getMosaicMode(root);
+    const selection = mode === "brush" && state.brushBounds
+      ? clampMosaicSelection(state.brushBounds, state.width, state.height)
+      : getMosaicSelection(root);
     if (selection.width < 1 || selection.height < 1) throw new Error(mosaicText(lang, "noArea"));
     const blockSize = Math.max(4, Math.round(Number(root.querySelector("#mosaic-size")?.value) || 12));
     const workContext = state.workCanvas.getContext("2d");
@@ -6612,10 +6900,30 @@ self.onmessage = async (event) => {
     if (!tinyContext) throw new Error(messages[lang].cannotCalculate);
     tinyContext.imageSmoothingEnabled = false;
     tinyContext.drawImage(state.workCanvas, selection.x, selection.y, selection.width, selection.height, 0, 0, tinyCanvas.width, tinyCanvas.height);
+    const mosaicCanvas = document.createElement("canvas");
+    mosaicCanvas.width = selection.width;
+    mosaicCanvas.height = selection.height;
+    const mosaicContext = mosaicCanvas.getContext("2d");
+    if (!mosaicContext) throw new Error(messages[lang].cannotCalculate);
+    mosaicContext.imageSmoothingEnabled = false;
+    mosaicContext.drawImage(tinyCanvas, 0, 0, tinyCanvas.width, tinyCanvas.height, 0, 0, selection.width, selection.height);
+    if (mode === "brush" && state.brushMaskCanvas) {
+      mosaicContext.globalCompositeOperation = "destination-in";
+      mosaicContext.drawImage(state.brushMaskCanvas, selection.x, selection.y, selection.width, selection.height, 0, 0, selection.width, selection.height);
+    }
     workContext.save();
     workContext.imageSmoothingEnabled = false;
-    workContext.drawImage(tinyCanvas, 0, 0, tinyCanvas.width, tinyCanvas.height, selection.x, selection.y, selection.width, selection.height);
+    if (mode === "circle") {
+      workContext.beginPath();
+      workContext.ellipse(selection.x + selection.width / 2, selection.y + selection.height / 2, selection.width / 2, selection.height / 2, 0, 0, Math.PI * 2);
+      workContext.clip();
+    }
+    workContext.drawImage(mosaicCanvas, selection.x, selection.y);
     workContext.restore();
+    if (mode === "brush") {
+      clearMosaicBrushMask(root);
+      setMosaicSelection(root, { x: 0, y: 0, width: 0, height: 0 });
+    }
     drawMosaicPreview(root);
     await refreshMosaicOutput(root, mosaicText(lang, "applied"));
   };
@@ -6641,6 +6949,227 @@ self.onmessage = async (event) => {
     }
     return { h: Math.round(h), s: Math.round(s * 100), l: Math.round(l * 100) };
   };
+  const WATERMARK_FONTS = [
+    {
+      id: "system-sans",
+      family: "system-ui",
+      source: "system",
+      languages: ["ko", "en"],
+      weights: [400, 700],
+      stack: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Arial, sans-serif',
+    },
+    {
+      id: "system-serif",
+      family: "Georgia",
+      source: "system",
+      languages: ["ko", "en"],
+      weights: [400, 700],
+      stack: 'Georgia, "Times New Roman", "Noto Serif KR", serif',
+    },
+    {
+      id: "system-mono",
+      family: "ui-monospace",
+      source: "system",
+      languages: ["ko", "en"],
+      weights: [400, 700],
+      stack: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace',
+    },
+    {
+      id: "noto-sans-kr",
+      family: "Noto Sans KR",
+      source: "web",
+      languages: ["ko", "en"],
+      weights: [400, 700],
+      stack: '"Noto Sans KR", system-ui, Arial, sans-serif',
+      cssUrl: "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap",
+      license: "SIL Open Font License 1.1",
+    },
+    {
+      id: "noto-serif-kr",
+      family: "Noto Serif KR",
+      source: "web",
+      languages: ["ko", "en"],
+      weights: [400, 700],
+      stack: '"Noto Serif KR", Georgia, "Times New Roman", serif',
+      cssUrl: "https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap",
+      license: "SIL Open Font License 1.1",
+    },
+    {
+      id: "roboto",
+      family: "MFW Roboto",
+      source: "web",
+      languages: ["en", "latin"],
+      weights: [400, 700],
+      stack: '"MFW Roboto", Arial, system-ui, sans-serif',
+      url: "https://cdn.jsdelivr.net/fontsource/fonts/roboto:vf@5.3.0/latin-wght-normal.woff2",
+      license: "Apache License 2.0",
+    },
+    {
+      id: "lora",
+      family: "MFW Lora",
+      source: "web",
+      languages: ["en", "latin"],
+      weights: [400, 700],
+      stack: '"MFW Lora", Georgia, "Times New Roman", serif',
+      url: "https://cdn.jsdelivr.net/fontsource/fonts/lora:vf@5.3.0/latin-wght-normal.woff2",
+      license: "SIL Open Font License 1.1",
+    },
+    {
+      id: "bebas-neue",
+      family: "MFW Bebas Neue",
+      source: "web",
+      languages: ["en", "latin"],
+      weights: [400],
+      stack: '"MFW Bebas Neue", Impact, Arial Narrow, sans-serif',
+      url: "https://cdn.jsdelivr.net/fontsource/fonts/bebas-neue@5.3.0/latin-400-normal.woff2",
+      license: "SIL Open Font License 1.1",
+    },
+  ];
+  const watermarkFontLoadCache = new Map();
+  const watermarkFontStylesheetCache = new Map();
+  const getWatermarkFont = (root) => WATERMARK_FONTS.find((font) => font.id === root.querySelector("#watermark-font")?.value) || WATERMARK_FONTS[0];
+  const containsKorean = (text) => /[\u3131-\u318e\uac00-\ud7a3]/.test(text);
+  const segmentGraphemes = (text) => {
+    if (typeof Intl !== "undefined" && "Segmenter" in Intl) {
+      const segmenter = new Intl.Segmenter(undefined, { granularity: "grapheme" });
+      return Array.from(segmenter.segment(text), (item) => item.segment);
+    }
+    return Array.from(text);
+  };
+  const setupColorControls = (root) => {
+    root.querySelectorAll("[data-color-hex-for]").forEach((hexInput) => {
+      const colorInput = root.querySelector(`#${hexInput.dataset.colorHexFor}`);
+      if (!colorInput) return;
+      const syncHexValue = () => {
+        hexInput.value = colorInput.value.toUpperCase();
+        hexInput.setAttribute("aria-invalid", "false");
+      };
+      colorInput.addEventListener("input", syncHexValue);
+      colorInput.addEventListener("change", syncHexValue);
+      hexInput.addEventListener("input", () => {
+        const value = hexInput.value.trim();
+        if (!/^#[0-9a-fA-F]{6}$/.test(value)) {
+          hexInput.setAttribute("aria-invalid", "true");
+          return;
+        }
+        colorInput.value = value.toLowerCase();
+        syncHexValue();
+        colorInput.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+      hexInput.addEventListener("change", syncHexValue);
+    });
+  };
+  const loadWatermarkFontStylesheet = (font) => {
+    if (!font.cssUrl) return Promise.resolve();
+    if (!watermarkFontStylesheetCache.has(font.id)) {
+      const existing = document.getElementById(`watermark-font-stylesheet-${font.id}`);
+      const pending = new Promise((resolve, reject) => {
+        if (existing?.sheet) {
+          resolve();
+          return;
+        }
+        const link = existing || document.createElement("link");
+        if (!existing) {
+          link.id = `watermark-font-stylesheet-${font.id}`;
+          link.rel = "stylesheet";
+          link.href = font.cssUrl;
+          document.head.append(link);
+        }
+        link.addEventListener("load", () => resolve(), { once: true });
+        link.addEventListener("error", () => reject(new Error("FONT_STYLESHEET_LOAD_FAILED")), { once: true });
+      }).catch((error) => {
+        watermarkFontStylesheetCache.delete(font.id);
+        throw error;
+      });
+      watermarkFontStylesheetCache.set(font.id, pending);
+    }
+    return watermarkFontStylesheetCache.get(font.id);
+  };
+  const loadWatermarkFont = async (root) => {
+    const font = getWatermarkFont(root);
+    const lang = root.dataset.lang || "ko";
+    const status = root.querySelector("#watermark-font-status");
+    if (font.source !== "web") {
+      if (status) status.textContent = lang === "ko" ? "시스템 폰트는 별도 다운로드 없이 사용합니다." : "System fonts do not require a download.";
+      return font;
+    }
+    if (!("FontFace" in window) || !document.fonts) {
+      if (status) status.textContent = lang === "ko" ? "이 브라우저에서는 웹폰트를 불러올 수 없어 시스템 폰트로 대체합니다." : "This browser cannot load web fonts here, so a system font is used.";
+      return font;
+    }
+    const requestedWeight = root.querySelector("#watermark-font-weight")?.value || "700";
+    const key = `${font.id}:${font.url || font.cssUrl}:${requestedWeight}`;
+    if (!watermarkFontLoadCache.has(key)) {
+      if (status) status.textContent = lang === "ko" ? "폰트 불러오는 중..." : "Loading font...";
+      const loader = font.cssUrl
+        ? loadWatermarkFontStylesheet(font).then(() => document.fonts.load(`normal ${requestedWeight} 36px "${font.family}"`, "워터마크 Preview 123"))
+        : new FontFace(font.family, `url(${font.url}) format("woff2")`, {
+            style: "normal",
+            weight: font.id === "bebas-neue" ? "400" : "100 900",
+            display: "swap",
+          }).load().then((loaded) => {
+            document.fonts.add(loaded);
+            return loaded;
+          });
+      watermarkFontLoadCache.set(key, loader.catch((error) => {
+        watermarkFontLoadCache.delete(key);
+        throw error;
+      }));
+    }
+    try {
+      await watermarkFontLoadCache.get(key);
+      await document.fonts.ready;
+      if (status) status.textContent = `${font.family.replace("MFW ", "")} · ${font.license}`;
+    } catch {
+      if (status) status.textContent = lang === "ko" ? "선택한 폰트를 불러오지 못해 시스템 폰트로 표시합니다." : "The selected font could not be loaded. A system font is being used.";
+    }
+    return font;
+  };
+  const updateWatermarkFontUi = async (root) => {
+    const font = getWatermarkFont(root);
+    const lang = root.dataset.lang || "ko";
+    const text = root.querySelector("#overlay-text")?.value || (lang === "ko" ? "워터마크 preview 123" : "Watermark Preview 123");
+    const weightSelect = root.querySelector("#watermark-font-weight");
+    if (weightSelect) {
+      const current = Number(weightSelect.value) || 700;
+      weightSelect.innerHTML = font.weights.map((weight) => `<option value="${weight}"${weight === current || (font.weights.length === 1 && weight === font.weights[0]) ? " selected" : ""}>${weight === 400 ? (lang === "ko" ? "보통 400" : "Regular 400") : weight === 700 ? (lang === "ko" ? "굵게 700" : "Bold 700") : weight}</option>`).join("");
+      if (!font.weights.includes(current)) weightSelect.value = String(font.weights.includes(700) ? 700 : font.weights[0]);
+    }
+    const preview = root.querySelector("#watermark-font-preview");
+    const warning = root.querySelector("#watermark-font-warning");
+    if (warning) {
+      const needsFallback = containsKorean(text) && !font.languages.includes("ko");
+      warning.textContent = needsFallback
+        ? (lang === "ko" ? "이 폰트는 한글 글리프를 포함하지 않아 한글은 시스템 폰트로 표시될 수 있습니다." : "This font does not include Korean glyphs. Korean characters may use a system fallback font.")
+        : "";
+      warning.classList.toggle("hidden", !needsFallback);
+    }
+    await loadWatermarkFont(root);
+    if (preview) {
+      preview.textContent = text.length > 80 ? `${text.slice(0, 80)}...` : text;
+      preview.style.fontFamily = font.stack;
+      preview.style.fontWeight = root.querySelector("#watermark-font-weight")?.value || "700";
+      preview.style.fontStyle = root.querySelector("#watermark-italic")?.checked ? "italic" : "normal";
+      preview.style.letterSpacing = `${Number(root.querySelector("#watermark-letter-spacing")?.value || 0)}px`;
+    }
+  };
+  const measureWatermarkLine = (context, line, letterSpacing) => {
+    const parts = segmentGraphemes(line);
+    return parts.reduce((width, part, index) => width + context.measureText(part).width + (index > 0 ? letterSpacing : 0), 0);
+  };
+  const drawWatermarkLine = (context, line, x, y, options) => {
+    const parts = segmentGraphemes(line);
+    const letterSpacing = options.letterSpacing;
+    let cursor = x;
+    if (options.align === "center") cursor -= measureWatermarkLine(context, line, letterSpacing) / 2;
+    if (options.align === "right") cursor -= measureWatermarkLine(context, line, letterSpacing);
+    parts.forEach((part, index) => {
+      if (index > 0) cursor += letterSpacing;
+      if (options.strokeWidth > 0) context.strokeText(part, cursor, y);
+      context.fillText(part, cursor, y);
+      cursor += context.measureText(part).width;
+    });
+  };
   const getTextAnchor = (position, width, height, padding) => {
     const map = {
       "top-left": { x: padding, y: padding, align: "left", baseline: "top" },
@@ -6651,10 +7180,20 @@ self.onmessage = async (event) => {
     };
     return map[position] ?? map["bottom-right"];
   };
-  const drawOverlayText = (context, root, width, height) => {
-    const text = root.querySelector("#overlay-text")?.value || "Toolbox";
-    if (!text.trim()) throw new Error(root.dataset.lang === "ko" ? "텍스트를 입력하세요." : "Enter text.");
+  const drawOverlayText = async (context, root, width, height) => {
+    const defaultText = root.dataset.lang === "ko" ? "워터마크 preview 123" : "Watermark Preview 123";
+    const text = root.querySelector("#overlay-text")?.value.trim() || defaultText;
     const fontSize = Math.max(8, Number(root.querySelector("#font-size")?.value) || 32);
+    const font = await loadWatermarkFont(root);
+    const fontWeight = Number(root.querySelector("#watermark-font-weight")?.value || 700);
+    const fontStyle = root.querySelector("#watermark-italic")?.checked ? "italic" : "normal";
+    const letterSpacing = Math.max(-5, Math.min(30, Number(root.querySelector("#watermark-letter-spacing")?.value || 0)));
+    const lineHeightRatio = Math.max(0.8, Math.min(3, Number(root.querySelector("#watermark-line-height")?.value || 1.2)));
+    const textAlign = root.querySelector("#watermark-text-align")?.value || "center";
+    const strokeWidth = Math.max(0, Math.min(20, Number(root.querySelector("#watermark-stroke-width")?.value || 0)));
+    const strokeColor = root.querySelector("#watermark-stroke-color")?.value || "#000000";
+    const shadowBlur = Math.max(0, Math.min(40, Number(root.querySelector("#watermark-shadow-blur")?.value || 0)));
+    const shadowColor = root.querySelector("#watermark-shadow-color")?.value || "#000000";
     const color = root.querySelector("#text-color")?.value || "#ffffff";
     const opacity = Math.max(0.1, Math.min(1, Number(root.querySelector("#text-opacity")?.value) / 100 || 0.6));
     const rotation = (Number(root.querySelector("#text-rotation")?.value) || 0) * Math.PI / 180;
@@ -6665,13 +7204,18 @@ self.onmessage = async (event) => {
     const rgb = hexToRgb(color);
     context.save();
     context.globalAlpha = opacity;
-    context.font = `700 ${fontSize}px Arial, sans-serif`;
-    context.textAlign = anchor.align;
+    context.font = `${fontStyle} ${fontWeight} ${fontSize}px ${font.stack}`;
+    context.textAlign = "left";
     context.textBaseline = anchor.baseline;
     context.fillStyle = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
-    context.strokeStyle = "rgba(0, 0, 0, 0.45)";
-    context.lineWidth = Math.max(2, Math.round(fontSize / 12));
-    const lineHeight = fontSize * 1.25;
+    context.strokeStyle = strokeColor;
+    context.lineWidth = strokeWidth;
+    context.lineJoin = "round";
+    context.shadowColor = shadowColor;
+    context.shadowBlur = shadowBlur;
+    context.shadowOffsetX = shadowBlur > 0 ? Math.max(1, Math.round(fontSize / 18)) : 0;
+    context.shadowOffsetY = shadowBlur > 0 ? Math.max(1, Math.round(fontSize / 18)) : 0;
+    const lineHeight = fontSize * lineHeightRatio;
     const blockHeight = lineHeight * (lines.length - 1);
     const startY = anchor.baseline === "middle" ? anchor.y - blockHeight / 2 : anchor.baseline === "bottom" ? anchor.y - blockHeight : anchor.y;
     lines.forEach((line, index) => {
@@ -6679,8 +7223,11 @@ self.onmessage = async (event) => {
       context.save();
       context.translate(anchor.x, y);
       context.rotate(rotation);
-      context.strokeText(line, 0, 0);
-      context.fillText(line, 0, 0);
+      drawWatermarkLine(context, line, 0, 0, {
+        align: textAlign === "center" && anchor.align !== "center" ? anchor.align : textAlign,
+        letterSpacing,
+        strokeWidth,
+      });
       context.restore();
     });
     context.restore();
@@ -7888,15 +8435,30 @@ self.onmessage = async (event) => {
 
         if (slug === "image-mosaic") {
           const workCanvas = document.createElement("canvas");
+          const brushMaskCanvas = document.createElement("canvas");
           const workContext = workCanvas.getContext("2d");
           const displayCanvas = root.querySelector("#mosaic-canvas");
           if (!workContext || !displayCanvas) throw new Error(m.cannotCalculate);
           workCanvas.width = originalWidth;
           workCanvas.height = originalHeight;
+          brushMaskCanvas.width = originalWidth;
+          brushMaskCanvas.height = originalHeight;
           workContext.drawImage(image, 0, 0, originalWidth, originalHeight);
           displayCanvas.width = originalWidth;
           displayCanvas.height = originalHeight;
-          root._mosaicState = { workCanvas, file, width: originalWidth, height: originalHeight };
+          root._mosaicState = {
+            workCanvas,
+            brushMaskCanvas,
+            brushBounds: null,
+            file,
+            width: originalWidth,
+            height: originalHeight,
+            zoomMode: "fit",
+            zoom: 1,
+            panX: 0,
+            panY: 0,
+            panEnabled: false,
+          };
           setMosaicSelection(root, { x: 0, y: 0, width: 0, height: 0 });
           drawMosaicPreview(root);
           await refreshMosaicOutput(root);
@@ -8037,7 +8599,7 @@ self.onmessage = async (event) => {
           context.drawImage(image, -originalWidth / 2, -originalHeight / 2, originalWidth, originalHeight);
         } else {
           context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, outputWidth, outputHeight);
-          if (slug === "image-watermark") drawOverlayText(context, root, outputWidth, outputHeight);
+          if (slug === "image-watermark") await drawOverlayText(context, root, outputWidth, outputHeight);
         }
         const blob = await canvasToBlob(canvas, outputType, quality);
         if (imageJobId && root.dataset.imageCompressionJobId !== imageJobId) return;
@@ -8437,9 +8999,11 @@ self.onmessage = async (event) => {
   }
   document.querySelectorAll("[data-tool]").forEach((root) => {
     const slug = root.dataset.tool;
+    setupColorControls(root);
     syncUnitConverterOptions(root);
     syncImageQualityLabel(root);
     if (slug === "image-rotate-flip") syncImageRotationControls(root, root.dataset.rotation || "0");
+    if (slug === "image-watermark") updateWatermarkFontUi(root);
     if (imageToolSlugs.includes(slug)) setupImageDropZone(root);
     if (slug === "image-compressor") setupImageComparisonViewer(root);
     if (slug === "image-cropper") setupCropperEditor(root);
@@ -8638,6 +9202,14 @@ self.onmessage = async (event) => {
           root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
         });
       }
+      if (slug === "image-mosaic" && action === "mosaic-zoom-fit") setMosaicZoom(root, "fit");
+      if (slug === "image-mosaic" && action === "mosaic-zoom-actual") setMosaicZoom(root, 1);
+      if (slug === "image-mosaic" && action === "mosaic-zoom-in") changeMosaicZoom(root, "in");
+      if (slug === "image-mosaic" && action === "mosaic-zoom-out") changeMosaicZoom(root, "out");
+      if (slug === "image-mosaic" && action === "mosaic-pan" && root._mosaicState) {
+        root._mosaicState.panEnabled = !root._mosaicState.panEnabled;
+        updateMosaicViewport(root);
+      }
       if (slug === "audio-volume-editor" && action === "volume-preset") {
         syncVolumeInputs(root, button.dataset.volume || "100");
       }
@@ -8738,6 +9310,21 @@ self.onmessage = async (event) => {
         if (slug === "image-rotate-flip" && (control.id === "rotate-background-mode" || control.id === "rotate-background-color" || control.id === "rotate-output-format" || control.name === "rotate-canvas-mode")) {
           syncImageRotationOptions(root);
         }
+        if (slug === "image-watermark" && [
+          "watermark-font",
+          "watermark-font-weight",
+          "overlay-text",
+          "watermark-italic",
+          "watermark-letter-spacing",
+          "watermark-line-height",
+          "watermark-text-align",
+          "watermark-stroke-width",
+          "watermark-stroke-color",
+          "watermark-shadow-blur",
+          "watermark-shadow-color",
+        ].includes(control.id)) {
+          updateWatermarkFontUi(root).catch(() => {});
+        }
         autoRun();
       });
       control.addEventListener("change", () => {
@@ -8775,6 +9362,15 @@ self.onmessage = async (event) => {
         }
         if (slug === "image-compressor" && control.id === "image-file") clearImageCompressionPreview(root);
         if (slug === "image-mosaic" && control.id === "image-file") run(root);
+        if (slug === "image-mosaic" && control.name === "mosaic-mode") {
+          if (root._mosaicState) root._mosaicState.panEnabled = false;
+          clearMosaicBrushMask(root);
+          setMosaicSelection(root, { x: 0, y: 0, width: 0, height: 0 });
+          drawMosaicPreview(root);
+          refreshMosaicOutput(root).catch((error) => {
+            root.querySelector("#result").textContent = error instanceof Error ? error.message : messages[root.dataset.lang || "ko"].checkInput;
+          });
+        }
         if (slug === "image-format-converter" && control.id === "image-file") {
           clearImageConverterResult(root);
           const file = control.files?.[0];
@@ -8951,21 +9547,74 @@ self.onmessage = async (event) => {
     }
     const mosaicCanvas = root.querySelector("#mosaic-canvas");
     if (mosaicCanvas) {
+      root.querySelectorAll('input[name="mosaic-mode"]').forEach((modeInput) => {
+        modeInput.addEventListener("click", () => {
+          if (!root._mosaicState) return;
+          root._mosaicState.panEnabled = false;
+          updateMosaicViewport(root);
+        });
+      });
+      const mosaicViewer = root.querySelector("#mosaic-viewer");
+      if (mosaicViewer && !root._mosaicResizeObserver && "ResizeObserver" in window) {
+        root._mosaicResizeObserver = new ResizeObserver(() => updateMosaicViewport(root));
+        root._mosaicResizeObserver.observe(mosaicViewer);
+        const mosaicResultViewer = root.querySelector("#mosaic-result-viewer");
+        if (mosaicResultViewer) root._mosaicResizeObserver.observe(mosaicResultViewer);
+      }
       let startPoint = null;
+      let lastBrushPoint = null;
+      let activeMosaicMode = "rect";
       let isDragging = false;
+      let isPanning = false;
+      let panStartX = 0;
+      let panStartY = 0;
+      let initialPanX = 0;
+      let initialPanY = 0;
       mosaicCanvas.addEventListener("pointerdown", (event) => {
-        if (!root._mosaicState) return;
+        const state = root._mosaicState;
+        if (!state) return;
         event.preventDefault();
         mosaicCanvas.setPointerCapture?.(event.pointerId);
+        if (state.panEnabled && getMosaicEffectiveZoom(root) > getMosaicFitZoom(root) + 0.01) {
+          isPanning = true;
+          panStartX = event.clientX;
+          panStartY = event.clientY;
+          initialPanX = state.panX || 0;
+          initialPanY = state.panY || 0;
+          return;
+        }
+        activeMosaicMode = getMosaicMode(root);
         startPoint = pointOnCanvas(mosaicCanvas, event);
         isDragging = true;
-        setMosaicSelection(root, { x: startPoint.x, y: startPoint.y, width: 0, height: 0 });
+        if (activeMosaicMode === "brush") {
+          lastBrushPoint = startPoint;
+          drawMosaicBrushStroke(root, startPoint, startPoint);
+        } else {
+          clearMosaicBrushMask(root);
+          lastBrushPoint = null;
+          setMosaicSelection(root, { x: startPoint.x, y: startPoint.y, width: 0, height: 0 });
+        }
         drawMosaicPreview(root);
       });
       mosaicCanvas.addEventListener("pointermove", (event) => {
+        if (isPanning) {
+          event.preventDefault();
+          const state = root._mosaicState;
+          if (!state) return;
+          state.panX = initialPanX + event.clientX - panStartX;
+          state.panY = initialPanY + event.clientY - panStartY;
+          updateMosaicViewport(root);
+          return;
+        }
         if (!isDragging || !startPoint) return;
         event.preventDefault();
         const point = pointOnCanvas(mosaicCanvas, event);
+        if (activeMosaicMode === "brush") {
+          drawMosaicBrushStroke(root, lastBrushPoint || point, point);
+          lastBrushPoint = point;
+          drawMosaicPreview(root);
+          return;
+        }
         const selection = {
           x: Math.min(startPoint.x, point.x),
           y: Math.min(startPoint.y, point.y),
@@ -8976,10 +9625,16 @@ self.onmessage = async (event) => {
         drawMosaicPreview(root);
       });
       const stopMosaicDrag = async (event) => {
+        if (isPanning) {
+          event.preventDefault();
+          isPanning = false;
+          return;
+        }
         if (!isDragging) return;
         event.preventDefault();
         isDragging = false;
         startPoint = null;
+        lastBrushPoint = null;
         drawMosaicPreview(root);
         try {
           await refreshMosaicOutput(root);

@@ -31,7 +31,7 @@ const description =
           <p class="mt-4">Toolbox는 가능한 범위에서 사용자의 입력값과 선택한 파일을 현재 브라우저 안에서 처리하도록 설계되어 있습니다. 이 문서는 사이트가 실제로 사용하는 저장 방식, 외부 서비스, 문의 정보 처리 범위를 설명합니다.</p>
           <h2>브라우저 내부 파일 처리</h2>
           <p>이미지, PDF, 오디오 파일 도구는 사용자가 직접 선택한 로컬 파일을 브라우저 메모리에서 처리합니다. 서버 업로드 방식, 로그인, 데이터베이스 저장 기능은 사용하지 않습니다.</p>
-          <p>일부 오디오 도구는 변환 엔진인 FFmpeg WASM 파일을 외부 CDN에서 내려받을 수 있습니다. 이미지 포맷 변환기에서는 AVIF 출력, HEIC, TIFF, GIF 프레임 추출, ZIP 처리에 필요한 코덱 또는 라이브러리 파일을 jsDelivr, esm.sh 같은 외부 CDN에서 내려받을 수 있습니다. 이때 내려받는 것은 실행 라이브러리이며, 사용자가 선택한 오디오 또는 이미지 파일은 CDN으로 전송하지 않습니다.</p>
+          <p>일부 오디오 도구는 변환 엔진인 FFmpeg WASM 파일을 외부 CDN에서 내려받을 수 있습니다. 이미지 포맷 변환기에서는 AVIF 출력, HEIC, TIFF, GIF 프레임 추출, ZIP 처리에 필요한 코덱 또는 라이브러리 파일을 jsDelivr, esm.sh 같은 외부 CDN에서 내려받을 수 있습니다. 이미지 워터마크 도구에서 Noto 웹폰트를 선택하면 Google Fonts에서 해당 폰트 스타일시트와 폰트 파일을 불러올 수 있습니다. 이때 내려받는 것은 실행 라이브러리 또는 폰트 파일이며, 사용자가 선택한 오디오 또는 이미지 파일과 워터마크 문구는 외부 CDN이나 Google Fonts로 전송하지 않습니다.</p>
           <h2>텍스트와 계산 입력값</h2>
           <p>글자수 세기, JSON 포맷터, 계산기, 변환기 같은 도구의 입력값은 결과 계산을 위해 브라우저에서만 사용됩니다. 사이트는 입력 내용을 서버에 저장하거나 계정과 연결하지 않습니다.</p>
           <h2>localStorage 사용</h2>
@@ -64,7 +64,7 @@ const description =
           <h2>Google AdSense and Advertising Cookies</h2>
           <p>The site may apply for or use Google AdSense. When AdSense is enabled, Google and advertising partners may use cookies or similar technologies to show and measure ads. When ad placements are disabled, empty ad areas and ad labels are not displayed. However, the Google advertising script may still be loaded for AdSense site verification or preparation of advertising features.</p>
           <h2>Cloudflare and External CDNs</h2>
-          <p>The site may be served through static hosting such as Cloudflare Pages. Cloudflare may process information needed for security, caching, and infrastructure logs. Some features may load library or codec files from external CDNs such as jsDelivr and esm.sh, and the CDN provider may receive ordinary request information such as IP address, User-Agent, and request time. User files are not uploaded to external conversion APIs or CDNs.</p>
+          <p>The site may be served through static hosting such as Cloudflare Pages. Cloudflare may process information needed for security, caching, and infrastructure logs. Some features may load library or codec files from external CDNs such as jsDelivr and esm.sh. When Noto web fonts are selected in the image watermark tool, Google Fonts may load the required stylesheet and font files. These providers may receive ordinary request information such as IP address, User-Agent, and request time. User files and watermark text are not uploaded to external conversion APIs, CDNs, or Google Fonts.</p>
           <h2>Contact Information</h2>
           <p>If you contact the site by email, your email address, message, and issue details are used to respond and troubleshoot. Unless a separate retention period is required, unnecessary information should not be kept after the inquiry is handled.</p>
           <h2>Your Choices</h2>

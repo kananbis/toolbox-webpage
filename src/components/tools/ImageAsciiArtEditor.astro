@@ -238,11 +238,17 @@ const text = {
     <div class="mt-4 grid gap-4 md:grid-cols-2">
       <label class="grid gap-2 text-sm">
         <span class="font-medium text-ink">{text.textColor}</span>
-        <input data-text-color type="color" value="#111827" />
+        <span class="color-control">
+          <input id="ascii-text-color" data-text-color type="color" value="#111827" />
+          <input class="color-hex" data-color-hex-for="ascii-text-color" type="text" value="#111827" maxlength="7" spellcheck="false" aria-label={lang === "ko" ? "텍스트 색상 HEX 값" : "Text color HEX value"} />
+        </span>
       </label>
       <label class="grid gap-2 text-sm">
         <span class="font-medium text-ink">{text.backgroundColor}</span>
-        <input data-background-color type="color" value="#ffffff" />
+        <span class="color-control">
+          <input id="ascii-background-color" data-background-color type="color" value="#ffffff" />
+          <input class="color-hex" data-color-hex-for="ascii-background-color" type="text" value="#FFFFFF" maxlength="7" spellcheck="false" aria-label={lang === "ko" ? "배경색 HEX 값" : "Background color HEX value"} />
+        </span>
       </label>
       <label class="grid gap-2 text-sm">
         <span class="font-medium text-ink">{text.previewBackground}</span>

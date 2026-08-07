@@ -29,6 +29,46 @@ textarea {
   @apply min-h-40;
 }
 
+.color-control {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  gap: 0.5rem;
+}
+
+.color-control input[type="color"] {
+  @apply h-11 w-full cursor-pointer rounded-md border border-line bg-white p-1 shadow-sm outline-none focus:border-brand focus:ring-2 focus:ring-blue-100;
+}
+
+.color-control input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-control input[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: 0.25rem;
+}
+
+.color-control input[type="color"]::-moz-color-swatch {
+  border: 0;
+  border-radius: 0.25rem;
+}
+
+.color-control .color-hex {
+  min-width: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
+  text-transform: uppercase;
+}
+
+.checkbox-control {
+  display: flex;
+  height: 2.75rem;
+  align-items: center;
+}
+
+.checkbox-control input[type="checkbox"] {
+  @apply h-5 w-5 cursor-pointer rounded border border-line accent-brand outline-none focus:ring-2 focus:ring-blue-100;
+}
+
 button {
   @apply rounded-md px-4 py-2 text-sm font-semibold transition;
 }

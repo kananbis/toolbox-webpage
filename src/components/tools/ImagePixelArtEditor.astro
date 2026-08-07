@@ -119,12 +119,20 @@ const t = {
         </select>
       </label>
       <label>{lang === "ko" ? "윤곽선 색상" : "Outline color"}
-        <input data-outline-color type="color" value="#111827" />
+        <span class="color-control">
+          <input id="pixel-outline-color" data-outline-color type="color" value="#111827" />
+          <input class="color-hex" data-color-hex-for="pixel-outline-color" type="text" value="#111827" maxlength="7" spellcheck="false" aria-label={lang === "ko" ? "외곽선 색상 HEX 값" : "Outline color HEX value"} />
+        </span>
       </label>
       <label>{t.brightness}<input data-brightness type="range" min="-100" max="100" value="0" /></label>
       <label>{t.contrast}<input data-contrast type="range" min="-100" max="100" value="0" /></label>
       <label>{t.saturation}<input data-saturation type="range" min="0" max="200" value="100" /></label>
-      <label>{t.background}<input data-background type="color" value="#ffffff" /></label>
+      <label>{t.background}
+        <span class="color-control">
+          <input id="pixel-background-color" data-background type="color" value="#ffffff" />
+          <input class="color-hex" data-color-hex-for="pixel-background-color" type="text" value="#FFFFFF" maxlength="7" spellcheck="false" aria-label={lang === "ko" ? "배경색 HEX 값" : "Background color HEX value"} />
+        </span>
+      </label>
       <label>{t.output}
         <select data-output-format>
           <option value="image/png">PNG</option>
