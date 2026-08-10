@@ -74,20 +74,20 @@ export const CODEC_MANIFEST: Record<string, CodecDefinition> = {
   },
   heif: {
     id: "heif",
-    version: "0.0.4",
-    license: "MIT",
-    homepage: "https://github.com/alexcorvi/heic2any",
+    version: "heic-to 1.5.2 / libheif 1.22.2",
+    license: "LGPL-3.0",
+    homepage: "https://github.com/hoppergee/heic-to",
     assets: [
       {
         type: "script",
-        url: "https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js",
-        sha256: "0963cfa50e9e1e7e6af929a40a81e3e898a673f1270eafa6917dd137e4968164",
-        sri: "sha256-CWPPpQ6eHn5q+SmkCoHj6Jimc/EnDq+mkX3RN+SWgWQ=",
+        url: "https://cdn.jsdelivr.net/npm/heic-to@1.5.2/dist/iife/heic-to.js",
+        sha256: "976f23cac9d435e3c3d9d8757c3975d1f56ae995581461b3a8ace66e07e4640e",
+        sri: "sha256-l28jysnUNePD2dh1fDl10fVq6ZVYFGGzqKzmbgfkZA4=",
       },
     ],
     capabilities: { decode: ["image/heic", "image/heif"] },
     enabled: true,
-    disabledReason: "HEIC/HEIF input is decoded with heic2any from a fixed external CDN asset. HEIC output remains unsupported.",
+    disabledReason: "HEIC/HEIF input is decoded with heic-to and libheif from a fixed external CDN asset. HEIC output remains unsupported.",
   },
   tiff: {
     id: "tiff",
