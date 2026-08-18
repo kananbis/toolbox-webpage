@@ -25,6 +25,30 @@ type FaqItem = {
 
 const toolEnhancements: Record<Lang, Partial<Record<ToolSlug, ToolEnhancement>>> = {
   ko: {
+    text: { guide: [
+      { title: "텍스트 도구 선택 기준", body: "글자수 세기는 분량을 확인할 때, 공백 제거는 복사한 데이터의 형식을 정리할 때, 대소문자 변환은 영문 제목과 식별자 표기를 맞출 때 사용합니다. 문장 차이 비교는 두 초안의 변경 부분을 확인하는 용도입니다." },
+      { title: "글자수 결과를 사용할 때", body: "서비스마다 줄바꿈, 이모지, 조합 문자, 공백을 세는 규칙이 다를 수 있습니다. 제출 전에는 대상 서비스의 실제 입력창에서도 한 번 더 확인하세요." },
+    ] },
+    calculator: { guide: [
+      { title: "계산기 결과의 범위", body: "퍼센트, 할인, 부가세, 날짜, 면적, 이자 계산은 입력값을 빠르게 비교하기 위한 참고값입니다. 계약, 세금, 대출, 건강 판단에는 실제 적용 기준과 공식 문서를 함께 확인하세요." },
+      { title: "반올림과 기준일", body: "표시값은 읽기 쉽게 반올림될 수 있습니다. 날짜 계산은 포함일 규칙에 따라 달라질 수 있고, 금융 계산은 실행일과 수수료에 따라 실제 결과가 달라질 수 있습니다." },
+    ] },
+    generator: { guide: [
+      { title: "생성기 사용 가이드", body: "비밀번호와 랜덤 문자열은 필요한 길이와 문자 종류를 정해 만들고, UUID는 개발용 식별자가 필요할 때 사용합니다. QR 코드는 링크나 짧은 텍스트를 공유할 때 유용합니다." },
+      { title: "보안 관련 주의", body: "생성한 비밀번호나 QR 코드에 민감한 정보가 포함될 수 있습니다. 생성 결과는 현재 브라우저에서 처리되지만, 공유하거나 저장하는 방식은 사용자가 직접 관리해야 합니다." },
+    ] },
+    developer: { guide: [
+      { title: "개발자 도구 선택 가이드", body: "JSON 포맷터는 구조 확인과 문법 오류 점검에, Base64와 URL 도구는 인코딩 값 확인에, CSV/JSON 변환은 표 형태 데이터를 옮길 때 사용합니다." },
+      { title: "민감한 데이터", body: "토큰, 비밀번호, 개인정보가 들어 있는 문자열은 결과를 복사하거나 공유하기 전에 다시 확인하세요. 이 도구들은 서버 저장을 목적으로 하지 않지만 브라우저 화면과 클립보드 사용에는 주의가 필요합니다." },
+    ] },
+    electronics: { guide: [
+      { title: "회로 계산기 사용 범위", body: "옴의 법칙, 전압 분배기, LED 저항, RC/RL 필터 계산은 설계 초안을 비교하는 데 유용합니다. 실제 제작에서는 부품 허용오차, 전력 정격, 발열, 측정 환경을 함께 고려해야 합니다." },
+      { title: "계산 전 확인할 값", body: "전압, 전류, 저항 단위와 접두어를 먼저 확인하세요. 특히 mA와 A, uF와 nF처럼 단위가 바뀌면 결과가 크게 달라질 수 있습니다." },
+    ] },
+    fun: { guide: [
+      { title: "재미있는 도구의 활용", body: "아스키 아트와 픽셀 아트는 이미지를 표현 방식으로 바꾸고, 랜덤 휠과 사다리 게임은 가벼운 선택과 놀이에 사용할 수 있습니다. 로또 번호 생성은 무작위 선택을 돕는 기능이며 당첨을 예측하지 않습니다." },
+      { title: "이미지 효과의 한계", body: "이미지 효과는 브라우저 Canvas 처리 결과를 저장합니다. 원본 세부 묘사가 복원되거나 AI로 피사체를 인식하는 기능은 제공하지 않습니다." },
+    ] },
     "image-compressor": {
       situations: { title: "이 도구가 필요한 상황", items: ["블로그나 쇼핑몰에 올릴 이미지를 더 가볍게 만들 때", "모바일에서 로딩이 느린 JPG, PNG, WebP 파일을 줄일 때", "해상도는 유지하면서 품질 값을 조절해 용량을 줄이고 싶을 때"] },
       options: { title: "품질 값 선택 기준", body: "JPG와 WebP는 품질 값을 낮출수록 용량이 줄어들 수 있지만 세부 묘사가 손실될 수 있습니다. PNG는 사진보다 로고, 아이콘, 캡처 이미지에서 압축 효과가 다르게 나타날 수 있습니다." },
@@ -46,6 +70,26 @@ const toolEnhancements: Record<Lang, Partial<Record<ToolSlug, ToolEnhancement>>>
       situations: { title: "활용 예", items: ["로고 이미지에서 브랜드 색상 HEX 값 확인", "캡처 이미지의 버튼 색상 추출", "디자인 시안의 배경색과 텍스트 색상 비교"] },
       options: { title: "색상 값 해석", body: "HEX는 웹 CSS에서 쓰기 좋고, RGB는 화면 픽셀 값을 확인할 때 직관적입니다. HSL은 밝기와 채도를 조절하며 비슷한 색을 만들 때 유용합니다." },
       limitations: { title: "주의사항", body: "이미지가 축소되어 보여도 실제 픽셀 기준으로 색상을 읽습니다. 반투명 픽셀이나 체크무늬 미리보기 위에서 보이는 색은 배경과 합성되어 보일 수 있습니다." },
+    },
+    "image-cropper": {
+      situations: { title: "자르기와 캔버스 확장의 차이", body: "필요한 부분만 남길 때는 잘라서 채우기를 사용하고, 사진 전체를 유지한 채 정사각형이나 세로 비율을 맞출 때는 이미지 전체 유지를 사용하세요." },
+      options: { title: "비율을 고르는 기준", body: "프로필과 정사각형 게시물에는 1:1, 세로형 피드에는 4:5, 영상 썸네일에는 16:9가 자주 쓰입니다. 서비스별 권장 크기는 바뀔 수 있으므로 업로드 전 최신 기준을 확인하세요." },
+      limitations: { title: "결과 이해", body: "이미지 전체 유지 모드는 원본을 확대하지 않고 캔버스만 넓힙니다. 결과 해상도가 커져도 원본에 없던 세부 정보가 생기지는 않습니다." },
+    },
+    "image-rotate-flip": {
+      situations: { title: "90도 회전과 자유 회전", body: "90도 단위 회전은 결과 크기를 예측하기 쉽습니다. 1도 단위 자유 회전은 사진의 기울기를 미세하게 보정할 때 유용하지만 픽셀 보간이 필요합니다." },
+      options: { title: "결과 캔버스 선택", body: "전체 이미지 유지는 회전된 모서리가 잘리지 않도록 캔버스를 넓힙니다. 원본 캔버스 유지는 원본 크기를 유지하지만 90도의 배수가 아닌 각도에서 가장자리가 잘릴 수 있습니다." },
+      limitations: { title: "보간과 화질", body: "자유 회전은 가장자리와 세부 표현을 약간 부드럽게 만들 수 있습니다. 도구는 이전 결과를 다시 회전하지 않고 원본에서 현재 각도로 한 번 렌더링합니다." },
+    },
+    "image-watermark": {
+      situations: { title: "한 곳 배치와 반복 배치", body: "사진 출처를 표시할 때는 한 곳 배치가 적합하고, 샘플 이미지나 문서 전체의 재사용을 어렵게 하려면 반복 배치를 사용하세요." },
+      options: { title: "읽기 쉬운 워터마크 설정", body: "배경과 대비되는 색상, 낮은 투명도, 얇은 외곽선 또는 그림자를 조합하면 문구를 읽을 수 있으면서 원본을 과도하게 가리지 않을 수 있습니다. 반복 배치는 가로·세로 개수로 간격을 자동 계산합니다." },
+      limitations: { title: "폰트와 결과", body: "시스템 폰트는 기기에 따라 모양이 달라질 수 있습니다. 웹폰트는 선택할 때만 불러오며, 영문 전용 폰트의 한글은 시스템 대체 폰트로 표시될 수 있습니다." },
+    },
+    "remove-image-metadata": {
+      situations: { title: "공유 전 확인할 사진 정보", body: "사진에는 촬영 날짜, 카메라 모델, GPS 위치, 작성자 같은 정보가 남을 수 있습니다. 공개 전에는 정보 보기로 필요한 항목을 확인하고 GPS만 제거하거나 전체 제거를 선택할 수 있습니다." },
+      options: { title: "수정과 제거의 차이", body: "수정은 지원되는 기존 EXIF 항목의 값을 바꾸고, 제거는 선택한 메타데이터 컨테이너를 삭제합니다. 방향 정보 수정은 픽셀을 회전하는 작업이 아니라 방향 태그를 바꾸는 작업입니다." },
+      limitations: { title: "형식별 지원 범위", body: "현재 사진 중심으로 JPG와 HEIC/HEIF를 지원합니다. 제조사 전용 고급 촬영 정보와 없는 항목의 새 추가는 파일 호환성을 위해 제한될 수 있습니다." },
     },
     "pdf-merger": {
       situations: { title: "사용하기 좋은 경우", items: ["여러 계약서 PDF를 하나로 묶을 때", "스캔한 페이지 파일을 순서대로 합칠 때", "보고서 본문과 첨부 자료를 하나의 PDF로 정리할 때"] },
@@ -104,6 +148,30 @@ const toolEnhancements: Record<Lang, Partial<Record<ToolSlug, ToolEnhancement>>>
     },
   },
   en: {
+    text: { guide: [
+      { title: "Choosing a Text Tool", body: "Use the character counter for length checks, whitespace removal for copied data cleanup, case conversion for English titles and identifiers, and text comparison to review changes between drafts." },
+      { title: "Using Character Counts", body: "Platforms can count line breaks, emoji, composed characters, and spaces differently. Check the final value in the destination service before submitting." },
+    ] },
+    calculator: { guide: [
+      { title: "Scope of Calculator Results", body: "Percent, discount, VAT, date, area, and interest tools provide quick comparison values. For contracts, tax, lending, or health decisions, check the applicable rules and official documents." },
+      { title: "Rounding and Base Dates", body: "Displayed values may be rounded for readability. Date results can depend on inclusive-date rules, and financial results can differ by execution date and fees." },
+    ] },
+    generator: { guide: [
+      { title: "Generator Guide", body: "Create passwords and random strings by choosing length and character sets. Use UUIDs when you need a development identifier and QR codes to share a link or short text." },
+      { title: "Security Notes", body: "Generated passwords or QR codes can contain sensitive information. Results are handled in the browser, but you are responsible for how you store or share them." },
+    ] },
+    developer: { guide: [
+      { title: "Choosing a Developer Tool", body: "Use the JSON formatter to inspect structure and syntax, Base64 and URL tools to inspect encoded values, and CSV/JSON conversion to move tabular data." },
+      { title: "Sensitive Data", body: "Review tokens, passwords, and personal data before copying or sharing a result. These tools are not designed for server storage, but browser screens and clipboards still need care." },
+    ] },
+    electronics: { guide: [
+      { title: "Scope of Circuit Calculators", body: "Ohm's law, voltage-divider, LED resistor, and RC/RL filter calculators are useful for comparing design drafts. Real builds must also consider tolerance, power rating, heat, and measurement conditions." },
+      { title: "Values to Check First", body: "Check voltage, current, resistance units, and prefixes first. Confusing mA with A or uF with nF can change the result substantially." },
+    ] },
+    fun: { guide: [
+      { title: "Using Fun Tools", body: "ASCII and pixel-art tools change how an image is represented. Random wheels and ladder games are for light choices and play. The lottery number generator creates random picks and does not predict outcomes." },
+      { title: "Limits of Image Effects", body: "Image effects are saved from browser Canvas processing. They do not restore missing detail or use AI to identify subjects." },
+    ] },
     "image-compressor": {
       situations: { title: "When to Use This Tool", items: ["Make images lighter before uploading to blogs or stores", "Reduce slow-loading JPG, PNG, or WebP files", "Keep dimensions while adjusting quality and file size"] },
       options: { title: "Choosing a Quality Value", body: "For JPG and WebP, lower quality can reduce file size but may remove detail. PNG compression behaves differently depending on whether the image is a photo, logo, icon, or screenshot." },
@@ -125,6 +193,26 @@ const toolEnhancements: Record<Lang, Partial<Record<ToolSlug, ToolEnhancement>>>
       situations: { title: "Use Cases", items: ["Find the HEX value from a logo", "Pick a button color from a screenshot", "Compare background and text colors from a design image"] },
       options: { title: "Reading Color Values", body: "HEX is convenient for CSS, RGB shows screen pixel values directly, and HSL is useful when adjusting brightness or saturation." },
       limitations: { title: "Notes", body: "The tool reads actual image pixels even if the preview is scaled. Semi-transparent pixels or checkerboard previews can appear visually mixed with the preview background." },
+    },
+    "image-cropper": {
+      situations: { title: "Cropping vs Canvas Expansion", body: "Use Crop to fill when only part of the image should remain. Use Keep full image when you need a square or portrait ratio without losing the original photo." },
+      options: { title: "Choosing a Ratio", body: "1:1 is common for profiles and square posts, 4:5 for portrait feeds, and 16:9 for video thumbnails. Platform recommendations can change, so check the latest upload rules before publishing." },
+      limitations: { title: "Understanding the Result", body: "Keep full image expands only the canvas and does not enlarge the original. A larger output resolution does not create missing detail." },
+    },
+    "image-rotate-flip": {
+      situations: { title: "Right-angle and Free Rotation", body: "Right-angle rotation is predictable for output dimensions. One-degree free rotation is useful for small corrections but requires pixel interpolation." },
+      options: { title: "Choosing an Output Canvas", body: "Keep full image expands the canvas so rotated corners remain visible. Keep original canvas size preserves dimensions but can crop edges at angles other than multiples of 90 degrees." },
+      limitations: { title: "Interpolation and Quality", body: "Free rotation can slightly soften edges and fine detail. The tool renders once from the original at the current angle instead of rotating previous output repeatedly." },
+    },
+    "image-watermark": {
+      situations: { title: "Single and Repeated Placement", body: "Use a single placement for a photo credit. Use repeated placement when you need a visible pattern across a sample image or document." },
+      options: { title: "Readable Watermark Settings", body: "A contrasting color, lower opacity, and a subtle outline or shadow can keep text readable without hiding too much of the image. Repeated placement calculates spacing from the selected row and column counts." },
+      limitations: { title: "Fonts and Output", body: "System fonts can differ by device. Hosted fonts load only when selected, and Korean text in Latin-only fonts may use a system fallback." },
+    },
+    "remove-image-metadata": {
+      situations: { title: "Photo Details to Check Before Sharing", body: "Photos can retain capture date, camera model, GPS location, author, and other information. Review metadata before sharing, then remove GPS only or remove all supported metadata." },
+      options: { title: "Editing vs Removing", body: "Editing changes supported existing EXIF values, while removal deletes selected metadata containers. Changing orientation updates a direction tag; it does not rotate image pixels." },
+      limitations: { title: "Format Support", body: "The tool currently focuses on JPG and HEIC/HEIF photos. Manufacturer-specific capture data and adding missing entries can be limited to protect file compatibility." },
     },
     "pdf-merger": {
       situations: { title: "Useful Cases", items: ["Combine several contract PDFs", "Merge scanned page files in order", "Put a report and appendices into one PDF"] },

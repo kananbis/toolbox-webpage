@@ -95,17 +95,10 @@ type ToolText = {
   faq: { question: string; answer: string }[];
 };
 
-const koFaq = (name: string) => [
-  { question: `${name} 입력값을 저장하나요?`, answer: "아니요. 입력한 내용은 서버에 저장하지 않으며 가능한 처리는 브라우저 안에서 끝납니다." },
-  { question: "모바일에서도 쓸 수 있나요?", answer: "네. PC와 모바일 화면에서 모두 사용할 수 있도록 반응형으로 구성했습니다." },
-  { question: "결과를 그대로 사용해도 되나요?", answer: "간단한 확인용으로 쓰기 좋습니다. 중요한 판단에는 별도 검토가 필요합니다." },
-];
-
-const enFaq = (name: string) => [
-  { question: `Does ${name} save my input?`, answer: "No. Your input is not stored on a server. Supported actions run in your browser." },
-  { question: "Can I use it on mobile?", answer: "Yes. The pages are responsive and work on desktop and mobile browsers." },
-  { question: "Can I rely on the result?", answer: "Use the result as a quick reference. Important work should be checked separately." },
-];
+// Tool-specific FAQs are preferred. Short utilities without a useful unique FAQ
+// intentionally render no FAQ section instead of repeating site-wide boilerplate.
+const koFaq = (_name: string) => [];
+const enFaq = (_name: string) => [];
 
 export const i18n = {
   ko: {
@@ -124,12 +117,12 @@ export const i18n = {
       languageSwitch: "EN",
     },
     home: {
-      title: "Toolbox - 무료 웹 도구 모음",
-      description: "오디오 압축, 오디오 자르기, 아이폰 벨소리 만들기, PDF 합치기, 이미지 리사이즈 같은 브라우저 기반 무료 도구를 사용할 수 있습니다.",
-      label: "무료 온라인 도구",
-      h1: "무료 웹 도구 모음",
-      body1: "오디오 편집, PDF 정리, 이미지 처리, 계산기, 변환기, 텍스트 도구를 설치 없이 사용할 수 있습니다.",
-      body2: "선택한 파일과 입력 내용은 가능한 범위에서 서버로 업로드하지 않고 현재 브라우저 안에서 처리합니다.",
+      title: "Toolbox - 브라우저 기반 파일·계산 도구",
+      description: "이미지, PDF, 오디오 파일 작업과 계산·변환을 브라우저에서 처리하는 웹 유틸리티 서비스입니다.",
+      label: "브라우저 기반 웹 유틸리티",
+      h1: "설치 없이 처리하는 파일·계산 도구",
+      body1: "이미지, PDF, 오디오 파일 작업과 계산, 변환, 텍스트 정리를 한곳에서 제공합니다. 도구마다 처리 방식과 제한 사항을 함께 확인할 수 있습니다.",
+      body2: "가능한 작업은 선택한 파일을 서버로 올리지 않고 현재 브라우저에서 처리합니다. 형식에 따라 필요한 실행 구성 요소만 별도로 불러올 수 있습니다.",
       button: "모든 도구 보기",
       frequent: "자주 쓰는 도구",
       categories: "도구 카테고리",
@@ -233,12 +226,12 @@ export const i18n = {
     siteName: "Toolbox",
     nav: { all: "All", text: "Text", calculator: "Calculators", converter: "Converters", audio: "Audio", fun: "Fun", generator: "Generators", developer: "Developer", electronics: "Electronics", image: "Images", languageSwitch: "KO" },
     home: {
-      title: "Toolbox - Free Web Tools",
-      description: "Use browser-based tools for audio compression, audio trimming, iPhone ringtones, PDF merging, image resizing, and more.",
-      label: "Free Online Tools",
-      h1: "Free Web Tools That Run in Your Browser",
-      body1: "Edit audio, organize PDFs, process images, calculate values, convert formats, and handle text tasks without installing software.",
-      body2: "Your files and input are processed in your browser whenever possible and are not uploaded to a server.",
+      title: "Toolbox - Browser-Based File and Calculation Tools",
+      description: "A browser-based utility service for image, PDF, and audio file tasks, calculations, and conversions.",
+      label: "Browser-based web utilities",
+      h1: "File and calculation tools without installation",
+      body1: "Use image, PDF, and audio file tools alongside calculators, converters, and text utilities. Each tool explains its processing approach and practical limits.",
+      body2: "Where possible, selected files are handled in your browser instead of being uploaded to a server. Some formats load only the required runtime component when needed.",
       button: "View All Tools",
       frequent: "Common Tools",
       categories: "Tool Categories",

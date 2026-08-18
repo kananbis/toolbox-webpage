@@ -3,7 +3,6 @@ import Layout from "./Layout.astro";
 import FAQ from "./FAQ.astro";
 import RelatedTools from "./RelatedTools.astro";
 import AdSlot from "./AdSlot.astro";
-import BookmarkPrompt from "./BookmarkPrompt.astro";
 import ToolRunner from "./ToolRunner.astro";
 import { getFaqOverride, getToolEnhancement } from "@/i18n/content-quality";
 import { getRelatedTools, getToolBasis, i18n, type Lang, type ToolSlug } from "@/i18n/translations";
@@ -34,6 +33,17 @@ const faqItems = getFaqOverride(lang, tool.slug) ?? tool.faq;
 const otherLang = lang === "ko" ? "en" : "ko";
 const basis = tool.basis ?? getToolBasis(lang, tool.slug) ?? t.common.basisText;
 const formattedBasis = basis.replace(/\. /g, ".\n");
+const faqSchema = faqItems.length
+  ? {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faqItems.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    }
+  : undefined;
 const isImageTool = ["image-resizer", "image-compressor", "webp-converter", "image-cropper", "image-rotate-flip", "image-format-converter", "image-mosaic", "image-watermark", "remove-image-metadata", "image-color-picker", "image-color-replacer", "make-color-transparent", "image-to-ascii-art", "image-to-pixel-art"].includes(tool.slug);
 const isAudioTool = ["audio-converter", "audio-cutter", "audio-compressor", "audio-volume-editor", "iphone-ringtone-maker", "audio-merger"].includes(tool.slug);
 const isPdfTool = ["pdf-merger", "pdf-splitter", "pdf-page-extractor", "image-to-pdf", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg", "pdf-watermark", "pdf-page-numbers", "pdf-organizer"].includes(tool.slug);
@@ -184,8 +194,6 @@ const imageConverterSupport = lang === "ko"
       {tool.privacy && <p class="mt-3 text-sm text-slate-600">{privacyNote}</p>}
     </section>
 
-    <BookmarkPrompt lang={lang} />
-
     <section class="prose-lite">
       {
         enhancement && (
@@ -332,7 +340,8 @@ const imageConverterSupport = lang === "ko"
 
     {enhancement && <AdSlot lang={lang} placement="toolBottom" />}
 
-    <FAQ items={faqItems} />
+    {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
+    {faqItems.length > 0 && <FAQ items={faqItems} />}
     <RelatedTools tools={related} lang={lang} />
   </article>
 </Layout>
