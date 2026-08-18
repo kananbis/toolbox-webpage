@@ -3,6 +3,7 @@ import path from "node:path";
 
 const root = "dist";
 const files = [];
+const siteUrl = "https://mfwtools.com";
 
 function walk(dir) {
   for (const name of fs.readdirSync(dir)) {
@@ -84,8 +85,22 @@ function duplicates(field) {
 const allExistingPaths = new Set(
   files.map((filePath) => pageUrl(filePath)).concat(["/robots.txt", "/sitemap.xml"]),
 );
+const redirectFile = path.join(root, "_redirects");
+const redirects = fs.existsSync(redirectFile)
+  ? fs.readFileSync(redirectFile, "utf8")
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => line && !line.startsWith("#"))
+      .map((line) => {
+        const [source, destination, status = "302"] = line.split(/\s+/);
+        return { source, destination, status: Number(status) };
+      })
+  : [];
+const redirectSources = new Set(redirects.filter((item) => item.source.startsWith("/")).map((item) => item.source));
 const brokenLinks = [];
 const redirectLikeLinks = [];
+const linksToRedirects = [];
+const inboundLinks = new Map(files.map((filePath) => [pageUrl(filePath), 0]));
 for (const page of pages) {
   for (const href of page.hrefs) {
     if (!href.startsWith("/") || href.startsWith("//")) continue;
@@ -94,11 +109,50 @@ for (const page of pages) {
     if (!allExistingPaths.has(normalized) && !href.includes(".")) {
       brokenLinks.push({ from: page.url, href });
     }
+    if (allExistingPaths.has(normalized)) {
+      inboundLinks.set(normalized, (inboundLinks.get(normalized) ?? 0) + 1);
+    }
+    if (redirectSources.has(href) || redirectSources.has(normalized)) {
+      linksToRedirects.push({ from: page.url, href });
+    }
     if (!href.endsWith("/") && !href.includes(".") && href !== "/") {
       redirectLikeLinks.push({ from: page.url, href });
     }
   }
 }
+
+const sitemapPath = path.join(root, "sitemap.xml");
+const sitemapUrls = fs.existsSync(sitemapPath)
+  ? [...fs.readFileSync(sitemapPath, "utf8").matchAll(/<loc>(.*?)<\/loc>/g)].map((item) => item[1])
+  : [];
+const sitemapPaths = sitemapUrls.map((url) => new URL(url).pathname);
+const sitemapProblems = sitemapPaths.flatMap((pathname) => {
+  const normalized = pathname.endsWith("/") ? pathname : `${pathname}/`;
+  const page = pages.find((item) => item.url === normalized);
+  if (!page) return [{ pathname, reason: "missing-build-page" }];
+  if (page.robots.includes("noindex")) return [{ pathname, reason: "noindex" }];
+  if (redirectSources.has(pathname) || redirectSources.has(normalized)) return [{ pathname, reason: "redirect-source" }];
+  return [];
+});
+const canonicalMissing = pages.filter((page) => !page.canonical);
+const canonicalSelfMismatch = pages.filter((page) => {
+  if (!page.canonical) return false;
+  try {
+    const pathname = new URL(page.canonical).pathname;
+    return pathname !== page.url;
+  } catch {
+    return true;
+  }
+});
+const crossLanguageCanonical = pages.filter((page) => {
+  const canonicalLanguage = new URL(page.canonical).pathname.split("/").filter(Boolean)[0];
+  const pageLanguage = page.url.split("/").filter(Boolean)[0];
+  return ["ko", "en"].includes(pageLanguage) && canonicalLanguage !== pageLanguage;
+});
+const orphanIndexPages = pages
+  .filter((page) => page.url !== "/ko/" && page.url !== "/en/" && page.robots === "index, follow")
+  .filter((page) => (inboundLinks.get(page.url) ?? 0) === 0)
+  .map((page) => page.url);
 
 const report = {
   htmlPages: pages.length,
@@ -110,7 +164,10 @@ const report = {
   duplicateDescriptions: duplicates("description"),
   duplicateIntros: duplicates("intro"),
   duplicateFaqBlocks: duplicates("faq"),
-  badCanonicals: pages.filter((page) => !page.canonical.startsWith("https://mfwtools.com/") || page.canonical.includes("www.") || page.canonical.includes("localhost") || page.canonical.includes("pages.dev") || !page.canonical.endsWith("/")).map(({ url, canonical }) => ({ url, canonical })),
+  missingCanonicals: canonicalMissing.map(({ url }) => url),
+  canonicalSelfMismatch: canonicalSelfMismatch.map(({ url, canonical }) => ({ url, canonical })),
+  crossLanguageCanonical: crossLanguageCanonical.map(({ url, canonical }) => ({ url, canonical })),
+  badCanonicals: pages.filter((page) => !page.canonical.startsWith(`${siteUrl}/`) || page.canonical.includes("www.") || page.canonical.includes("localhost") || page.canonical.includes("pages.dev") || !page.canonical.endsWith("/")).map(({ url, canonical }) => ({ url, canonical })),
   badRobots: pages.filter((page) => page.robots !== "index, follow").map(({ url, robots }) => ({ url, robots })),
   badHreflang: pages.filter((page) => page.hreflangCount < 3).map(({ url, hreflangCount }) => ({ url, hreflangCount })),
   pagesWithAdLabels: pages.filter((page) => page.adLabels > 0).length,
@@ -119,6 +176,15 @@ const report = {
   brokenLinkCount: brokenLinks.length,
   redirectLikeLinks: redirectLikeLinks.slice(0, 100),
   redirectLikeLinkCount: redirectLikeLinks.length,
+  configuredRedirects: redirects,
+  redirectLoops: redirects.filter((item) => item.source === item.destination),
+  redirectSourcesInSitemap: sitemapPaths.filter((pathname) => redirectSources.has(pathname) || redirectSources.has(`${pathname}/`)),
+  internalLinksToRedirects: linksToRedirects,
+  orphanIndexPages,
+  sitemap: {
+    totalUrls: sitemapUrls.length,
+    problems: sitemapProblems,
+  },
   bookmarkPromptPages: pages.filter((page) => page.bookmarkPromptCount > 0).map((page) => page.url),
   qualityClasses: pages
     .filter((page) => toolPattern.test(page.url) && !categoryPattern.test(page.url))

@@ -7,8 +7,11 @@ const lang: Lang = isLang(segments[0]) ? segments[0] : "ko";
 const t = i18n[lang];
 const otherLang: Lang = lang === "ko" ? "en" : "ko";
 const withSlash = (path: string) => (path.endsWith("/") ? path : `${path}/`);
-const pathWithoutLang = isLang(segments[0]) ? `/${segments.slice(1).join("/")}` : currentPath;
-const switchPath = withSlash(`/${otherLang}${pathWithoutLang === "/" ? "" : pathWithoutLang}`);
+const hasLanguagePrefix = isLang(segments[0]);
+const pathWithoutLang = hasLanguagePrefix ? `/${segments.slice(1).join("/")}` : currentPath;
+const switchPath = hasLanguagePrefix
+  ? withSlash(`/${otherLang}${pathWithoutLang === "/" ? "" : pathWithoutLang}`)
+  : `/${otherLang}/`;
 
 const menuItems = [
   { href: `/${lang}/tools/`, label: t.nav.all },

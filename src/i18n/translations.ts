@@ -139,11 +139,11 @@ export const i18n = {
       relatedTools: "관련 도구",
       ad: "광고 영역",
       toolsTitle: "전체 도구",
-      toolsDescription: "계산기, 변환기, 텍스트 도구, 오디오 도구, 전자 계산기, 이미지 도구를 설치와 로그인 없이 사용할 수 있습니다. 각 도구 페이지에는 사용 방법, 예시, FAQ가 포함되어 있습니다.",
+      toolsDescription: "이미지, PDF, 오디오 파일 작업과 계산, 변환, 텍스트 정리를 설치와 로그인 없이 사용할 수 있습니다. 도구마다 실제 기능과 사용 기준, 제한 사항을 함께 안내합니다.",
       categoryView: "카테고리 보기",
     },
     footer: {
-      text: "계산기, 변환기, 텍스트 도구를 모은 무료 온라인 도구 사이트입니다.",
+      text: "이미지, PDF, 오디오 처리와 계산, 변환, 텍스트 작업을 브라우저에서 사용할 수 있는 웹 도구 모음입니다.",
     },
     categories: {
       text: { name: "텍스트 도구", description: "글자수 확인, 단어수 계산, 공백 제거, 대소문자 변환을 바로 사용할 수 있습니다." },
@@ -251,7 +251,7 @@ export const i18n = {
       toolsDescription: "Free calculators, converters, text tools, audio tools, electronics calculators, and image tools you can use without installation or sign-in. Each tool page includes instructions, examples, and FAQ.",
       categoryView: "View category",
     },
-    footer: { text: "A free online tools site for calculators, converters, and text utilities." },
+    footer: { text: "A browser-based collection of tools for image, PDF, and audio tasks, along with calculations, conversions, and text utilities." },
     categories: {
       text: { name: "Text Tools", description: "Count characters and words, remove spaces, and convert letter case." },
       calculator: { name: "Calculators", description: "Calculate percentages, discounts, VAT, dates, BMI, margins, compound interest, and loan interest." },

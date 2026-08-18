@@ -53,6 +53,14 @@ Every category now includes a decision guide appropriate to its subject. The ima
 - The About page now states the service motivation and clarifies that optional external runtimes do not receive selected files or metadata.
 - No C-class tool was noindexed, deleted, merged, or redirected in this pass.
 
+## Third-Pass Technical Verification
+
+- Canonical URLs are checked for presence, self-reference, production host, trailing slash, and language mismatch.
+- Sitemap URLs are checked against generated HTML, robots directives, and configured redirect sources.
+- `_redirects` is checked for self-loops, sitemap sources, and internal links to redirect sources.
+- A custom `404.html` is generated with `noindex, follow` and clear Korean/English navigation.
+- `scripts/analyze-indexing-urls.mjs` is available for a supplied Search Console URL export; it reports build presence, canonical, robots, title, and A/B/C class without guessing which URLs Google excluded.
+
 ## Remaining Risks
 
 - Some small calculators and generators intentionally have compact content because their user task is narrow.
