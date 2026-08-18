@@ -12,16 +12,16 @@ const switchPath = withSlash(`/${otherLang}${pathWithoutLang === "/" ? "" : path
 
 const menuItems = [
   { href: `/${lang}/tools/`, label: t.nav.all },
-  { href: `/${lang}/tools/text/`, label: t.nav.text },
-  { href: `/${lang}/tools/calculator/`, label: t.nav.calculator },
-  { href: `/${lang}/tools/converter/`, label: t.nav.converter },
   { href: `/${lang}/tools/audio/`, label: t.nav.audio },
+  { href: `/${lang}/tools/image/`, label: t.nav.image },
   { href: `/${lang}/tools/pdf/`, label: "PDF" },
-  { href: `/${lang}/tools/fun/`, label: t.nav.fun },
+  { href: `/${lang}/tools/converter/`, label: t.nav.converter },
+  { href: `/${lang}/tools/calculator/`, label: t.nav.calculator },
   { href: `/${lang}/tools/generator/`, label: t.nav.generator },
+  { href: `/${lang}/tools/text/`, label: t.nav.text },
   { href: `/${lang}/tools/developer/`, label: t.nav.developer },
   { href: `/${lang}/tools/electronics/`, label: t.nav.electronics },
-  { href: `/${lang}/tools/image/`, label: t.nav.image },
+  { href: `/${lang}/tools/fun/`, label: t.nav.fun },
 ];
 
 const isActive = (href: string) => {

@@ -12,7 +12,8 @@ export type ColorReplacementOptions = {
   targetColor: RgbColor;
   replacementColor: RgbColor;
   tolerance: number;
-  preserveShading: boolean;
+  scope?: "all" | "connected";
+  seed?: { x: number; y: number };
 };
 
 export type ColorTransparencyOptions = {
@@ -23,6 +24,12 @@ export type ColorTransparencyOptions = {
 };
 
 const MAX_RGB_DISTANCE = Math.sqrt(255 * 255 * 3);
+
+type HslColor = {
+  h: number;
+  s: number;
+  l: number;
+};
 
 const clampByte = (value: number) => Math.max(0, Math.min(255, Math.round(value)));
 
@@ -53,57 +60,60 @@ export function calculateColorDistance(a: RgbColor, b: RgbColor): number {
   return Math.sqrt((a.r - b.r) ** 2 + (a.g - b.g) ** 2 + (a.b - b.b) ** 2);
 }
 
-export function toleranceToThreshold(tolerance: number): number {
-  return MAX_RGB_DISTANCE * Math.max(0, Math.min(100, tolerance)) / 100;
-}
-
-export function isColorWithinTolerance(color: RgbColor, targetColor: RgbColor, tolerance: number): boolean {
-  const threshold = toleranceToThreshold(tolerance);
-  const distance = calculateColorDistance(color, targetColor);
-  return tolerance <= 0 ? distance === 0 : distance <= threshold;
-}
-
-function rgbToHsl(color: RgbColor) {
-  const r = color.r / 255;
-  const g = color.g / 255;
-  const b = color.b / 255;
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
+function rgbToHsl(color: RgbColor): HslColor {
+  const red = color.r / 255;
+  const green = color.g / 255;
+  const blue = color.b / 255;
+  const max = Math.max(red, green, blue);
+  const min = Math.min(red, green, blue);
   const lightness = (max + min) / 2;
   const delta = max - min;
 
   if (delta === 0) return { h: 0, s: 0, l: lightness };
 
   const saturation = delta / (1 - Math.abs(2 * lightness - 1));
-  let hue = 0;
+  let hue;
+  if (max === red) hue = ((green - blue) / delta) % 6;
+  else if (max === green) hue = (blue - red) / delta + 2;
+  else hue = (red - green) / delta + 4;
 
-  if (max === r) hue = 60 * (((g - b) / delta) % 6);
-  if (max === g) hue = 60 * ((b - r) / delta + 2);
-  if (max === b) hue = 60 * ((r - g) / delta + 4);
-
-  return { h: hue < 0 ? hue + 360 : hue, s: saturation, l: lightness };
+  return { h: (hue * 60 + 360) % 360, s: saturation, l: lightness };
 }
 
-function hslToRgb(h: number, s: number, l: number): RgbColor {
-  const chroma = (1 - Math.abs(2 * l - 1)) * s;
-  const x = chroma * (1 - Math.abs(((h / 60) % 2) - 1));
-  const m = l - chroma / 2;
-  let r = 0;
-  let g = 0;
-  let b = 0;
+function hueDistance(first: number, second: number): number {
+  const difference = Math.abs(first - second);
+  return Math.min(difference, 360 - difference);
+}
 
-  if (h < 60) [r, g, b] = [chroma, x, 0];
-  else if (h < 120) [r, g, b] = [x, chroma, 0];
-  else if (h < 180) [r, g, b] = [0, chroma, x];
-  else if (h < 240) [r, g, b] = [0, x, chroma];
-  else if (h < 300) [r, g, b] = [x, 0, chroma];
-  else [r, g, b] = [chroma, 0, x];
+export function toleranceToThreshold(tolerance: number): number {
+  const normalized = Math.max(0, Math.min(100, tolerance)) / 100;
+  // A linear scale makes low values unexpectedly broad: 10 previously accepted
+  // colors up to about 44 RGB units away. Keep the high end available while
+  // making the first part of the slider useful for precise color selection.
+  return MAX_RGB_DISTANCE * normalized ** 1.5;
+}
 
-  return {
-    r: clampByte((r + m) * 255),
-    g: clampByte((g + m) * 255),
-    b: clampByte((b + m) * 255),
-  };
+export function isColorWithinTolerance(color: RgbColor, targetColor: RgbColor, tolerance: number): boolean {
+  const normalizedTolerance = Math.max(0, Math.min(100, tolerance)) / 100;
+  const threshold = toleranceToThreshold(tolerance);
+  const distance = calculateColorDistance(color, targetColor);
+  if (tolerance <= 0) return distance === 0;
+  if (distance > threshold) return false;
+
+  // RGB distance alone makes dark but unrelated colors (for example brown and
+  // black) look close. For colors with a meaningful hue, also keep similar hue
+  // and saturation. Neutral colors deliberately stay on RGB matching because
+  // their hue is undefined or unstable.
+  if (normalizedTolerance >= 0.8) return true;
+  const targetHsl = rgbToHsl(targetColor);
+  if (targetHsl.s < 0.18) return true;
+
+  const candidateHsl = rgbToHsl(color);
+  const minimumSaturation = Math.max(0.08, targetHsl.s - (0.18 + normalizedTolerance * 0.45));
+  if (candidateHsl.s < minimumSaturation) return false;
+
+  const maximumHueDistance = 12 + normalizedTolerance * 120;
+  return hueDistance(candidateHsl.h, targetHsl.h) <= maximumHueDistance;
 }
 
 export function getPixelColor(imageData: ImageData, x: number, y: number): RgbaColor {
@@ -120,23 +130,56 @@ export function getPixelColor(imageData: ImageData, x: number, y: number): RgbaC
 
 export function applyColorReplacement(source: ImageData, options: ColorReplacementOptions): ImageData {
   const output = new ImageData(new Uint8ClampedArray(source.data), source.width, source.height);
-  const replacementHsl = rgbToHsl(options.replacementColor);
 
-  for (let index = 0; index < output.data.length; index += 4) {
+  const replacePixel = (index: number) => {
     const alpha = source.data[index + 3];
-    if (alpha === 0) continue;
+    if (alpha === 0) return;
 
     const color = { r: source.data[index], g: source.data[index + 1], b: source.data[index + 2] };
-    if (!isColorWithinTolerance(color, options.targetColor, options.tolerance)) continue;
+    if (!isColorWithinTolerance(color, options.targetColor, options.tolerance)) return;
 
-    const nextColor = options.preserveShading
-      ? hslToRgb(replacementHsl.h, replacementHsl.s, rgbToHsl(color).l)
-      : options.replacementColor;
-
-    output.data[index] = nextColor.r;
-    output.data[index + 1] = nextColor.g;
-    output.data[index + 2] = nextColor.b;
+    output.data[index] = options.replacementColor.r;
+    output.data[index + 1] = options.replacementColor.g;
+    output.data[index + 2] = options.replacementColor.b;
     output.data[index + 3] = alpha;
+  };
+
+  if (options.scope === "connected" && options.seed) {
+    const seedX = Math.max(0, Math.min(source.width - 1, Math.round(options.seed.x)));
+    const seedY = Math.max(0, Math.min(source.height - 1, Math.round(options.seed.y)));
+    const pixelCount = source.width * source.height;
+    const visited = new Uint8Array(pixelCount);
+    const queue = new Int32Array(pixelCount);
+    let head = 0;
+    let tail = 0;
+
+    const enqueue = (position: number) => {
+      if (visited[position]) return;
+      visited[position] = 1;
+      queue[tail++] = position;
+    };
+
+    enqueue(seedY * source.width + seedX);
+    while (head < tail) {
+      const position = queue[head++];
+
+      const index = position * 4;
+      const color = { r: source.data[index], g: source.data[index + 1], b: source.data[index + 2] };
+      if (source.data[index + 3] === 0 || !isColorWithinTolerance(color, options.targetColor, options.tolerance)) continue;
+
+      replacePixel(index);
+      const x = position % source.width;
+      const y = Math.floor(position / source.width);
+      if (x > 0) enqueue(position - 1);
+      if (x < source.width - 1) enqueue(position + 1);
+      if (y > 0) enqueue(position - source.width);
+      if (y < source.height - 1) enqueue(position + source.width);
+    }
+    return output;
+  }
+
+  for (let index = 0; index < output.data.length; index += 4) {
+    replacePixel(index);
   }
 
   return output;

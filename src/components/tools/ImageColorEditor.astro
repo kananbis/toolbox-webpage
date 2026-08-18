@@ -17,7 +17,7 @@ const text = {
     sectionResult: "결과 확인 및 저장",
     privacy: "선택한 이미지는 서버로 업로드되지 않고 브라우저 안에서만 처리됩니다.",
     large: "이미지 해상도가 크면 브라우저 처리 시간이 길어질 수 있습니다.",
-    pickHelp: "이미지에서 바꿀 원본 색상을 화면에서 선택하거나 HEX 값으로 입력하세요.",
+    pickHelp: "이미지에서 바꿀 원본 색상을 선택하거나 HEX 값으로 입력하세요.",
     eyedropper: "화면에서 색상 선택",
     eyedropperHelp: "화면에서 색상 선택은 미리보기 배경과 합성되어 보이는 색상을 선택할 수 있습니다.",
     previewBackground: "미리보기 배경",
@@ -30,10 +30,16 @@ const text = {
     targetColor: "변경할 원본 색상",
     newColor: "새 색상",
     replacementHex: "새 색상 HEX",
+    pickReplacementColor: "화면에서 새 색상 선택",
+    replacementScope: "적용 범위",
+    replaceAll: "이미지 전체",
+    replaceConnected: "선택한 연속 영역만",
+    replaceConnectedHelp: "원본 이미지에서 대상 색상과 바꿀 영역을 한 번에 선택합니다.",
+    pickTargetColor: "원본 이미지에서 대상 색상 선택",
+    originalImage: "원본 이미지",
+    originalImageSelect: "원본 이미지 - 클릭하여 대상 색상과 영역 선택",
     tolerance: "유사 색상 범위",
-    toleranceHelp: "0에 가까울수록 선택한 색상과 거의 같은 색상만 처리하고, 값이 커질수록 비슷한 색상까지 함께 처리합니다.",
-    preserveShading: "원본 명암 유지",
-    preserveShadingHelp: "선택한 영역의 밝기 차이를 유지합니다.",
+    toleranceHelp: "낮은 값은 같은 색조와 채도를 우선해 처리합니다. 값을 높이면 밝기 차이와 유사 색상까지 더 넓게 포함합니다.",
     transparencyMode: "투명화 방식",
     full: "완전 투명",
     soft: "부드럽게 투명",
@@ -66,7 +72,7 @@ const text = {
     sectionResult: "Preview and Save",
     privacy: "Selected images are not uploaded to a server and are processed only in your browser.",
     large: "Large images may take longer to process in your browser.",
-    pickHelp: "Pick the original color to replace from the screen or enter a HEX value.",
+    pickHelp: "Choose the original color to replace from the image or enter a HEX value.",
     eyedropper: "Pick screen color",
     eyedropperHelp: "Screen color picking may select the color as composited with the preview background.",
     previewBackground: "Preview background",
@@ -79,10 +85,16 @@ const text = {
     targetColor: "Original color to replace",
     newColor: "New color",
     replacementHex: "New color HEX",
+    pickReplacementColor: "Pick new screen color",
+    replacementScope: "Apply to",
+    replaceAll: "Entire image",
+    replaceConnected: "Selected connected area only",
+    replaceConnectedHelp: "Choose the source color and connected area together from the original image.",
+    pickTargetColor: "Choose source color from original image",
+    originalImage: "Original image",
+    originalImageSelect: "Original image - click to select the source color and area",
     tolerance: "Color tolerance",
-    toleranceHelp: "Lower values process only nearly identical colors. Higher values include more similar colors.",
-    preserveShading: "Preserve original shading",
-    preserveShadingHelp: "Keeps the brightness differences in the selected area.",
+    toleranceHelp: "Lower values prioritize similar hue and saturation. Higher values include a wider range of brightness and similar colors.",
     transparencyMode: "Transparency mode",
     full: "Fully transparent",
     soft: "Soft transparency",
@@ -122,19 +134,18 @@ const text = {
     <section class="rounded-md border border-line bg-white p-4">
       <h2 class="text-base font-semibold text-ink">{text.sectionTarget}</h2>
       <p class="mt-2 text-sm text-slate-600">{text.pickHelp}</p>
-      <div class="mt-4 grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+      <div class="mt-4 grid gap-3 md:grid-cols-[minmax(160px,1fr)_auto_auto] md:items-end">
         <label class="grid gap-2 text-sm">
           <span class="font-medium text-ink">{text.targetColor}</span>
           <input data-target-hex type="text" value="#FFFFFF" inputmode="text" autocomplete="off" />
         </label>
-        <button class="btn-secondary w-full md:w-auto" type="button" data-eyedropper>{text.eyedropper}</button>
+        <div class="flex flex-wrap items-center gap-2 text-sm text-slate-700 md:pb-2">
+          <span class="h-8 w-8 rounded border border-line" data-target-swatch></span>
+          <span class="font-medium text-ink" data-target-hex-display>#FFFFFF</span>
+          <span class="text-slate-500" data-target-rgb-display>rgb(255, 255, 255)</span>
+        </div>
+        <button class="btn-secondary w-full md:w-auto" type="button" data-eyedropper>{text.pickTargetColor}</button>
       </div>
-      <div class="mt-3 flex flex-wrap items-center gap-2 text-sm text-slate-700">
-        <span class="h-8 w-8 rounded border border-line" data-target-swatch></span>
-        <span class="font-medium text-ink" data-target-hex-display>#FFFFFF</span>
-        <span class="text-slate-500" data-target-rgb-display>rgb(255, 255, 255)</span>
-      </div>
-      <p class="mt-2 text-xs leading-5 text-slate-500" data-eyedropper-help>{text.eyedropperHelp}</p>
     </section>
 
     <section class="rounded-md border border-line bg-white p-4">
@@ -142,23 +153,28 @@ const text = {
       <div class="mt-4 grid gap-4 md:grid-cols-2">
         {mode === "replace" ? (
           <>
-            <div class="grid gap-4 sm:grid-cols-[96px_1fr]">
-              <label class="grid gap-2 text-sm">
-                <span class="font-medium text-ink">{text.newColor}</span>
-                <input data-replacement-color type="color" value="#2563EB" />
-              </label>
-              <label class="grid gap-2 text-sm">
-                <span class="font-medium text-ink">{text.replacementHex}</span>
-                <input data-replacement-hex type="text" value="#2563EB" inputmode="text" autocomplete="off" />
-              </label>
+            <div class="grid gap-2">
+              <span class="text-sm font-medium text-ink">{text.newColor}</span>
+              <div class="grid gap-2 sm:grid-cols-[48px_minmax(0,1fr)_auto] sm:items-center">
+                <input class="h-10 w-12" data-replacement-color type="color" value="#2563EB" aria-label={text.newColor} />
+                <input data-replacement-hex type="text" value="#2563EB" inputmode="text" autocomplete="off" aria-label={text.replacementHex} />
+                <button class="btn-secondary w-full sm:w-auto" type="button" data-replacement-eyedropper>{text.pickReplacementColor}</button>
+              </div>
             </div>
-            <label class="grid gap-1 text-sm">
-              <span class="flex items-center gap-2 font-medium text-ink">
-                <input class="w-auto" data-preserve-shading type="checkbox" checked />
-                <span>{text.preserveShading}</span>
-              </span>
-              <span class="text-xs leading-5 text-slate-500">{text.preserveShadingHelp}</span>
-            </label>
+            <fieldset class="grid gap-2 text-sm">
+              <legend class="font-medium text-ink">{text.replacementScope}</legend>
+              <div class="grid grid-cols-2 gap-2">
+                <label class="flex min-h-10 cursor-pointer items-center gap-2 rounded border border-line bg-panel px-3">
+                  <input class="w-auto" data-replacement-scope name="replacement-scope" type="radio" value="all" checked />
+                  <span>{text.replaceAll}</span>
+                </label>
+                <label class="flex min-h-10 cursor-pointer items-center gap-2 rounded border border-line bg-panel px-3">
+                  <input class="w-auto" data-replacement-scope name="replacement-scope" type="radio" value="connected" />
+                  <span>{text.replaceConnected}</span>
+                </label>
+              </div>
+              <span class="hidden text-xs leading-5 text-slate-500" data-connected-area-help>{text.replaceConnectedHelp}</span>
+            </fieldset>
           </>
         ) : (
           <>
@@ -182,8 +198,8 @@ const text = {
         <div class="grid gap-2 text-sm md:col-span-2">
           <span class="font-medium text-ink">{text.tolerance}</span>
           <div class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_120px]">
-            <input data-tolerance-range type="range" min="0" max="100" value="25" />
-            <input data-tolerance-number type="number" min="0" max="100" value="25" aria-label={text.tolerance} />
+            <input data-tolerance-range type="range" min="0" max="100" value="10" />
+            <input data-tolerance-number type="number" min="0" max="100" value="10" aria-label={text.tolerance} />
           </div>
           <p class="text-xs leading-5 text-slate-500">{text.toleranceHelp}</p>
         </div>
@@ -196,11 +212,14 @@ const text = {
             <option value="black">{text.blackBackground}</option>
             <option value="custom">{text.customBackground}</option>
           </select>
-          <span class="text-xs leading-5 text-slate-500">{text.previewBackgroundHelp}</span>
+          <span class="min-h-10 text-xs leading-5 text-slate-500">{text.previewBackgroundHelp}</span>
         </label>
         <label class="hidden grid gap-2 text-sm" data-preview-background-color-row>
           <span class="font-medium text-ink">{text.backgroundColor}</span>
-          <input data-preview-background-color type="color" value="#FF00FF" />
+          <span class="color-control">
+            <input id="image-color-editor-preview-background-color" data-preview-background-color type="color" value="#FF00FF" />
+            <input class="color-hex" data-preview-background-color-hex type="text" value="#FF00FF" maxlength="7" spellcheck="false" aria-label={`${text.backgroundColor} HEX`} />
+          </span>
         </label>
 
         <label class="grid gap-2 text-sm">
@@ -210,7 +229,7 @@ const text = {
             <option value="image/webp">WebP</option>
             {mode === "replace" && <option value="image/jpeg">JPG</option>}
           </select>
-          <span class="text-xs leading-5 text-slate-500">{mode === "transparent" ? text.pngWebpAlpha : `${text.pngWebpAlpha} ${text.jpgWhite}`}</span>
+          <span class="min-h-10 text-xs leading-5 text-slate-500">{mode === "transparent" ? text.pngWebpAlpha : `${text.pngWebpAlpha} ${text.jpgWhite}`}</span>
         </label>
         <label data-quality-row class="hidden grid gap-2 text-sm">
           <span class="font-medium text-ink">{text.quality}</span>
@@ -224,14 +243,16 @@ const text = {
     <h2 class="text-base font-semibold text-ink">{text.sectionResult}</h2>
     <div class="mt-4 grid gap-4 md:grid-cols-2">
       <section>
-        <h3 class="text-sm font-semibold">{text.original}</h3>
-        <div class="relative mt-2 overflow-auto rounded-md border border-line bg-white p-2" data-original-preview>
-          <canvas data-original-canvas class="max-h-[520px] max-w-full" aria-label={text.original}></canvas>
+        <h3 class="text-sm font-semibold" data-original-preview-title data-default-title={text.originalImage} data-select-title={text.originalImageSelect}>{text.originalImage}</h3>
+        <div class="relative mt-2 flex justify-center overflow-auto rounded-md border border-line bg-white p-2" data-original-preview>
+          <canvas data-original-canvas class="max-h-[520px] max-w-full" aria-label={text.originalImage} tabindex="0"></canvas>
+          <span class="pointer-events-none absolute hidden h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-red-500 bg-white/70" data-connected-seed-marker aria-hidden="true"></span>
         </div>
+        <canvas class="pointer-events-none fixed z-20 hidden h-28 w-28 rounded-md border-2 border-slate-700 bg-white shadow-lg [image-rendering:pixelated]" data-original-loupe aria-hidden="true"></canvas>
       </section>
       <section>
         <h3 class="text-sm font-semibold">{text.result}</h3>
-        <div class:list={["mt-2 overflow-auto rounded-md border border-line p-2", mode === "transparent" ? "checkerboard" : "bg-white"]} data-result-preview>
+        <div class:list={["mt-2 flex justify-center overflow-auto rounded-md border border-line p-2", mode === "transparent" ? "checkerboard" : "bg-white"]} data-result-preview>
           <canvas data-result-canvas class="max-h-[520px] max-w-full" aria-label={text.result}></canvas>
         </div>
       </section>
@@ -298,10 +319,15 @@ const text = {
 
   const debounce = (callback, delay) => {
     let timer = 0;
-    return (...args) => {
+    const run = (...args) => {
       window.clearTimeout(timer);
       timer = window.setTimeout(() => callback(...args), delay);
     };
+    run.cancel = () => {
+      window.clearTimeout(timer);
+      timer = 0;
+    };
+    return run;
   };
 
   const hasTransparentPixels = (imageData) => imageData.data.some((value, index) => index % 4 === 3 && value < 255);
@@ -315,9 +341,11 @@ const text = {
   const setPreviewTransparencyBackground = (root, element, enabled) => {
     if (!element) return;
     const previewBackground = getPreviewBackground(root);
-    element.classList.toggle("checkerboard", enabled && previewBackground.mode === "checkerboard");
-    element.classList.toggle("bg-white", !enabled);
-    if (!enabled || previewBackground.mode === "checkerboard") {
+    // Preview background is a display preference, not only an alpha indicator.
+    // Apply it to both source and result panes so their surrounding canvas areas match.
+    element.classList.toggle("checkerboard", previewBackground.mode === "checkerboard");
+    element.classList.toggle("bg-white", previewBackground.mode === "white");
+    if (previewBackground.mode === "checkerboard") {
       element.style.backgroundColor = "";
       return;
     }
@@ -374,6 +402,8 @@ const text = {
     rgbDisplay.textContent = rgbToText(target);
   };
 
+  const getReplacementScope = (root) => root.dataset.currentReplacementScope || "all";
+
   const loadImage = async (file) => {
     const url = URL.createObjectURL(file);
     try {
@@ -389,6 +419,7 @@ const text = {
 
   const drawSource = (root, image) => {
     const originalCanvas = root.querySelector("[data-original-canvas]");
+    const originalPreviewTitle = root.querySelector("[data-original-preview-title]");
     const resultCanvas = root.querySelector("[data-result-canvas]");
     const originalPreview = root.querySelector("[data-original-preview]");
     const originalContext = originalCanvas?.getContext("2d", { willReadFrequently: true });
@@ -407,7 +438,7 @@ const text = {
     setPreviewTransparencyBackground(root, originalPreview, hasTransparentPixels(root._sourceImageData));
   };
 
-  const processImage = async (root) => {
+  const processImage = async (root, scopeOverride) => {
     const lang = root.dataset.lang || "ko";
     const mode = root.dataset.mode;
     const message = labels[lang] || labels.en;
@@ -420,6 +451,15 @@ const text = {
     const targetColor = parseHexColor(root.querySelector("[data-target-hex]")?.value || "");
     if (!targetColor) {
       setStatus(root, message.invalidHex);
+      revokeDownload(root);
+      return;
+    }
+
+    // Scope changes must render from the original pixels with the exact mode the user selected.
+    // Passing it from the radio handler prevents an earlier "all" render from being reused.
+    const replacementScope = scopeOverride || getReplacementScope(root);
+    if (mode === "replace" && replacementScope === "connected" && !root._replacementSeed) {
+      setStatus(root, root.querySelector("[data-connected-area-help]")?.textContent || "Select an area in the original preview.");
       revokeDownload(root);
       return;
     }
@@ -441,7 +481,8 @@ const text = {
           targetColor,
           replacementColor: parseHexColor(root.querySelector("[data-replacement-hex]")?.value || "") || { r: 37, g: 99, b: 235 },
           tolerance,
-          preserveShading: Boolean(root.querySelector("[data-preserve-shading]")?.checked),
+          scope: replacementScope,
+          seed: root._replacementSeed || undefined,
         })
         : applyColorTransparency(sourceImageData, {
           targetColor,
@@ -487,6 +528,8 @@ const text = {
     const targetHex = root.querySelector("[data-target-hex]");
     const replacementColor = root.querySelector("[data-replacement-color]");
     const replacementHex = root.querySelector("[data-replacement-hex]");
+    const replacementScopeInputs = root.querySelectorAll("[data-replacement-scope]");
+    const connectedAreaHelp = root.querySelector("[data-connected-area-help]");
     const toleranceRange = root.querySelector("[data-tolerance-range]");
     const toleranceNumber = root.querySelector("[data-tolerance-number]");
     const outputFormat = root.querySelector("[data-output-format]");
@@ -494,18 +537,28 @@ const text = {
     const originalPreview = root.querySelector("[data-original-preview]");
     const previewBackgroundMode = root.querySelector("[data-preview-background-mode]");
     const previewBackgroundColor = root.querySelector("[data-preview-background-color]");
+    const previewBackgroundColorHex = root.querySelector("[data-preview-background-color-hex]");
     const previewBackgroundColorRow = root.querySelector("[data-preview-background-color-row]");
     const dropZone = root.querySelector("[data-drop-zone]");
+    const replacementEyedropperButton = root.querySelector("[data-replacement-eyedropper]");
+    const originalCanvas = root.querySelector("[data-original-canvas]");
+    const originalPreviewTitle = root.querySelector("[data-original-preview-title]");
+    const connectedSeedMarker = root.querySelector("[data-connected-seed-marker]");
+    const originalLoupe = root.querySelector("[data-original-loupe]");
     const debouncedProcess = debounce(() => processImage(root), 140);
 
     const reset = () => {
       revokeDownload(root);
       root._sourceImageData = null;
       root._sourceFileName = "";
+      root._replacementSeed = null;
+      root._pickingTargetFromImage = false;
+      connectedSeedMarker?.classList.add("hidden");
       if (fileInput) fileInput.value = "";
       options?.setAttribute("disabled", "");
       if (previewBackgroundMode) previewBackgroundMode.value = "checkerboard";
       if (previewBackgroundColor) previewBackgroundColor.value = "#ff00ff";
+      if (previewBackgroundColorHex) previewBackgroundColorHex.value = "#FF00FF";
       if (previewBackgroundColorRow) previewBackgroundColorRow.classList.add("hidden");
       root._resultHasTransparency = false;
       setPreviewTransparencyBackground(root, originalPreview, false);
@@ -521,8 +574,12 @@ const text = {
       });
       setHexControls(null, targetHex, { r: 255, g: 255, b: 255 });
       if (replacementColor && replacementHex) setHexControls(replacementColor, replacementHex, { r: 37, g: 99, b: 235 });
-      toleranceRange.value = "25";
-      toleranceNumber.value = "25";
+      replacementScopeInputs.forEach((input) => {
+        input.checked = input.value === "all";
+      });
+      root.dataset.currentReplacementScope = "all";
+      toleranceRange.value = "10";
+      toleranceNumber.value = "10";
       syncSwatch(root);
       updateDownloadLabel(root);
       setStatus(root, "");
@@ -539,6 +596,13 @@ const text = {
         const image = await loadImage(file);
         drawSource(root, image);
         root._sourceFileName = file.name;
+        root._replacementSeed = null;
+        root._pickingTargetFromImage = false;
+        root.dataset.currentReplacementScope = "all";
+        replacementScopeInputs.forEach((input) => {
+          input.checked = input.value === "all";
+        });
+        connectedSeedMarker?.classList.add("hidden");
         options?.removeAttribute("disabled");
         setStatus(root, message.pickColor);
       } catch {
@@ -595,6 +659,100 @@ const text = {
       });
     }
 
+    const updateSeedMarker = () => {
+      const seed = root._replacementSeed;
+      if (!seed || !root._sourceImageData || !originalCanvas || !originalPreview || !connectedSeedMarker) return;
+      const canvasBounds = originalCanvas.getBoundingClientRect();
+      const previewBounds = originalPreview.getBoundingClientRect();
+      connectedSeedMarker.style.left = `${canvasBounds.left - previewBounds.left + ((seed.x + 0.5) / root._sourceImageData.width) * canvasBounds.width}px`;
+      connectedSeedMarker.style.top = `${canvasBounds.top - previewBounds.top + ((seed.y + 0.5) / root._sourceImageData.height) * canvasBounds.height}px`;
+    };
+
+    const hideOriginalLoupe = () => originalLoupe?.classList.add("hidden");
+    const updateOriginalLoupe = (event) => {
+      const selectingConnectedArea = mode === "replace" && getReplacementScope(root) === "connected";
+      if ((!root._pickingTargetFromImage && !selectingConnectedArea) || !root._sourceImageData || !originalCanvas || !originalLoupe) {
+        hideOriginalLoupe();
+        return;
+      }
+      const bounds = originalCanvas.getBoundingClientRect();
+      const x = Math.max(0, Math.min(originalCanvas.width - 1, Math.floor((event.clientX - bounds.left) * originalCanvas.width / bounds.width)));
+      const y = Math.max(0, Math.min(originalCanvas.height - 1, Math.floor((event.clientY - bounds.top) * originalCanvas.height / bounds.height)));
+      const context = originalLoupe.getContext("2d");
+      if (!context) return;
+      const sourceSize = Math.min(13, originalCanvas.width, originalCanvas.height);
+      const sourceX = Math.max(0, Math.min(originalCanvas.width - sourceSize, x - Math.floor(sourceSize / 2)));
+      const sourceY = Math.max(0, Math.min(originalCanvas.height - sourceSize, y - Math.floor(sourceSize / 2)));
+      originalLoupe.width = 130;
+      originalLoupe.height = 130;
+      context.imageSmoothingEnabled = false;
+      context.clearRect(0, 0, originalLoupe.width, originalLoupe.height);
+      context.drawImage(originalCanvas, sourceX, sourceY, sourceSize, sourceSize, 0, 0, originalLoupe.width, originalLoupe.height);
+      context.strokeStyle = "#ef4444";
+      context.lineWidth = 2;
+      context.strokeRect(60, 60, 10, 10);
+      originalLoupe.style.left = `${Math.min(window.innerWidth - 128, event.clientX + 16)}px`;
+      originalLoupe.style.top = `${Math.min(window.innerHeight - 128, event.clientY + 16)}px`;
+      originalLoupe.classList.remove("hidden");
+    };
+
+    const updateReplacementScope = () => {
+      const connected = mode === "replace" && getReplacementScope(root) === "connected";
+      connectedAreaHelp?.classList.toggle("hidden", !connected);
+      originalCanvas?.classList.toggle("cursor-crosshair", connected);
+      if (originalPreviewTitle) {
+        originalPreviewTitle.textContent = connected
+          ? originalPreviewTitle.dataset.selectTitle
+          : originalPreviewTitle.dataset.defaultTitle;
+      }
+      if (connected && root._replacementSeed) {
+        updateSeedMarker();
+        connectedSeedMarker?.classList.remove("hidden");
+      } else {
+        connectedSeedMarker?.classList.add("hidden");
+      }
+      originalPreview?.classList.remove("ring-2", "ring-brand");
+    };
+    const renderReplacementScope = (input) => {
+      if (!input.checked) return;
+      const scope = input.value === "connected" ? "connected" : "all";
+      root.dataset.currentReplacementScope = scope;
+      updateReplacementScope();
+      window.requestAnimationFrame(() => {
+        void processImage(root, scope);
+      });
+    };
+    replacementScopeInputs.forEach((input) => {
+      input.addEventListener("change", () => renderReplacementScope(input));
+    });
+    originalCanvas?.addEventListener("pointerdown", (event) => {
+      const selectingTarget = root._pickingTargetFromImage;
+      const selectingConnectedArea = mode === "replace" && getReplacementScope(root) === "connected";
+      if ((!selectingTarget && !selectingConnectedArea) || !root._sourceImageData) return;
+      const bounds = originalCanvas.getBoundingClientRect();
+      const x = Math.floor((event.clientX - bounds.left) * root._sourceImageData.width / bounds.width);
+      const y = Math.floor((event.clientY - bounds.top) * root._sourceImageData.height / bounds.height);
+      const safeX = Math.max(0, Math.min(root._sourceImageData.width - 1, x));
+      const safeY = Math.max(0, Math.min(root._sourceImageData.height - 1, y));
+      const pixelIndex = (safeY * root._sourceImageData.width + safeX) * 4;
+      const sourceColor = {
+        r: root._sourceImageData.data[pixelIndex],
+        g: root._sourceImageData.data[pixelIndex + 1],
+        b: root._sourceImageData.data[pixelIndex + 2],
+      };
+      root._replacementSeed = { x: safeX, y: safeY };
+      setHexControls(null, targetHex, sourceColor);
+      syncSwatch(root);
+      root._pickingTargetFromImage = false;
+      updateSeedMarker();
+      if (selectingConnectedArea) connectedSeedMarker?.classList.remove("hidden");
+      originalPreview?.classList.remove("ring-2", "ring-brand");
+      hideOriginalLoupe();
+      debouncedProcess();
+    });
+    originalCanvas?.addEventListener("pointermove", updateOriginalLoupe);
+    originalCanvas?.addEventListener("pointerleave", hideOriginalLoupe);
+
     const syncTolerance = (source) => {
       const value = Math.max(0, Math.min(100, Number(source.value) || 0));
       toleranceRange.value = String(value);
@@ -624,15 +782,37 @@ const text = {
       setPreviewTransparencyBackground(root, root.querySelector("[data-result-preview]"), mode === "transparent" || Boolean(root._resultHasTransparency));
     };
     previewBackgroundMode?.addEventListener("input", updatePreviewBackgrounds);
-    previewBackgroundColor?.addEventListener("input", updatePreviewBackgrounds);
+    previewBackgroundColor?.addEventListener("input", () => {
+      if (previewBackgroundColorHex) {
+        previewBackgroundColorHex.value = previewBackgroundColor.value.toUpperCase();
+        previewBackgroundColorHex.setAttribute("aria-invalid", "false");
+      }
+      updatePreviewBackgrounds();
+    });
+    previewBackgroundColorHex?.addEventListener("input", () => {
+      const value = previewBackgroundColorHex.value.trim();
+      if (!/^#[0-9a-fA-F]{6}$/.test(value)) {
+        previewBackgroundColorHex.setAttribute("aria-invalid", "true");
+        return;
+      }
+      previewBackgroundColorHex.setAttribute("aria-invalid", "false");
+      if (previewBackgroundColor) previewBackgroundColor.value = value.toLowerCase();
+      previewBackgroundColorHex.value = value.toUpperCase();
+      updatePreviewBackgrounds();
+    });
+    previewBackgroundColorHex?.addEventListener("change", () => {
+      if (!previewBackgroundColor) return;
+      previewBackgroundColorHex.value = previewBackgroundColor.value.toUpperCase();
+      previewBackgroundColorHex.setAttribute("aria-invalid", "false");
+    });
 
     const eyedropperButton = root.querySelector("[data-eyedropper]");
     const eyedropperHelp = root.querySelector("[data-eyedropper-help]");
     if (!("EyeDropper" in window)) {
-      eyedropperButton?.classList.add("hidden");
+      replacementEyedropperButton?.classList.add("hidden");
       eyedropperHelp?.classList.add("hidden");
     }
-    eyedropperButton?.addEventListener("click", async () => {
+    const pickScreenColor = async (applyColor) => {
       if (!("EyeDropper" in window)) return;
       try {
         const eyeDropper = new window.EyeDropper();
@@ -642,15 +822,31 @@ const text = {
           setStatus(root, message.invalidHex);
           return;
         }
-        setHexControls(null, targetHex, color);
-        syncSwatch(root);
+        applyColor(color);
         debouncedProcess();
       } catch {
         // User cancellation is expected; keep the current color and status.
       }
+    };
+    eyedropperButton?.addEventListener("click", () => {
+      if (!originalPreview) return;
+      root._pickingTargetFromImage = true;
+      connectedSeedMarker?.classList.add("hidden");
+      originalPreview.classList.add("ring-2", "ring-brand");
+      originalPreview.scrollIntoView({ behavior: "smooth", block: "center" });
+      window.setTimeout(() => originalCanvas?.focus({ preventScroll: true }), 250);
+    });
+    replacementEyedropperButton?.addEventListener("click", () => {
+      pickScreenColor((color) => {
+        if (replacementColor && replacementHex) {
+          setHexControls(replacementColor, replacementHex, color);
+        }
+      });
     });
 
     root.querySelector("[data-reset]")?.addEventListener("click", reset);
+    root.dataset.currentReplacementScope = "all";
+    updateReplacementScope();
     syncSwatch(root);
     updateDownloadLabel(root);
   };
