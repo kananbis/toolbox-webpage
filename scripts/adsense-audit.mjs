@@ -29,6 +29,10 @@ function match(html, regex) {
   return html.match(regex)?.[1] ?? "";
 }
 
+function normalizeText(value) {
+  return stripHtml(value).replace(/\s+/g, " ").trim();
+}
+
 function pageUrl(filePath) {
   return `/${path.relative(root, filePath).replaceAll("\\", "/").replace(/index\.html$/, "")}`;
 }
@@ -59,6 +63,9 @@ const pages = files.map((filePath) => {
     hreflangCount: [...html.matchAll(/rel="alternate" hreflang=/g)].length,
     textLength: text.length,
     adLabels: (html.match(/>광고<|>Advertisement</g) ?? []).length,
+    intro: normalizeText(match(html, /<p class="page-intro[^>]*>([\s\S]*?)<\/p>/)),
+    faq: normalizeText(match(html, /<section class="prose-lite">\s*<h2>(?:FAQ|자주 묻는 질문)<\/h2>([\s\S]*?)<\/section>/)),
+    bookmarkPromptCount: (html.match(/Use Toolbox often\? Add it to your bookmarks|자주 사용하는 도구인가요\? 즐겨찾기에 추가/g) ?? []).length,
     hrefs,
   };
 });
@@ -101,6 +108,8 @@ const report = {
   shortestPages: [...pages].sort((a, b) => a.textLength - b.textLength).slice(0, 30).map(({ url, textLength, title, adLabels }) => ({ url, textLength, title, adLabels })),
   duplicateTitles: duplicates("title"),
   duplicateDescriptions: duplicates("description"),
+  duplicateIntros: duplicates("intro"),
+  duplicateFaqBlocks: duplicates("faq"),
   badCanonicals: pages.filter((page) => !page.canonical.startsWith("https://mfwtools.com/") || page.canonical.includes("www.") || page.canonical.includes("localhost") || page.canonical.includes("pages.dev") || !page.canonical.endsWith("/")).map(({ url, canonical }) => ({ url, canonical })),
   badRobots: pages.filter((page) => page.robots !== "index, follow").map(({ url, robots }) => ({ url, robots })),
   badHreflang: pages.filter((page) => page.hreflangCount < 3).map(({ url, hreflangCount }) => ({ url, hreflangCount })),
@@ -110,6 +119,7 @@ const report = {
   brokenLinkCount: brokenLinks.length,
   redirectLikeLinks: redirectLikeLinks.slice(0, 100),
   redirectLikeLinkCount: redirectLikeLinks.length,
+  bookmarkPromptPages: pages.filter((page) => page.bookmarkPromptCount > 0).map((page) => page.url),
   qualityClasses: pages
     .filter((page) => toolPattern.test(page.url) && !categoryPattern.test(page.url))
     .reduce((counts, page) => {

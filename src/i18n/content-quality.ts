@@ -319,6 +319,102 @@ const categoryEnhancements: Record<Lang, Partial<Record<CategorySlug, CategoryEn
   },
 };
 
+type ToolDeepDive = {
+  title: string;
+  intro?: string;
+  headers: [string, string];
+  rows: [string, string][];
+  note?: string;
+};
+
+const toolDeepDives: Record<Lang, Partial<Record<ToolSlug, ToolDeepDive>>> = {
+  ko: {
+    "image-compressor": {
+      title: "압축 품질을 고르는 기준",
+      intro: "아래 범위는 결과를 확인할 때의 출발점입니다. 이미지 내용과 브라우저 인코더에 따라 파일 크기와 보이는 차이는 달라질 수 있습니다.",
+      headers: ["품질 범위", "확인할 점"],
+      rows: [["90 이상", "원본 표현을 최대한 유지하려는 사진. 확대 미리보기로 미세한 차이를 확인합니다."], ["80~89", "웹 업로드용 사진에서 용량과 표현을 함께 확인하는 범위입니다."], ["70~79", "용량 감소를 더 우선할 때 사용하되 글자, 경계선, 그라데이션을 확대해 확인합니다."]],
+      note: "해상도를 유지한 채 용량만 줄이려면 이 도구를 사용하고, 픽셀 크기도 줄여야 하면 먼저 이미지 리사이즈를 사용하세요.",
+    },
+    "image-resizer": {
+      title: "해상도를 줄이면 픽셀 수는 얼마나 줄어드나요?",
+      intro: "파일 용량은 이미지 내용과 출력 형식에 따라 달라지지만, 총 픽셀 수는 가로와 세로 값으로 정확하게 계산할 수 있습니다.",
+      headers: ["크기", "총 픽셀 수"],
+      rows: [["4000 x 3000", "12,000,000 pixels"], ["2000 x 1500", "3,000,000 pixels (원본의 1/4)"], ["1200 x 900", "1,080,000 pixels (원본의 9%)"]],
+      note: "가로와 세로를 각각 절반으로 줄이면 총 픽셀 수는 1/4이 됩니다. 작은 이미지를 확대해도 원본에 없던 세부 정보가 생기지는 않습니다.",
+    },
+    "image-rotate-flip": {
+      title: "회전 방식에 따른 차이",
+      headers: ["방식", "결과"],
+      rows: [["90도 회전", "가로와 세로가 교환되며 결과 크기를 예측하기 쉽습니다."], ["1도 단위 자유 회전", "문서나 사진의 미세한 기울기를 보정할 수 있지만 픽셀 보간이 필요합니다."], ["전체 이미지 유지", "모서리가 잘리지 않도록 결과 캔버스를 자동으로 확장합니다."], ["원본 캔버스 유지", "원본 크기는 유지하지만 90도의 배수가 아닌 각도에서 가장자리가 잘릴 수 있습니다."]],
+      note: "자유 회전은 항상 원본 이미지에서 현재 각도로 한 번 렌더링해 반복 조작으로 인한 누적 재샘플링을 줄입니다.",
+    },
+    "image-watermark": {
+      title: "배치 방식 선택",
+      headers: ["배치", "적합한 상황"],
+      rows: [["한 곳에 배치", "저작권, 회사명, 출처를 한 번 표시할 때"], ["반복 배치", "샘플 이미지나 기밀 자료처럼 이미지 전체에 표시가 필요할 때"], ["격자", "정돈된 반복 패턴이 필요할 때"], ["엇갈림", "행마다 반 칸을 옮긴 자연스러운 전체 보호 패턴이 필요할 때"]],
+      note: "반복 배치에서는 가로·세로 개수만 지정하면 이미지 크기에 맞춰 간격을 자동 계산합니다.",
+    },
+    "image-format-converter": {
+      title: "어떤 형식으로 바꿀까요?",
+      headers: ["목적", "권장 형식과 이유"],
+      rows: [["호환성 우선", "JPG 또는 PNG. 대부분의 프로그램에서 열기 쉽습니다."], ["투명 배경 유지", "PNG 또는 WebP. JPG는 투명도를 지원하지 않습니다."], ["사진 웹 업로드", "JPG 또는 WebP. 사진용 손실 압축과 용량 균형을 확인합니다."], ["높은 압축 효율", "AVIF. 지원 브라우저와 처리 시간을 먼저 확인합니다."], ["모바일 사진 입력", "HEIC/HEIF를 지원되는 출력 형식으로 변환할 수 있습니다."]],
+      note: "형식 변환은 원본의 세부 표현을 복원하지 않습니다. 파일 크기만 줄이는 목적이라면 이미지 압축 결과와 비교하세요.",
+    },
+    "remove-image-metadata": {
+      title: "사진 메타데이터에 들어갈 수 있는 정보",
+      headers: ["정보 종류", "예"],
+      rows: [["촬영 정보", "촬영 날짜, 카메라 모델, 렌즈 정보"], ["위치 정보", "GPS 위도, 경도, 고도"], ["저작권 정보", "작성자, Copyright"], ["설명 정보", "이미지 설명, Software"]],
+      note: "GPS만 제거하면 촬영 날짜나 카메라 정보는 유지할 수 있습니다. 수정·제거 가능 범위는 JPG와 HEIC/HEIF의 실제 파일 구조에 따라 달라질 수 있습니다.",
+    },
+    "percent-calculator": {
+      title: "퍼센트와 퍼센트포인트의 차이",
+      headers: ["계산", "20%에서 30%로 변한 경우"],
+      rows: [["퍼센트포인트 차이", "10%p: 두 비율의 단순 차이"], ["상대 증가율", "50%: (30 - 20) / 20 x 100"]],
+      note: "비율 자체의 차이를 말할 때는 %p, 기존 비율을 기준으로 얼마나 변했는지는 증가율로 구분합니다.",
+    },
+    "date-calculator": {
+      title: "날짜 차이를 볼 때 확인할 점",
+      headers: ["기준", "왜 중요한가요?"],
+      rows: [["시작일 포함 여부", "사람이 세는 일정 일수와 단순 날짜 차이가 달라질 수 있습니다."], ["시간대", "날짜 단위 계산은 시간대 비교를 대신하지 않습니다."], ["영업일·공휴일", "기본 계산에는 별도로 반영되지 않습니다."]],
+      note: "계약, 배송, 마감일처럼 포함일 규칙이 중요한 일정은 대상 서비스나 문서의 기준을 함께 확인하세요.",
+    },
+    "loan-interest-calculator": {
+      title: "대출 계산 결과를 해석하는 기준",
+      headers: ["항목", "현재 계산의 범위"],
+      rows: [["상환 방식", "UI에서 선택한 원리금균등, 원금균등, 만기일시상환 기준으로 계산합니다."], ["월 이율", "입력한 연이율을 월 단위 계산에 사용합니다."], ["포함하지 않는 항목", "실행일 일할 계산, 우대금리, 수수료, 세금, 중도상환 조건은 기본 결과에 포함되지 않을 수 있습니다."]],
+      note: "결과는 입력값을 비교하기 위한 참고용입니다. 실제 상환액은 금융기관의 약정과 계산 기준을 확인하세요.",
+    },
+    "unit-converter": {
+      title: "대표 변환 기준",
+      headers: ["기준", "값"],
+      rows: [["inch", "1 inch = 2.54 cm"], ["foot", "1 foot = 12 inches"], ["mile", "1 mile = 1.609344 km"]],
+      note: "고정 공식이 있는 단위를 변환합니다. 환율처럼 실시간 데이터가 필요한 값은 이 도구 범위에 포함되지 않습니다.",
+    },
+    "character-counter": {
+      title: "글자 수 결과를 해석하는 기준",
+      headers: ["항목", "계산 기준"],
+      rows: [["공백 포함", "띄어쓰기와 줄바꿈을 포함한 문자열 길이"], ["공백 제외", "공백 문자를 제외한 문자열 길이"], ["단어·줄", "공백과 줄바꿈을 기준으로 나눈 참고값"]],
+      note: "이모지와 결합 문자는 브라우저 문자열 처리 방식에 따라 서비스별 입력창의 표시와 다를 수 있으므로 제출 전 대상 서비스에서도 확인하세요.",
+    },
+  },
+  en: {
+    "image-compressor": { title: "Choosing an Image Quality", intro: "These ranges are starting points for review, not guaranteed file-size or quality targets. Results vary with the image and browser encoder.", headers: ["Quality range", "What to check"], rows: [["90 and above", "For photos where preserving the original appearance matters. Inspect fine details at a larger zoom."], ["80-89", "A practical range to compare size and appearance for web uploads."], ["70-79", "Prioritizes smaller files. Check text, edges, and gradients closely."]], note: "Use this tool when dimensions should stay the same. Resize first when pixel dimensions also need to be reduced." },
+    "image-resizer": { title: "How Much Do Pixels Decrease?", intro: "File size depends on image content and output format, but total pixels can be calculated exactly from width and height.", headers: ["Dimensions", "Total pixels"], rows: [["4000 x 3000", "12,000,000 pixels"], ["2000 x 1500", "3,000,000 pixels (one quarter)"], ["1200 x 900", "1,080,000 pixels (9% of the original)"]], note: "Halving both width and height reduces total pixels to one quarter. Enlarging a small image does not create missing detail." },
+    "image-rotate-flip": { title: "How Rotation Modes Differ", headers: ["Mode", "Result"], rows: [["90-degree rotation", "Swaps width and height and makes output dimensions predictable."], ["One-degree free rotation", "Corrects small tilts but may require pixel interpolation."], ["Keep full image", "Expands the canvas so rotated corners are not cropped."], ["Keep original canvas", "Keeps original dimensions but can crop edges at non-right angles."]], note: "Free rotation renders once from the original image to reduce cumulative resampling during repeated adjustments." },
+    "image-watermark": { title: "Choosing a Placement Mode", headers: ["Placement", "Best for"], rows: [["Single placement", "One copyright, company, or source mark"], ["Repeated placement", "Samples or confidential materials that need coverage across the image"], ["Grid", "A structured repeating pattern"], ["Staggered", "A more natural offset pattern across the image"]], note: "Repeated placement calculates spacing from the image size after you choose only columns and rows." },
+    "image-format-converter": { title: "Which Output Format Should I Choose?", headers: ["Goal", "Suggested format and reason"], rows: [["Compatibility first", "JPG or PNG. Both are widely supported."], ["Keep transparency", "PNG or WebP. JPG has no transparency."], ["Photo web upload", "JPG or WebP. Compare lossy compression and file size."], ["Higher compression efficiency", "AVIF. Check browser support and processing time."], ["Mobile photo input", "HEIC/HEIF can be converted to supported output formats."]], note: "Changing format does not restore lost detail. Compare image compression when file size is the only goal." },
+    "remove-image-metadata": { title: "What Photo Metadata Can Contain", headers: ["Information type", "Examples"], rows: [["Capture data", "Date taken, camera model, lens data"], ["Location data", "GPS latitude, longitude, altitude"], ["Copyright data", "Artist, Copyright"], ["Description data", "Image description, Software"]], note: "Removing GPS can preserve capture date and camera data. Editing and removal support depends on the actual JPG or HEIC/HEIF file structure." },
+    "percent-calculator": { title: "Percent vs Percentage Points", headers: ["Calculation", "From 20% to 30%"], rows: [["Percentage-point difference", "10 percentage points: the direct difference between the rates"], ["Relative increase", "50%: (30 - 20) / 20 x 100"]], note: "Use percentage points for the difference between rates and relative increase for change measured against the starting rate." },
+    "date-calculator": { title: "What to Check in Date Differences", headers: ["Rule", "Why it matters"], rows: [["Inclusive start date", "Human-counted days and a simple date difference can differ."], ["Time zones", "A date-only calculation does not replace time-zone comparison."], ["Business days and holidays", "They are not included in the basic calculation."]], note: "For contracts, deliveries, and deadlines, also check the inclusive-date rule in the relevant service or document." },
+    "loan-interest-calculator": { title: "Interpreting Loan Estimates", headers: ["Item", "Scope of the calculation"], rows: [["Repayment type", "Calculated from the repayment type selected in the UI."], ["Monthly rate", "Uses the entered annual rate for monthly calculations."], ["Not normally included", "Daily interest rules, preferential rates, fees, taxes, and early-repayment conditions may be excluded."]], note: "This is a reference based on your inputs. Confirm actual repayment amounts with the lender and loan agreement." },
+    "unit-converter": { title: "Common Conversion References", headers: ["Reference", "Value"], rows: [["inch", "1 inch = 2.54 cm"], ["foot", "1 foot = 12 inches"], ["mile", "1 mile = 1.609344 km"]], note: "This tool covers values with fixed formulas. It does not cover live-data values such as exchange rates." },
+    "character-counter": { title: "How to Read the Character Counts", headers: ["Item", "Counting basis"], rows: [["With spaces", "String length including spaces and line breaks"], ["Without spaces", "String length with whitespace removed"], ["Words and lines", "Reference counts based on spaces and line breaks"]], note: "Emoji and composed characters can differ from another service's count depending on browser string handling. Check the destination field before submitting." },
+  },
+};
+
+export const getToolDeepDive = (lang: Lang, slug: ToolSlug) => toolDeepDives[lang][slug];
+
 const faqOverrides: Record<Lang, Partial<Record<ToolSlug, FaqItem[]>>> = {
   ko: {
     "image-compressor": [

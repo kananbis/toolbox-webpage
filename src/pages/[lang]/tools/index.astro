@@ -12,6 +12,27 @@ const t = i18n[lang];
 const categories = getCategoryItems(lang);
 const otherLang = lang === "ko" ? "en" : "ko";
 const withSlash = (path: string) => (path.endsWith("/") ? path : `${path}/`);
+const taskGuide = lang === "ko"
+  ? [
+      ["파일 용량을 줄이고 싶어요", "이미지 압축 / 오디오 압축", "/ko/tools/image-compressor/"],
+      ["이미지 크기를 바꾸고 싶어요", "이미지 리사이즈", "/ko/tools/image-resizer/"],
+      ["이미지 형식을 바꾸고 싶어요", "이미지 포맷 변환기", "/ko/tools/image-format-converter/"],
+      ["PDF 여러 개를 하나로 합치고 싶어요", "PDF 합치기", "/ko/tools/pdf-merger/"],
+      ["오디오 여러 개를 합치고 싶어요", "오디오 합치기", "/ko/tools/audio-merger/"],
+      ["사진의 GPS나 EXIF 정보를 지우고 싶어요", "이미지 EXIF/메타데이터 편집기", "/ko/tools/remove-image-metadata/"],
+      ["사진 전체에 저작권 표시를 넣고 싶어요", "이미지 워터마크", "/ko/tools/image-watermark/"],
+      ["민감한 부분을 가리고 싶어요", "이미지 모자이크", "/ko/tools/image-mosaic/"],
+    ]
+  : [
+      ["I want to reduce a file size", "Image Compressor / Audio Compressor", "/en/tools/image-compressor/"],
+      ["I want to change image dimensions", "Image Resizer", "/en/tools/image-resizer/"],
+      ["I want to change an image format", "Image Format Converter", "/en/tools/image-format-converter/"],
+      ["I want to combine PDF files", "PDF Merger", "/en/tools/pdf-merger/"],
+      ["I want to join audio files", "Audio Merger", "/en/tools/audio-merger/"],
+      ["I want to remove photo GPS or EXIF data", "Image EXIF & Metadata Editor", "/en/tools/remove-image-metadata/"],
+      ["I want to add a copyright mark across an image", "Image Watermark", "/en/tools/image-watermark/"],
+      ["I want to hide a sensitive area", "Image Mosaic", "/en/tools/image-mosaic/"],
+    ];
 ---
 
 <Layout
@@ -27,6 +48,17 @@ const withSlash = (path: string) => (path.endsWith("/") ? path : `${path}/`);
   <h1 class="text-3xl font-bold tracking-normal md:text-4xl">{t.common.toolsTitle}</h1>
   <p class="page-intro mt-4 text-lg leading-8 text-slate-700">{t.common.toolsDescription}</p>
 
+  <section class="mt-8 rounded-lg border border-line bg-panel/60 p-5">
+    <h2 class="text-xl font-bold">{lang === "ko" ? "무엇을 하려는지 먼저 선택하세요" : "Start with what you want to do"}</h2>
+    <div class="mt-4 grid gap-3 md:grid-cols-2">
+      {taskGuide.map(([goal, toolName, href]) => (
+        <a href={href} class="rounded-md border border-line bg-white px-4 py-3 transition hover:border-brand">
+          <span class="block text-sm text-slate-600">{goal}</span>
+          <span class="mt-1 block font-semibold text-ink">{toolName}</span>
+        </a>
+      ))}
+    </div>
+  </section>
 
   <div class="mt-10 space-y-12">
     {categories.map((category) => (

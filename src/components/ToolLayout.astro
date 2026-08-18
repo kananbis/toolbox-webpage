@@ -4,8 +4,8 @@ import FAQ from "./FAQ.astro";
 import RelatedTools from "./RelatedTools.astro";
 import AdSlot from "./AdSlot.astro";
 import ToolRunner from "./ToolRunner.astro";
-import { getFaqOverride, getToolEnhancement } from "@/i18n/content-quality";
-import { getRelatedTools, getToolBasis, i18n, type Lang, type ToolSlug } from "@/i18n/translations";
+import { getFaqOverride, getToolDeepDive, getToolEnhancement } from "@/i18n/content-quality";
+import { getRelatedTools, getTool, getToolBasis, i18n, type Lang, type ToolSlug } from "@/i18n/translations";
 
 type Props = {
   tool: {
@@ -29,6 +29,24 @@ const t = i18n[lang];
 const title = tool.seoTitle ?? `${tool.name} - ${tool.description}`;
 const related = getRelatedTools(lang, tool.slug);
 const enhancement = getToolEnhancement(lang, tool.slug);
+const deepDive = getToolDeepDive(lang, tool.slug);
+const workflowLinkText: Partial<Record<ToolSlug, { target: ToolSlug; before: string; after: string }>> = lang === "ko"
+  ? {
+      "image-compressor": { target: "image-resizer", before: "원본 해상도가 지나치게 크다면 먼저 ", after: "로 필요한 픽셀 크기를 맞춘 뒤 압축하는 편이 효율적입니다." },
+      "image-resizer": { target: "image-compressor", before: "해상도는 유지하고 파일 크기만 줄이려면 ", after: "를 사용하세요." },
+      "image-format-converter": { target: "image-compressor", before: "형식 변경보다 파일 크기 감소가 목적이라면 ", after: " 결과도 함께 비교하세요." },
+      "image-watermark": { target: "remove-image-metadata", before: "공유 전에 위치 정보도 제거하려면 ", after: "를 함께 사용할 수 있습니다." },
+      "remove-image-metadata": { target: "image-watermark", before: "출처 표기가 필요하면 메타데이터를 정리한 뒤 ", after: "로 텍스트 워터마크를 추가할 수 있습니다." },
+    }
+  : {
+      "image-compressor": { target: "image-resizer", before: "When the original dimensions are much larger than needed, use the ", after: " first, then compress the result." },
+      "image-resizer": { target: "image-compressor", before: "To keep the same dimensions and reduce only file size, use the ", after: "." },
+      "image-format-converter": { target: "image-compressor", before: "If smaller file size is the only goal, also compare the ", after: "." },
+      "image-watermark": { target: "remove-image-metadata", before: "To remove location information before sharing, you can also use the ", after: "." },
+      "remove-image-metadata": { target: "image-watermark", before: "When an image also needs a visible source mark, add a text watermark with the ", after: " after metadata cleanup." },
+    };
+const workflowLink = workflowLinkText[tool.slug];
+const workflowTarget = workflowLink ? getTool(lang, workflowLink.target) : undefined;
 const faqItems = getFaqOverride(lang, tool.slug) ?? tool.faq;
 const otherLang = lang === "ko" ? "en" : "ko";
 const basis = tool.basis ?? getToolBasis(lang, tool.slug) ?? t.common.basisText;
@@ -262,6 +280,36 @@ const imageConverterSupport = lang === "ko"
       <ul class="mt-3 list-disc space-y-2 pl-6">
         {tool.examples.map((item) => <li>{item}</li>)}
       </ul>
+
+      {
+        deepDive && (
+          <>
+            <h2>{deepDive.title}</h2>
+            {deepDive.intro && <p>{deepDive.intro}</p>}
+            <div class="mt-4 overflow-x-auto rounded-lg border border-line">
+              <table class="min-w-[520px] w-full border-collapse text-left text-sm">
+                <thead class="bg-slate-50 text-slate-700">
+                  <tr>
+                    {deepDive.headers.map((header) => <th class="border-b border-line px-3 py-2">{header}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {deepDive.rows.map((row) => (
+                    <tr>
+                      <td class="border-t border-line px-3 py-2 font-medium text-ink">{row[0]}</td>
+                      <td class="border-t border-line px-3 py-2">{row[1]}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {deepDive.note && <p class="mt-3 text-slate-700">{deepDive.note}</p>}
+            {workflowLink && workflowTarget && (
+              <p class="mt-3 text-slate-700">{workflowLink.before}<a href={workflowTarget.path}>{workflowTarget.name}</a>{workflowLink.after}</p>
+            )}
+          </>
+        )
+      }
 
       {
         tool.slug === "image-cropper" && (

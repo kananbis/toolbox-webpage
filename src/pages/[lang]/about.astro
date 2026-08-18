@@ -29,11 +29,13 @@ const description =
       lang === "ko" ? (
         <>
           <p class="mt-4">Toolbox는 설치나 로그인 없이 바로 사용할 수 있는 무료 웹 도구 모음입니다. 오디오 편집, PDF 정리, 이미지 처리, 날짜와 비율 계산, 단위 변환, 텍스트 정리처럼 반복적으로 필요한 작업을 가볍게 처리하는 것을 목표로 합니다.</p>
+          <h2>Toolbox를 만든 이유</h2>
+          <p>간단한 이미지, PDF, 오디오 작업을 위해 별도 프로그램을 설치하거나 파일을 외부 서버에 업로드해야 하는 불편을 줄이기 위해 Toolbox를 만들고 있습니다. 브라우저에서 안전하게 처리할 수 있는 작업은 가능한 한 로컬에서 처리하고, 필요한 기능을 하나씩 추가하면서 도구별 제한 사항도 함께 공개합니다.</p>
           <h2>제공하는 도구 범위</h2>
           <p>현재 사이트에는 이미지 압축과 리사이즈, PDF 합치기와 페이지 정리, 오디오 변환과 자르기, 시간대 변환, QR 코드 생성, 글자수 세기, 전자 계산기, 랜덤 선택 도구 등이 포함되어 있습니다. 각 도구는 독립된 페이지로 제공되며, 해당 작업의 사용 방법과 제한사항을 함께 안내합니다.</p>
           <h2>브라우저 처리 원칙</h2>
           <p>가능한 도구는 사용자의 현재 브라우저 안에서 처리합니다. 텍스트 입력값, 계산값, 선택한 이미지/PDF/오디오 파일은 도구 기능을 수행하기 위해 브라우저 메모리에서 사용되며, 별도의 서버 업로드 방식으로 처리하지 않습니다.</p>
-          <p>다만 오디오 변환처럼 FFmpeg WASM이 필요한 기능은 실행 라이브러리를 외부 CDN에서 내려받을 수 있습니다. 이 경우 내려받는 것은 변환 엔진 파일이며, 사용자가 선택한 오디오 파일 자체를 CDN으로 전송하지 않습니다.</p>
+          <p>오디오 변환이나 일부 특수 이미지 형식처럼 실행 구성 요소가 필요한 기능은 외부 CDN에서 필요한 코드나 WASM을 내려받을 수 있습니다. 이 경우 내려받는 것은 처리 엔진 파일이며, 사용자가 선택한 파일이나 메타데이터 자체를 CDN으로 전송하지 않습니다.</p>
           <h2>계산과 변환 기준</h2>
           <p>계산기와 변환기는 페이지에 표시된 공식, 단위, 반올림 기준을 바탕으로 결과를 만듭니다. 금융, 전자, 건강 관련 계산은 빠른 참고용이며 실제 계약, 구매, 진단, 설계 검증을 대신하지 않습니다.</p>
           <h2>지원 형식과 검증</h2>
@@ -51,11 +53,13 @@ const description =
       ) : (
         <>
           <p class="mt-4">Toolbox is a free web utility site that works without installation or sign-in. It is built for everyday tasks such as editing audio, organizing PDFs, processing images, calculating dates and percentages, converting units, and cleaning up text.</p>
+          <h2>Why Toolbox Exists</h2>
+          <p>Toolbox is being built to reduce the need to install separate programs or upload files to an outside service for simple image, PDF, and audio tasks. Work that can be handled safely in the browser is kept local where possible, while feature limits are published alongside each tool.</p>
           <h2>What the Site Provides</h2>
           <p>The site includes tools for image compression and resizing, PDF merging and page editing, audio conversion and trimming, time zone conversion, QR code creation, character counting, electronics calculations, and random selection. Each tool has its own page with usage notes and limitations.</p>
           <h2>Browser-Based Processing</h2>
           <p>Where possible, tools run directly in your current browser. Text input, calculation values, and selected image, PDF, or audio files are used in browser memory for the selected task and are not processed through a server upload workflow.</p>
-          <p>Some audio tools may download an FFmpeg WASM runtime from an external CDN. In that case, the downloaded files are the conversion engine. Your selected audio file is not sent to the CDN.</p>
+          <p>Some audio tools and specialized image formats may download the code or WASM runtime they need from an external CDN. Those downloads are processing engines; your selected files and metadata are not sent to the CDN.</p>
           <h2>Calculation and Conversion Standards</h2>
           <p>Calculators and converters use the formulas, units, and rounding rules shown on each page. Financial, electronics, and health-related results are quick references and do not replace contracts, product validation, diagnosis, or professional review.</p>
           <h2>Format Support and Testing</h2>

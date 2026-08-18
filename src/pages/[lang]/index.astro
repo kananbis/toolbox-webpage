@@ -4,7 +4,7 @@ import AdSlot from "@/components/AdSlot.astro";
 import BookmarkPrompt from "@/components/BookmarkPrompt.astro";
 import ToolCard from "@/components/ToolCard.astro";
 import { getSiteUpdates } from "@/data/site-updates";
-import { getCategoryItems, getTools, i18n, languages, type Lang } from "@/i18n/translations";
+import { getCategoryItems, getTool, getTools, i18n, languages, type Lang } from "@/i18n/translations";
 
 export function getStaticPaths() {
   return languages.map((lang) => ({ params: { lang } }));
@@ -117,7 +117,9 @@ const withSlash = (path: string) => (path.endsWith("/") ? path : `${path}/`);
       {recentUpdates.map((update) => (
         <article class="rounded-lg border border-line bg-white p-4">
           <p class="text-xs font-semibold text-brand">{update.date}</p>
-          <h3 class="mt-2 font-semibold text-ink">{update.title}</h3>
+          {update.toolSlug ? (
+            <h3 class="mt-2 font-semibold text-ink"><a href={getTool(lang, update.toolSlug)?.path}>{update.title}</a></h3>
+          ) : <h3 class="mt-2 font-semibold text-ink">{update.title}</h3>}
           <p class="mt-2 text-sm leading-6 text-slate-700">{update.summary}</p>
         </article>
       ))}

@@ -44,6 +44,15 @@ Every category now includes a decision guide appropriate to its subject. The ima
 - The generic site-wide FAQ has been removed from short utilities. FAQ schema is emitted only where a page displays tool-specific FAQs.
 - Browser-local processing remains a short operational note near file tools rather than a repeated FAQ answer.
 
+## Second-Pass Precision Improvements
+
+- The home-page bookmark help is now a compact, closed-by-default disclosure instead of a persistent multi-line prompt.
+- The all-tools pages include a task-first selector that links directly to the relevant image, PDF, audio, and metadata tools.
+- Eleven core pages now include concise decision tables or fixed mathematical examples: six image tools, five calculation/text tools.
+- Recent update cards on the home page link directly to the affected tools as well as to the full update log.
+- The About page now states the service motivation and clarifies that optional external runtimes do not receive selected files or metadata.
+- No C-class tool was noindexed, deleted, merged, or redirected in this pass.
+
 ## Remaining Risks
 
 - Some small calculators and generators intentionally have compact content because their user task is narrow.
@@ -59,4 +68,4 @@ npm run build
 node scripts/adsense-audit.mjs
 ```
 
-The audit script checks duplicate titles/descriptions, canonical URLs, hreflang coverage, robots directives, internal links, and page classification counts.
+The audit script checks duplicate titles/descriptions, duplicate rendered introductions and FAQ blocks, canonical URLs, hreflang coverage, robots directives, internal links, bookmark-prompt repetition, and page classification counts.
