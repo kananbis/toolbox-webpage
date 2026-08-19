@@ -12,6 +12,13 @@ const updates: Record<Lang, SiteUpdate[]> = {
   ko: [
     {
       date: "2026-08-18",
+      toolSlug: "pdf-splitter",
+      title: "PDF 합치기와 분할기 썸네일 확인 기능 추가",
+      summary: "PDF 합치기에서는 파일별 첫 페이지를, PDF 분할기에서는 문서의 페이지 썸네일을 필요할 때만 표시할 수 있습니다.",
+      details: ["분할기에서 체크한 페이지를 페이지 범위에 하나의 그룹으로 자동 입력", "예: (1,3,4)는 선택한 세 페이지를 하나의 PDF로 저장", "기존 1-3,5,7-9 입력은 세 개의 결과 PDF로 분할"],
+    },
+    {
+      date: "2026-08-18",
       toolSlug: "image-color-replacer",
       title: "이미지 색상 도구의 색상 선택 기준 개선",
       summary: "색상 대체와 특정 색상 투명화에서 색조와 채도를 함께 고려하도록 조정했습니다.",
@@ -40,6 +47,13 @@ const updates: Record<Lang, SiteUpdate[]> = {
     },
   ],
   en: [
+    {
+      date: "2026-08-18",
+      toolSlug: "pdf-splitter",
+      title: "Added thumbnail checks to PDF merge and split tools",
+      summary: "PDF Merge can show the first page of each file, while PDF Splitter can show page thumbnails only when requested.",
+      details: ["Selected splitter pages are inserted into the page-range field as one group", "For example, (1,3,4) saves the selected pages as one PDF", "The existing 1-3,5,7-9 input still creates three separate PDF files"],
+    },
     {
       date: "2026-08-18",
       toolSlug: "image-color-replacer",
