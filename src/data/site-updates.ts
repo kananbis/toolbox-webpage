@@ -11,11 +11,18 @@ export type SiteUpdate = {
 const updates: Record<Lang, SiteUpdate[]> = {
   ko: [
     {
+      date: "2026-08-20",
+      toolSlug: "image-to-pdf",
+      title: "이미지 PDF 변환기 다중 이미지 순서와 썸네일 확인 기능 추가",
+      summary: "여러 이미지를 선택한 뒤 축소 미리보기로 확인하고 목록 순서를 바꾼 후, 그 순서대로 하나의 PDF 파일로 만들 수 있습니다.",
+      details: ["필요할 때만 이미지 썸네일 표시", "위로·아래로 버튼으로 이미지 순서 변경", "선택한 이미지 전체를 하나의 PDF로 생성"],
+    },
+    {
       date: "2026-08-18",
       toolSlug: "pdf-splitter",
-      title: "PDF 합치기와 분할기 썸네일 확인 기능 추가",
-      summary: "PDF 합치기에서는 파일별 첫 페이지를, PDF 분할기에서는 문서의 페이지 썸네일을 필요할 때만 표시할 수 있습니다.",
-      details: ["분할기에서 체크한 페이지를 페이지 범위에 하나의 그룹으로 자동 입력", "예: (1,3,4)는 선택한 세 페이지를 하나의 PDF로 저장", "기존 1-3,5,7-9 입력은 세 개의 결과 PDF로 분할"],
+      title: "PDF 합치기·분할·페이지 추출기 썸네일 확인 기능 추가",
+      summary: "PDF 합치기에서는 파일별 첫 페이지를, PDF 분할기와 페이지 추출기에서는 문서의 페이지 썸네일을 필요할 때만 표시할 수 있습니다.",
+      details: ["분할기에서 체크한 페이지를 페이지 범위에 하나의 그룹으로 자동 입력", "페이지 추출기에서 체크한 페이지를 추출 범위에 자동 입력", "예: (1,3,4)는 선택한 세 페이지를 하나의 PDF로 저장"],
     },
     {
       date: "2026-08-18",
@@ -48,11 +55,18 @@ const updates: Record<Lang, SiteUpdate[]> = {
   ],
   en: [
     {
+      date: "2026-08-20",
+      toolSlug: "image-to-pdf",
+      title: "Added image thumbnails and ordering to the Image to PDF tool",
+      summary: "You can preview multiple selected images, reorder them, and create one PDF using that exact list order.",
+      details: ["Show image thumbnails only when needed", "Move images up or down in the list", "Create one PDF from all selected images"],
+    },
+    {
       date: "2026-08-18",
       toolSlug: "pdf-splitter",
-      title: "Added thumbnail checks to PDF merge and split tools",
-      summary: "PDF Merge can show the first page of each file, while PDF Splitter can show page thumbnails only when requested.",
-      details: ["Selected splitter pages are inserted into the page-range field as one group", "For example, (1,3,4) saves the selected pages as one PDF", "The existing 1-3,5,7-9 input still creates three separate PDF files"],
+      title: "Added thumbnail checks to PDF merge, split, and extraction tools",
+      summary: "PDF Merge can show the first page of each file, while PDF Splitter and Page Extractor can show page thumbnails only when requested.",
+      details: ["Selected splitter pages are inserted into the page-range field as one group", "Selected extractor pages are inserted into the extraction range", "For example, (1,3,4) saves the selected pages as one PDF"],
     },
     {
       date: "2026-08-18",
