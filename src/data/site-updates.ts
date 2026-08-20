@@ -13,9 +13,9 @@ const updates: Record<Lang, SiteUpdate[]> = {
     {
       date: "2026-08-20",
       toolSlug: "image-to-pdf",
-      title: "이미지 PDF 변환기 다중 이미지 순서와 썸네일 확인 기능 추가",
-      summary: "여러 이미지를 선택한 뒤 축소 미리보기로 확인하고 목록 순서를 바꾼 후, 그 순서대로 하나의 PDF 파일로 만들 수 있습니다.",
-      details: ["필요할 때만 이미지 썸네일 표시", "위로·아래로 버튼으로 이미지 순서 변경", "선택한 이미지 전체를 하나의 PDF로 생성"],
+      title: "이미지 PDF 변환기 썸네일·순서·회전·페이지 방향 기능 추가",
+      summary: "여러 이미지를 축소 미리보기로 확인하고 순서를 바꾸거나 회전한 뒤, 세로 또는 가로 페이지 방향으로 하나의 PDF 파일을 만들 수 있습니다.",
+      details: ["필요할 때만 이미지 썸네일 표시", "위로·아래로 버튼으로 이미지 순서 변경", "회전 버튼으로 각 이미지를 시계 방향 90도 회전", "A4·Letter·이미지 크기 기준에서 세로 또는 가로 방향 선택"],
     },
     {
       date: "2026-08-18",
@@ -57,9 +57,9 @@ const updates: Record<Lang, SiteUpdate[]> = {
     {
       date: "2026-08-20",
       toolSlug: "image-to-pdf",
-      title: "Added image thumbnails and ordering to the Image to PDF tool",
-      summary: "You can preview multiple selected images, reorder them, and create one PDF using that exact list order.",
-      details: ["Show image thumbnails only when needed", "Move images up or down in the list", "Create one PDF from all selected images"],
+      title: "Added thumbnails, ordering, rotation, and page orientation to Image to PDF",
+      summary: "You can preview multiple selected images, reorder or rotate them, and create one PDF with portrait or landscape pages.",
+      details: ["Show image thumbnails only when needed", "Move images up or down in the list", "Rotate each image 90 degrees clockwise", "Choose portrait or landscape for A4, Letter, or image-sized pages"],
     },
     {
       date: "2026-08-18",
