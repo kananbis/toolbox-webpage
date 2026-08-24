@@ -11,6 +11,20 @@ export type SiteUpdate = {
 const updates: Record<Lang, SiteUpdate[]> = {
   ko: [
     {
+      date: "2026-08-24",
+      toolSlug: "pdf-page-delete",
+      title: "PDF 페이지 삭제기 페이지 썸네일 선택 기능 추가",
+      summary: "페이지 썸네일을 필요할 때만 표시하고, 체크한 페이지를 삭제 범위에 바로 지정할 수 있습니다.",
+      details: ["페이지 썸네일 표시 기본 꺼짐", "체크한 페이지 번호를 삭제 범위에 자동 입력", "최소 한 페이지가 남도록 기존 안전 검증 유지"],
+    },
+    {
+      date: "2026-08-24",
+      toolSlug: "pdf-rotate",
+      title: "PDF 회전기 페이지 썸네일 선택 기능 추가",
+      summary: "페이지 썸네일을 필요할 때만 표시하고, 체크한 페이지를 특정 페이지 회전 대상으로 바로 지정할 수 있습니다.",
+      details: ["페이지 썸네일 표시 기본 꺼짐", "체크한 페이지 번호를 특정 페이지 범위에 자동 입력", "선택한 페이지에만 90도·180도·270도 회전 적용"],
+    },
+    {
       date: "2026-08-20",
       toolSlug: "image-to-pdf",
       title: "이미지 PDF 변환기 썸네일·순서·회전·페이지 방향 기능 추가",
@@ -54,6 +68,20 @@ const updates: Record<Lang, SiteUpdate[]> = {
     },
   ],
   en: [
+    {
+      date: "2026-08-24",
+      toolSlug: "pdf-page-delete",
+      title: "Added page-thumbnail selection to PDF Page Delete",
+      summary: "You can show page thumbnails only when needed and check pages to set them directly as deletion targets.",
+      details: ["Page thumbnails are off by default", "Checked pages are added to the deletion range automatically", "The existing safeguard keeps at least one page in the PDF"],
+    },
+    {
+      date: "2026-08-24",
+      toolSlug: "pdf-rotate",
+      title: "Added page-thumbnail selection to PDF Rotator",
+      summary: "You can show page thumbnails only when needed and check pages to set them directly as rotation targets.",
+      details: ["Page thumbnails are off by default", "Checked pages are added to the specific-page range automatically", "Apply 90, 180, or 270 degree rotation only to selected pages"],
+    },
     {
       date: "2026-08-20",
       toolSlug: "image-to-pdf",

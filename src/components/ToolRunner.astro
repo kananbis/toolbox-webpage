@@ -959,7 +959,7 @@ const timeZonePresets = [
 
   {["pdf-merger", "pdf-splitter", "pdf-page-extractor", "image-to-pdf", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg", "pdf-watermark", "pdf-page-numbers", "pdf-organizer"].includes(slug) && (
     <div class="grid gap-4">
-      {!["pdf-merger", "pdf-splitter", "pdf-page-extractor", "image-to-pdf"].includes(slug) && (
+      {!["pdf-merger", "pdf-splitter", "pdf-page-extractor", "image-to-pdf", "pdf-rotate", "pdf-page-delete"].includes(slug) && (
       <div class="rounded-md border border-line bg-white p-4 text-sm leading-6 text-slate-700">
         <p>{lang === "ko" ? "선택한 파일은 서버로 업로드되지 않으며, 현재 브라우저 안에서만 처리됩니다." : "Selected files are not uploaded to a server and are processed only in your browser."}</p>
         <p class="mt-2">{lang === "ko" ? "본인이 소유했거나 편집할 권한이 있는 파일만 사용하세요. 저작권이 있는 파일을 무단으로 편집하거나 배포해서는 안 됩니다." : "Only use files that you own or have the right to edit. Do not edit or distribute copyrighted files without permission."}</p>
@@ -979,7 +979,7 @@ const timeZonePresets = [
         </>
       ) : (
         <>
-          {["pdf-merger", "pdf-splitter", "pdf-page-extractor"].includes(slug) ? (
+          {["pdf-merger", "pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete"].includes(slug) ? (
             <div class="flex flex-wrap items-center justify-between gap-3">
               <label class="font-semibold" for="pdf-files">{slug === "pdf-merger" ? (lang === "ko" ? "PDF 파일 선택" : "Choose PDF Files") : (lang === "ko" ? "PDF 파일 선택" : "Choose PDF File")}</label>
               <div class="checkbox-control h-auto gap-2 text-sm text-slate-700">
@@ -997,10 +997,16 @@ const timeZonePresets = [
       <div id="pdf-file-list" class="grid gap-2"></div>
       {slug === "image-to-pdf" && <p class="text-sm leading-6 text-slate-600">{lang === "ko" ? <><span>이미지 썸네일 표시를 켜면 선택한 이미지를 축소 미리보기로 확인할 수 있습니다.</span><br /><span>회전 버튼은 해당 이미지를 시계 방향으로 90도씩 돌립니다. 페이지 방향은 세로가 기본이며, 가로를 선택하면 이미지를 비율 유지로 맞춰 저장합니다.</span><br /><span>위로·아래로 버튼으로 순서를 바꾸면 현재 목록 순서대로 한 개의 PDF 파일로 저장됩니다.</span></> : <><span>Turn on image thumbnails to preview the selected images at a smaller size.</span><br /><span>The Rotate button turns that image 90 degrees clockwise. Portrait is the default page orientation; landscape keeps the image proportionally fitted to the page.</span><br /><span>Use the Up and Down buttons to reorder images, then save the current list order as one PDF file.</span></>}</p>}
       {slug === "pdf-page-extractor" && <p class="text-sm leading-6 text-slate-600">{lang === "ko" ? <><span>페이지 썸네일 표시를 켜면 원하는 페이지를 직접 체크할 수 있으며, 선택한 페이지 번호가 추출 범위에 자동 입력됩니다.</span><br /><span>썸네일을 사용하지 않아도 페이지 번호와 범위를 직접 입력할 수 있습니다.</span></> : <><span>Turn on page thumbnails to check the pages you want. Their page numbers are added to the extraction range automatically.</span><br /><span>You can also enter page numbers and ranges directly without using thumbnails.</span></>}</p>}
-      {["pdf-splitter", "pdf-page-extractor"].includes(slug) && <div id="pdf-split-thumbnail-list" class="hidden grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"></div>}
-      {["pdf-splitter", "pdf-page-extractor"].includes(slug) && <p id="pdf-split-thumbnail-example" class="hidden text-sm leading-6 text-slate-600">{slug === "pdf-splitter"
+      {slug === "pdf-rotate" && <p class="text-sm leading-6 text-slate-600">{lang === "ko" ? <><span>페이지 썸네일 표시를 켜면 회전할 페이지를 직접 체크할 수 있으며, 선택한 페이지 번호가 특정 페이지 범위에 자동 입력됩니다.</span><br /><span>썸네일을 사용하지 않아도 모든 페이지 또는 특정 페이지를 직접 선택할 수 있습니다.</span></> : <><span>Turn on page thumbnails to check the pages you want to rotate. Their page numbers are added to the specific-page range automatically.</span><br /><span>You can also select all pages or enter specific pages directly without using thumbnails.</span></>}</p>}
+      {slug === "pdf-page-delete" && <p class="text-sm leading-6 text-slate-600">{lang === "ko" ? <><span>페이지 썸네일 표시를 켜면 삭제할 페이지를 직접 체크할 수 있으며, 선택한 페이지 번호가 삭제 범위에 자동 입력됩니다.</span><br /><span>썸네일을 사용하지 않아도 페이지 번호와 범위를 직접 입력할 수 있습니다.</span></> : <><span>Turn on page thumbnails to check the pages you want to delete. Their page numbers are added to the deletion range automatically.</span><br /><span>You can also enter page numbers and ranges directly without using thumbnails.</span></>}</p>}
+      {["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete"].includes(slug) && <div id="pdf-split-thumbnail-list" class="hidden grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"></div>}
+      {["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete"].includes(slug) && <p id="pdf-split-thumbnail-example" class="hidden text-sm leading-6 text-slate-600">{slug === "pdf-splitter"
         ? (lang === "ko" ? "예: 썸네일에서 1, 4, 6페이지를 선택하면 페이지 범위에 (1,4,6)이 자동 입력됩니다. 분할하면 선택한 세 페이지가 하나의 PDF로 저장됩니다." : "Example: Select pages 1, 4, and 6 in the thumbnails to automatically enter (1,4,6) in Page ranges. Splitting saves the three selected pages as one PDF.")
-        : (lang === "ko" ? "예: 썸네일에서 1, 4, 6페이지를 선택하면 추출할 페이지에 1,4,6이 자동 입력됩니다. 페이지 추출을 누르면 선택한 세 페이지가 하나의 PDF로 저장됩니다." : "Example: Select pages 1, 4, and 6 in the thumbnails to automatically enter 1,4,6 in Pages to extract. Extracting saves the three selected pages as one PDF.")}</p>}
+        : slug === "pdf-page-extractor"
+          ? (lang === "ko" ? "예: 썸네일에서 1, 4, 6페이지를 선택하면 추출할 페이지에 1,4,6이 자동 입력됩니다. 페이지 추출을 누르면 선택한 세 페이지가 하나의 PDF로 저장됩니다." : "Example: Select pages 1, 4, and 6 in the thumbnails to automatically enter 1,4,6 in Pages to extract. Extracting saves the three selected pages as one PDF.")
+          : slug === "pdf-rotate"
+            ? (lang === "ko" ? "예: 썸네일에서 1, 4, 6페이지를 선택하면 특정 페이지에 1,4,6이 자동 입력됩니다. 회전을 누르면 선택한 페이지만 설정한 각도로 회전합니다." : "Example: Select pages 1, 4, and 6 in the thumbnails to automatically enter 1,4,6 in Specific pages. Rotate applies the selected angle only to those pages.")
+            : (lang === "ko" ? "예: 썸네일에서 1, 4, 6페이지를 선택하면 삭제할 페이지에 1,4,6이 자동 입력됩니다. 페이지 삭제를 누르면 선택한 페이지만 문서에서 제거됩니다." : "Example: Select pages 1, 4, and 6 in the thumbnails to automatically enter 1,4,6 in Pages to delete. Delete Pages removes only those selected pages.")}</p>}
 
       {slug === "pdf-splitter" && (
         <div class="grid gap-3">
@@ -5185,7 +5191,7 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
     root._pdfSplitSelectedPages = new Set();
   };
   const renderPdfSplitThumbnails = async (root) => {
-    if (!["pdf-splitter", "pdf-page-extractor"].includes(root.dataset.tool) || !root.querySelector("#pdf-show-page-thumbnails")?.checked) return;
+    if (!["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete"].includes(root.dataset.tool) || !root.querySelector("#pdf-show-page-thumbnails")?.checked) return;
     const item = root._pdfFiles?.[0];
     const list = root.querySelector("#pdf-split-thumbnail-list");
     const example = root.querySelector("#pdf-split-thumbnail-example");
@@ -5299,7 +5305,7 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
     renderPdfFileList(root);
     if (slug === "pdf-merger" && root.querySelector("#pdf-show-thumbnails")?.checked) await renderPdfMergerThumbnails(root);
     if (slug === "image-to-pdf" && root.querySelector("#pdf-show-image-thumbnails")?.checked) await renderImagePdfThumbnails(root);
-    if (["pdf-splitter", "pdf-page-extractor"].includes(slug) && root.querySelector("#pdf-show-page-thumbnails")?.checked) await renderPdfSplitThumbnails(root);
+    if (["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete"].includes(slug) && root.querySelector("#pdf-show-page-thumbnails")?.checked) await renderPdfSplitThumbnails(root);
     setPdfStatus(root, items.length ? `${pdfText(lang, "resultCount")}: ${items.length}` : (slug === "image-to-pdf" ? pdfText(lang, "chooseImage") : pdfText(lang, "choosePdf")));
   };
   const parsePdfPageGroups = (input, pageCount, combine = false, lang = "ko") => {
@@ -9851,7 +9857,7 @@ self.onmessage = async (event) => {
     });
     root.addEventListener("change", (event) => {
       const control = event.target;
-      if (!["pdf-splitter", "pdf-page-extractor"].includes(slug) || !(control instanceof HTMLInputElement) || !control.dataset.pdfSplitPage) return;
+      if (!["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete"].includes(slug) || !(control instanceof HTMLInputElement) || !control.dataset.pdfSplitPage) return;
       const pageNumber = Number(control.dataset.pdfSplitPage);
       if (!Number.isInteger(pageNumber) || pageNumber < 1) return;
       const selectedPages = root._pdfSplitSelectedPages || new Set();
@@ -9860,6 +9866,7 @@ self.onmessage = async (event) => {
       root._pdfSplitSelectedPages = selectedPages;
       const rangeInput = root.querySelector("#pdf-page-ranges");
       const mode = root.querySelector("#pdf-split-mode");
+      const rotateMode = root.querySelector("#pdf-rotate-mode");
       if (rangeInput) {
         const pages = Array.from(selectedPages).sort((left, right) => left - right);
         rangeInput.value = pages.length
@@ -9867,6 +9874,7 @@ self.onmessage = async (event) => {
           : "";
       }
       if (mode) mode.value = "ranges";
+      if (rotateMode) rotateMode.value = "custom";
     });
     root.querySelectorAll("input, textarea, select").forEach((control) => {
       control.addEventListener("input", () => {
@@ -9929,7 +9937,7 @@ self.onmessage = async (event) => {
             setPdfStatus(root, items.length ? `${pdfText(root.dataset.lang || "ko", "resultCount")}: ${items.length}` : pdfText(root.dataset.lang || "ko", "chooseImage"));
           }
         }
-        if (["pdf-splitter", "pdf-page-extractor"].includes(slug) && control.id === "pdf-show-page-thumbnails") {
+        if (["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete"].includes(slug) && control.id === "pdf-show-page-thumbnails") {
           if (control.checked) {
             renderPdfSplitThumbnails(root).catch((error) => {
               const message = error instanceof Error ? error.message : pdfText(root.dataset.lang || "ko", "invalidPdf");
