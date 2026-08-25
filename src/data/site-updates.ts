@@ -11,6 +11,20 @@ export type SiteUpdate = {
 const updates: Record<Lang, SiteUpdate[]> = {
   ko: [
     {
+      date: "2026-08-25",
+      toolSlug: "pdf-watermark",
+      title: "PDF 워터마크 대표 페이지 미리보기 추가",
+      summary: "필요할 때만 첫 페이지를 축소 렌더링하고, 현재 워터마크 설정을 바로 겹쳐 확인할 수 있습니다.",
+      details: ["대표 페이지 미리보기는 기본적으로 꺼짐", "텍스트, 위치, 크기, 색상, 투명도, 회전을 즉시 반영", "전체 페이지 썸네일 대신 첫 페이지만 렌더링"],
+    },
+    {
+      date: "2026-08-25",
+      toolSlug: "pdf-to-jpg",
+      title: "PDF JPG 변환기 페이지 썸네일 선택 기능 추가",
+      summary: "페이지 썸네일을 필요할 때만 표시하고, 체크한 페이지를 JPG 변환 대상으로 바로 지정할 수 있습니다.",
+      details: ["페이지 썸네일 표시 기본 꺼짐", "체크한 페이지 번호를 변환 범위에 자동 입력", "선택한 페이지별 JPG 파일 생성"],
+    },
+    {
       date: "2026-08-24",
       toolSlug: "pdf-page-delete",
       title: "PDF 페이지 삭제기 페이지 썸네일 선택 기능 추가",
@@ -68,6 +82,20 @@ const updates: Record<Lang, SiteUpdate[]> = {
     },
   ],
   en: [
+    {
+      date: "2026-08-25",
+      toolSlug: "pdf-watermark",
+      title: "Added representative-page preview to PDF Watermark",
+      summary: "You can render only the first page when needed and see the current watermark settings overlaid immediately.",
+      details: ["Representative preview is off by default", "Reflects text, position, size, color, opacity, and rotation immediately", "Renders only the first page instead of every page thumbnail"],
+    },
+    {
+      date: "2026-08-25",
+      toolSlug: "pdf-to-jpg",
+      title: "Added page-thumbnail selection to PDF to JPG",
+      summary: "You can show page thumbnails only when needed and check pages to set them directly as JPG conversion targets.",
+      details: ["Page thumbnails are off by default", "Checked pages are added to the conversion range automatically", "Create one JPG file for each selected page"],
+    },
     {
       date: "2026-08-24",
       toolSlug: "pdf-page-delete",

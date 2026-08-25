@@ -959,7 +959,7 @@ const timeZonePresets = [
 
   {["pdf-merger", "pdf-splitter", "pdf-page-extractor", "image-to-pdf", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg", "pdf-watermark", "pdf-page-numbers", "pdf-organizer"].includes(slug) && (
     <div class="grid gap-4">
-      {!["pdf-merger", "pdf-splitter", "pdf-page-extractor", "image-to-pdf", "pdf-rotate", "pdf-page-delete"].includes(slug) && (
+      {!["pdf-merger", "pdf-splitter", "pdf-page-extractor", "image-to-pdf", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg", "pdf-watermark"].includes(slug) && (
       <div class="rounded-md border border-line bg-white p-4 text-sm leading-6 text-slate-700">
         <p>{lang === "ko" ? "선택한 파일은 서버로 업로드되지 않으며, 현재 브라우저 안에서만 처리됩니다." : "Selected files are not uploaded to a server and are processed only in your browser."}</p>
         <p class="mt-2">{lang === "ko" ? "본인이 소유했거나 편집할 권한이 있는 파일만 사용하세요. 저작권이 있는 파일을 무단으로 편집하거나 배포해서는 안 됩니다." : "Only use files that you own or have the right to edit. Do not edit or distribute copyrighted files without permission."}</p>
@@ -979,12 +979,12 @@ const timeZonePresets = [
         </>
       ) : (
         <>
-          {["pdf-merger", "pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete"].includes(slug) ? (
+          {["pdf-merger", "pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg", "pdf-watermark"].includes(slug) ? (
             <div class="flex flex-wrap items-center justify-between gap-3">
               <label class="font-semibold" for="pdf-files">{slug === "pdf-merger" ? (lang === "ko" ? "PDF 파일 선택" : "Choose PDF Files") : (lang === "ko" ? "PDF 파일 선택" : "Choose PDF File")}</label>
               <div class="checkbox-control h-auto gap-2 text-sm text-slate-700">
-                <input id={slug === "pdf-merger" ? "pdf-show-thumbnails" : "pdf-show-page-thumbnails"} type="checkbox" />
-                <label class="cursor-pointer" for={slug === "pdf-merger" ? "pdf-show-thumbnails" : "pdf-show-page-thumbnails"}>{slug === "pdf-merger" ? (lang === "ko" ? "첫 페이지 썸네일 표시" : "Show first-page thumbnails") : (lang === "ko" ? "페이지 썸네일 표시" : "Show page thumbnails")}</label>
+                <input id={slug === "pdf-merger" ? "pdf-show-thumbnails" : slug === "pdf-watermark" ? "pdf-show-watermark-preview" : "pdf-show-page-thumbnails"} type="checkbox" />
+                <label class="cursor-pointer" for={slug === "pdf-merger" ? "pdf-show-thumbnails" : slug === "pdf-watermark" ? "pdf-show-watermark-preview" : "pdf-show-page-thumbnails"}>{slug === "pdf-merger" ? (lang === "ko" ? "첫 페이지 썸네일 표시" : "Show first-page thumbnails") : slug === "pdf-watermark" ? (lang === "ko" ? "대표 페이지 미리보기 표시" : "Show representative page preview") : (lang === "ko" ? "페이지 썸네일 표시" : "Show page thumbnails")}</label>
               </div>
             </div>
           ) : (
@@ -995,18 +995,22 @@ const timeZonePresets = [
       )}
 
       <div id="pdf-file-list" class="grid gap-2"></div>
+      {slug === "pdf-watermark" && <div id="pdf-watermark-preview" class="hidden max-w-sm rounded-md border border-line bg-white p-3"></div>}
       {slug === "image-to-pdf" && <p class="text-sm leading-6 text-slate-600">{lang === "ko" ? <><span>이미지 썸네일 표시를 켜면 선택한 이미지를 축소 미리보기로 확인할 수 있습니다.</span><br /><span>회전 버튼은 해당 이미지를 시계 방향으로 90도씩 돌립니다. 페이지 방향은 세로가 기본이며, 가로를 선택하면 이미지를 비율 유지로 맞춰 저장합니다.</span><br /><span>위로·아래로 버튼으로 순서를 바꾸면 현재 목록 순서대로 한 개의 PDF 파일로 저장됩니다.</span></> : <><span>Turn on image thumbnails to preview the selected images at a smaller size.</span><br /><span>The Rotate button turns that image 90 degrees clockwise. Portrait is the default page orientation; landscape keeps the image proportionally fitted to the page.</span><br /><span>Use the Up and Down buttons to reorder images, then save the current list order as one PDF file.</span></>}</p>}
       {slug === "pdf-page-extractor" && <p class="text-sm leading-6 text-slate-600">{lang === "ko" ? <><span>페이지 썸네일 표시를 켜면 원하는 페이지를 직접 체크할 수 있으며, 선택한 페이지 번호가 추출 범위에 자동 입력됩니다.</span><br /><span>썸네일을 사용하지 않아도 페이지 번호와 범위를 직접 입력할 수 있습니다.</span></> : <><span>Turn on page thumbnails to check the pages you want. Their page numbers are added to the extraction range automatically.</span><br /><span>You can also enter page numbers and ranges directly without using thumbnails.</span></>}</p>}
       {slug === "pdf-rotate" && <p class="text-sm leading-6 text-slate-600">{lang === "ko" ? <><span>페이지 썸네일 표시를 켜면 회전할 페이지를 직접 체크할 수 있으며, 선택한 페이지 번호가 특정 페이지 범위에 자동 입력됩니다.</span><br /><span>썸네일을 사용하지 않아도 모든 페이지 또는 특정 페이지를 직접 선택할 수 있습니다.</span></> : <><span>Turn on page thumbnails to check the pages you want to rotate. Their page numbers are added to the specific-page range automatically.</span><br /><span>You can also select all pages or enter specific pages directly without using thumbnails.</span></>}</p>}
       {slug === "pdf-page-delete" && <p class="text-sm leading-6 text-slate-600">{lang === "ko" ? <><span>페이지 썸네일 표시를 켜면 삭제할 페이지를 직접 체크할 수 있으며, 선택한 페이지 번호가 삭제 범위에 자동 입력됩니다.</span><br /><span>썸네일을 사용하지 않아도 페이지 번호와 범위를 직접 입력할 수 있습니다.</span></> : <><span>Turn on page thumbnails to check the pages you want to delete. Their page numbers are added to the deletion range automatically.</span><br /><span>You can also enter page numbers and ranges directly without using thumbnails.</span></>}</p>}
-      {["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete"].includes(slug) && <div id="pdf-split-thumbnail-list" class="hidden grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"></div>}
-      {["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete"].includes(slug) && <p id="pdf-split-thumbnail-example" class="hidden text-sm leading-6 text-slate-600">{slug === "pdf-splitter"
+      {slug === "pdf-to-jpg" && <p class="text-sm leading-6 text-slate-600">{lang === "ko" ? <><span>페이지 썸네일 표시를 켜면 JPG로 변환할 페이지를 직접 체크할 수 있으며, 선택한 페이지 번호가 변환 범위에 자동 입력됩니다.</span><br /><span>썸네일을 사용하지 않아도 모든 페이지 또는 특정 페이지를 직접 선택할 수 있습니다.</span></> : <><span>Turn on page thumbnails to check the pages you want to convert to JPG. Their page numbers are added to the conversion range automatically.</span><br /><span>You can also select all pages or enter specific pages directly without using thumbnails.</span></>}</p>}
+      {["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg"].includes(slug) && <div id="pdf-split-thumbnail-list" class="hidden grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"></div>}
+      {["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg"].includes(slug) && <p id="pdf-split-thumbnail-example" class="hidden text-sm leading-6 text-slate-600">{slug === "pdf-splitter"
         ? (lang === "ko" ? "예: 썸네일에서 1, 4, 6페이지를 선택하면 페이지 범위에 (1,4,6)이 자동 입력됩니다. 분할하면 선택한 세 페이지가 하나의 PDF로 저장됩니다." : "Example: Select pages 1, 4, and 6 in the thumbnails to automatically enter (1,4,6) in Page ranges. Splitting saves the three selected pages as one PDF.")
         : slug === "pdf-page-extractor"
           ? (lang === "ko" ? "예: 썸네일에서 1, 4, 6페이지를 선택하면 추출할 페이지에 1,4,6이 자동 입력됩니다. 페이지 추출을 누르면 선택한 세 페이지가 하나의 PDF로 저장됩니다." : "Example: Select pages 1, 4, and 6 in the thumbnails to automatically enter 1,4,6 in Pages to extract. Extracting saves the three selected pages as one PDF.")
           : slug === "pdf-rotate"
             ? (lang === "ko" ? "예: 썸네일에서 1, 4, 6페이지를 선택하면 특정 페이지에 1,4,6이 자동 입력됩니다. 회전을 누르면 선택한 페이지만 설정한 각도로 회전합니다." : "Example: Select pages 1, 4, and 6 in the thumbnails to automatically enter 1,4,6 in Specific pages. Rotate applies the selected angle only to those pages.")
-            : (lang === "ko" ? "예: 썸네일에서 1, 4, 6페이지를 선택하면 삭제할 페이지에 1,4,6이 자동 입력됩니다. 페이지 삭제를 누르면 선택한 페이지만 문서에서 제거됩니다." : "Example: Select pages 1, 4, and 6 in the thumbnails to automatically enter 1,4,6 in Pages to delete. Delete Pages removes only those selected pages.")}</p>}
+            : slug === "pdf-page-delete"
+              ? (lang === "ko" ? "예: 썸네일에서 1, 4, 6페이지를 선택하면 삭제할 페이지에 1,4,6이 자동 입력됩니다. 페이지 삭제를 누르면 선택한 페이지만 문서에서 제거됩니다." : "Example: Select pages 1, 4, and 6 in the thumbnails to automatically enter 1,4,6 in Pages to delete. Delete Pages removes only those selected pages.")
+              : (lang === "ko" ? "예: 썸네일에서 1, 4, 6페이지를 선택하면 변환할 페이지에 1,4,6이 자동 입력됩니다. JPG로 변환을 누르면 선택한 페이지별 JPG 파일이 생성됩니다." : "Example: Select pages 1, 4, and 6 in the thumbnails to automatically enter 1,4,6 in Pages to convert. Convert to JPG creates a JPG file for each selected page.")}</p>}
 
       {slug === "pdf-splitter" && (
         <div class="grid gap-3">
@@ -1114,12 +1118,7 @@ const timeZonePresets = [
             <select id="pdf-watermark-rotation"><option value="0">0</option><option value="30">30</option><option value="45" selected>45</option><option value="-45">-45</option></select>
           </label>
           <label>{lang === "ko" ? "색상" : "Color"}
-            <select id="pdf-watermark-color">
-              <option value="gray">{lang === "ko" ? "회색" : "Gray"}</option>
-              <option value="black">{lang === "ko" ? "검정" : "Black"}</option>
-              <option value="red">{lang === "ko" ? "빨강" : "Red"}</option>
-              <option value="blue">{lang === "ko" ? "파랑" : "Blue"}</option>
-            </select>
+            <span class="color-control"><input id="pdf-watermark-color" type="color" value="#6b7280" /><input class="color-hex" data-color-hex-for="pdf-watermark-color" type="text" value="#6B7280" maxlength="7" spellcheck="false" aria-label={lang === "ko" ? "워터마크 색상 HEX 값" : "Watermark color HEX value"} /></span>
           </label>
         </div>
       )}
@@ -5190,8 +5189,57 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
     example?.classList.add("hidden");
     root._pdfSplitSelectedPages = new Set();
   };
+  const clearPdfWatermarkPreview = (root) => {
+    root.dataset.pdfWatermarkPreviewRun = String((Number(root.dataset.pdfWatermarkPreviewRun || "0") || 0) + 1);
+    root.dataset.pdfWatermarkPreviewDrawRun = String((Number(root.dataset.pdfWatermarkPreviewDrawRun || "0") || 0) + 1);
+    root._pdfWatermarkPreview = undefined;
+    const preview = root.querySelector("#pdf-watermark-preview");
+    if (!preview) return;
+    preview.innerHTML = "";
+    preview.classList.add("hidden");
+  };
+  const renderPdfWatermarkPreview = async (root) => {
+    if (root.dataset.tool !== "pdf-watermark" || !root.querySelector("#pdf-show-watermark-preview")?.checked) return;
+    const item = root._pdfFiles?.[0];
+    const preview = root.querySelector("#pdf-watermark-preview");
+    if (!item || !preview) return;
+    const runId = String((Number(root.dataset.pdfWatermarkPreviewRun || "0") || 0) + 1);
+    root.dataset.pdfWatermarkPreviewRun = runId;
+    preview.innerHTML = "";
+    preview.classList.remove("hidden");
+    const title = document.createElement("p");
+    title.className = "mb-2 text-sm font-semibold text-slate-800";
+    title.textContent = root.dataset.lang === "ko" ? "대표 페이지 워터마크 미리보기" : "Representative page watermark preview";
+    preview.appendChild(title);
+    const lang = root.dataset.lang || "ko";
+    setPdfStatus(root, pdfText(lang, "loadingThumbnails"));
+    const pdfjs = await getPdfThumbnailJs();
+    const task = pdfjs.getDocument({ data: new Uint8Array(await item.file.arrayBuffer()) });
+    const pdf = await task.promise;
+    try {
+      if (root.dataset.pdfWatermarkPreviewRun !== runId || !root.querySelector("#pdf-show-watermark-preview")?.checked) return;
+      const page = await pdf.getPage(1);
+      const pageViewport = page.getViewport({ scale: 1 });
+      const scale = Math.min(1, 360 / pageViewport.width, 480 / pageViewport.height);
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.ceil(viewport.width));
+      canvas.height = Math.max(1, Math.ceil(viewport.height));
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error("Canvas failed.");
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      await page.render({ canvasContext: context, viewport }).promise;
+      if (root.dataset.pdfWatermarkPreviewRun !== runId || !root.querySelector("#pdf-show-watermark-preview")?.checked) return;
+      root._pdfWatermarkPreview = { canvas, pageWidth: pageViewport.width, pageHeight: pageViewport.height, scale };
+      await drawPdfWatermarkPreview(root);
+      if (root.dataset.pdfWatermarkPreviewRun === runId) setPdfStatus(root, `${pdfText(lang, "resultCount")}: 1`);
+    } finally {
+      await pdf.destroy?.();
+    }
+  };
   const renderPdfSplitThumbnails = async (root) => {
-    if (!["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete"].includes(root.dataset.tool) || !root.querySelector("#pdf-show-page-thumbnails")?.checked) return;
+    if (!["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg"].includes(root.dataset.tool) || !root.querySelector("#pdf-show-page-thumbnails")?.checked) return;
     const item = root._pdfFiles?.[0];
     const list = root.querySelector("#pdf-split-thumbnail-list");
     const example = root.querySelector("#pdf-split-thumbnail-example");
@@ -5275,6 +5323,7 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
     clearPdfDownloads(root);
     root.dataset.pdfThumbnailRun = String((Number(root.dataset.pdfThumbnailRun || "0") || 0) + 1);
     clearPdfSplitThumbnails(root);
+    clearPdfWatermarkPreview(root);
     const input = root.querySelector(slug === "image-to-pdf" ? "#pdf-image-files" : "#pdf-files");
     const files = Array.from(input?.files || []);
     const { PDFDocument } = await getPdfLib();
@@ -5305,7 +5354,8 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
     renderPdfFileList(root);
     if (slug === "pdf-merger" && root.querySelector("#pdf-show-thumbnails")?.checked) await renderPdfMergerThumbnails(root);
     if (slug === "image-to-pdf" && root.querySelector("#pdf-show-image-thumbnails")?.checked) await renderImagePdfThumbnails(root);
-    if (["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete"].includes(slug) && root.querySelector("#pdf-show-page-thumbnails")?.checked) await renderPdfSplitThumbnails(root);
+    if (["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg"].includes(slug) && root.querySelector("#pdf-show-page-thumbnails")?.checked) await renderPdfSplitThumbnails(root);
+    if (slug === "pdf-watermark" && root.querySelector("#pdf-show-watermark-preview")?.checked) await renderPdfWatermarkPreview(root);
     setPdfStatus(root, items.length ? `${pdfText(lang, "resultCount")}: ${items.length}` : (slug === "image-to-pdf" ? pdfText(lang, "chooseImage") : pdfText(lang, "choosePdf")));
   };
   const parsePdfPageGroups = (input, pageCount, combine = false, lang = "ko") => {
@@ -5489,12 +5539,12 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
     };
     return map[position] || map.center;
   };
-  const watermarkCssColor = (color) => ({
+  const watermarkCssColor = (color) => (/^#[0-9a-fA-F]{6}$/.test(String(color || "")) ? color : ({
     gray: "#6b7280",
     black: "#111827",
     red: "#dc2626",
     blue: "#2563eb",
-  })[color] || "#6b7280";
+  })[color] || "#6b7280");
   const createWatermarkImage = async (text, size, color) => {
     const measureCanvas = document.createElement("canvas");
     const measureContext = measureCanvas.getContext("2d");
@@ -5514,6 +5564,67 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
     context.textBaseline = "middle";
     context.fillText(text, width / 2, height / 2);
     return { bytes: await (await canvasToBlob(canvas, "image/png", 0.92)).arrayBuffer(), width, height };
+  };
+  const drawPdfWatermarkPreview = async (root) => {
+    if (root.dataset.tool !== "pdf-watermark" || !root.querySelector("#pdf-show-watermark-preview")?.checked) return;
+    const source = root._pdfWatermarkPreview;
+    const preview = root.querySelector("#pdf-watermark-preview");
+    if (!source || !preview) return;
+    const runId = String((Number(root.dataset.pdfWatermarkPreviewDrawRun || "0") || 0) + 1);
+    root.dataset.pdfWatermarkPreviewDrawRun = runId;
+    const title = preview.querySelector("p");
+    const canvas = document.createElement("canvas");
+    canvas.width = source.canvas.width;
+    canvas.height = source.canvas.height;
+    canvas.className = "mx-auto block max-h-[30rem] max-w-full rounded border border-line bg-white";
+    canvas.setAttribute("aria-label", root.dataset.lang === "ko" ? "대표 페이지 워터마크 미리보기" : "Representative page watermark preview");
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Canvas failed.");
+    context.drawImage(source.canvas, 0, 0);
+    if (title) preview.replaceChildren(title, canvas);
+    else preview.replaceChildren(canvas);
+
+    const text = root.querySelector("#pdf-watermark-text")?.value.trim();
+    if (!text) return;
+    const mode = root.querySelector("#pdf-watermark-mode")?.value || "all";
+    if (mode === "custom") {
+      const totalPages = root._pdfFiles?.[0]?.pageCount || 0;
+      try {
+        if (!parsePdfPageGroups(root.querySelector("#pdf-page-ranges")?.value, totalPages, true, root.dataset.lang || "ko")[0].includes(0)) return;
+      } catch {
+        return;
+      }
+    }
+
+    const size = Number(root.querySelector("#pdf-watermark-size")?.value || 48);
+    const opacity = Number(root.querySelector("#pdf-watermark-opacity")?.value || 0.2);
+    const rotation = Number(root.querySelector("#pdf-watermark-rotation")?.value || 45);
+    const position = root.querySelector("#pdf-watermark-position")?.value || "center";
+    const imageData = await createWatermarkImage(text, size, root.querySelector("#pdf-watermark-color")?.value);
+    if (root.dataset.pdfWatermarkPreviewDrawRun !== runId) return;
+    const objectUrl = URL.createObjectURL(new Blob([imageData.bytes], { type: "image/png" }));
+    try {
+      const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const element = new Image();
+        element.onload = () => resolve(element);
+        element.onerror = () => reject(new Error("Watermark preview failed."));
+        element.src = objectUrl;
+      });
+      if (root.dataset.pdfWatermarkPreviewDrawRun !== runId) return;
+      const [x, y] = watermarkPosition({ getSize: () => ({ width: source.pageWidth, height: source.pageHeight }) }, imageData.width, imageData.height, position);
+      const scaledWidth = imageData.width * source.scale;
+      const scaledHeight = imageData.height * source.scale;
+      const centerX = (x + imageData.width / 2) * source.scale;
+      const centerY = (source.pageHeight - (y + imageData.height / 2)) * source.scale;
+      context.save();
+      context.globalAlpha = opacity;
+      context.translate(centerX, centerY);
+      context.rotate(-rotation * Math.PI / 180);
+      context.drawImage(image, -scaledWidth / 2, -scaledHeight / 2, scaledWidth, scaledHeight);
+      context.restore();
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
   };
   const watermarkPdf = async (root) => {
     const lang = root.dataset.lang || "ko";
@@ -9621,6 +9732,11 @@ self.onmessage = async (event) => {
         delete root._cropperState;
         delete root._pdfFiles;
         delete root._pdfOrganizerPages;
+        if (slug === "pdf-watermark") {
+          const watermarkPreviewToggle = root.querySelector("#pdf-show-watermark-preview");
+          if (watermarkPreviewToggle) watermarkPreviewToggle.checked = false;
+          clearPdfWatermarkPreview(root);
+        }
         delete root.dataset.cutterDuration;
         clearImageCompressionPreview(root);
         const cropCanvas = root.querySelector("#crop-editor-canvas");
@@ -9857,7 +9973,7 @@ self.onmessage = async (event) => {
     });
     root.addEventListener("change", (event) => {
       const control = event.target;
-      if (!["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete"].includes(slug) || !(control instanceof HTMLInputElement) || !control.dataset.pdfSplitPage) return;
+      if (!["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg"].includes(slug) || !(control instanceof HTMLInputElement) || !control.dataset.pdfSplitPage) return;
       const pageNumber = Number(control.dataset.pdfSplitPage);
       if (!Number.isInteger(pageNumber) || pageNumber < 1) return;
       const selectedPages = root._pdfSplitSelectedPages || new Set();
@@ -9867,6 +9983,7 @@ self.onmessage = async (event) => {
       const rangeInput = root.querySelector("#pdf-page-ranges");
       const mode = root.querySelector("#pdf-split-mode");
       const rotateMode = root.querySelector("#pdf-rotate-mode");
+      const jpgMode = root.querySelector("#pdf-jpg-mode");
       if (rangeInput) {
         const pages = Array.from(selectedPages).sort((left, right) => left - right);
         rangeInput.value = pages.length
@@ -9875,6 +9992,7 @@ self.onmessage = async (event) => {
       }
       if (mode) mode.value = "ranges";
       if (rotateMode) rotateMode.value = "custom";
+      if (jpgMode) jpgMode.value = "custom";
     });
     root.querySelectorAll("input, textarea, select").forEach((control) => {
       control.addEventListener("input", () => {
@@ -9904,6 +10022,18 @@ self.onmessage = async (event) => {
         if (slug === "image-watermark" && control.name === "watermark-placement-mode") {
           syncWatermarkPlacementUi(root);
         }
+        if (slug === "pdf-watermark" && [
+          "pdf-watermark-text",
+          "pdf-watermark-mode",
+          "pdf-page-ranges",
+          "pdf-watermark-position",
+          "pdf-watermark-size",
+          "pdf-watermark-opacity",
+          "pdf-watermark-rotation",
+          "pdf-watermark-color",
+        ].includes(control.id)) {
+          drawPdfWatermarkPreview(root).catch(() => {});
+        }
         autoRun();
       });
       control.addEventListener("change", () => {
@@ -9922,6 +10052,19 @@ self.onmessage = async (event) => {
             setPdfStatus(root, items.length ? `${pdfText(root.dataset.lang || "ko", "resultCount")}: ${items.length}` : pdfText(root.dataset.lang || "ko", "choosePdf"));
           }
         }
+        if (slug === "pdf-watermark" && control.id === "pdf-show-watermark-preview") {
+          const items = root._pdfFiles || [];
+          if (control.checked) {
+            renderPdfWatermarkPreview(root).catch((error) => {
+              const message = error instanceof Error ? error.message : pdfText(root.dataset.lang || "ko", "invalidPdf");
+              root.querySelector("#result").textContent = message;
+              setPdfStatus(root, message);
+            });
+          } else {
+            clearPdfWatermarkPreview(root);
+            setPdfStatus(root, items.length ? `${pdfText(root.dataset.lang || "ko", "resultCount")}: ${items.length}` : pdfText(root.dataset.lang || "ko", "choosePdf"));
+          }
+        }
         if (slug === "image-to-pdf" && control.id === "pdf-show-image-thumbnails") {
           root.dataset.imageThumbnailRun = String((Number(root.dataset.imageThumbnailRun || "0") || 0) + 1);
           const items = root._pdfFiles || [];
@@ -9937,7 +10080,7 @@ self.onmessage = async (event) => {
             setPdfStatus(root, items.length ? `${pdfText(root.dataset.lang || "ko", "resultCount")}: ${items.length}` : pdfText(root.dataset.lang || "ko", "chooseImage"));
           }
         }
-        if (["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete"].includes(slug) && control.id === "pdf-show-page-thumbnails") {
+        if (["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg"].includes(slug) && control.id === "pdf-show-page-thumbnails") {
           if (control.checked) {
             renderPdfSplitThumbnails(root).catch((error) => {
               const message = error instanceof Error ? error.message : pdfText(root.dataset.lang || "ko", "invalidPdf");
