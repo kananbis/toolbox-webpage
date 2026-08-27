@@ -11,6 +11,13 @@ export type SiteUpdate = {
 const updates: Record<Lang, SiteUpdate[]> = {
   ko: [
     {
+      date: "2026-08-27",
+      toolSlug: "pdf-organizer",
+      title: "PDF 정리 페이지 썸네일 확인 기능 추가",
+      summary: "필요할 때만 페이지 썸네일을 목록 왼쪽에 표시해 각 페이지를 확인할 수 있습니다.",
+      details: ["페이지 썸네일 표시는 기본적으로 꺼짐", "페이지 순서 변경과 삭제 후에도 목록 썸네일 유지", "회전 버튼을 누르면 해당 페이지 썸네일도 같은 방향으로 다시 렌더링"],
+    },
+    {
       date: "2026-08-25",
       toolSlug: "pdf-watermark",
       title: "PDF 워터마크 대표 페이지 미리보기 추가",
@@ -82,6 +89,13 @@ const updates: Record<Lang, SiteUpdate[]> = {
     },
   ],
   en: [
+    {
+      date: "2026-08-27",
+      toolSlug: "pdf-organizer",
+      title: "Added page thumbnails to PDF Organizer",
+      summary: "You can show page thumbnails on the left side of the list only when needed to identify each page.",
+      details: ["Page thumbnails are off by default", "Thumbnails remain with pages after reordering or deletion", "Rotating a page re-renders its thumbnail with the same orientation"],
+    },
     {
       date: "2026-08-25",
       toolSlug: "pdf-watermark",

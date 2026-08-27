@@ -959,7 +959,7 @@ const timeZonePresets = [
 
   {["pdf-merger", "pdf-splitter", "pdf-page-extractor", "image-to-pdf", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg", "pdf-watermark", "pdf-page-numbers", "pdf-organizer"].includes(slug) && (
     <div class="grid gap-4">
-      {!["pdf-merger", "pdf-splitter", "pdf-page-extractor", "image-to-pdf", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg", "pdf-watermark"].includes(slug) && (
+      {!["pdf-merger", "pdf-splitter", "pdf-page-extractor", "image-to-pdf", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg", "pdf-watermark", "pdf-page-numbers", "pdf-organizer"].includes(slug) && (
       <div class="rounded-md border border-line bg-white p-4 text-sm leading-6 text-slate-700">
         <p>{lang === "ko" ? "선택한 파일은 서버로 업로드되지 않으며, 현재 브라우저 안에서만 처리됩니다." : "Selected files are not uploaded to a server and are processed only in your browser."}</p>
         <p class="mt-2">{lang === "ko" ? "본인이 소유했거나 편집할 권한이 있는 파일만 사용하세요. 저작권이 있는 파일을 무단으로 편집하거나 배포해서는 안 됩니다." : "Only use files that you own or have the right to edit. Do not edit or distribute copyrighted files without permission."}</p>
@@ -979,12 +979,12 @@ const timeZonePresets = [
         </>
       ) : (
         <>
-          {["pdf-merger", "pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg", "pdf-watermark"].includes(slug) ? (
+          {["pdf-merger", "pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg", "pdf-watermark", "pdf-organizer"].includes(slug) ? (
             <div class="flex flex-wrap items-center justify-between gap-3">
               <label class="font-semibold" for="pdf-files">{slug === "pdf-merger" ? (lang === "ko" ? "PDF 파일 선택" : "Choose PDF Files") : (lang === "ko" ? "PDF 파일 선택" : "Choose PDF File")}</label>
               <div class="checkbox-control h-auto gap-2 text-sm text-slate-700">
-                <input id={slug === "pdf-merger" ? "pdf-show-thumbnails" : slug === "pdf-watermark" ? "pdf-show-watermark-preview" : "pdf-show-page-thumbnails"} type="checkbox" />
-                <label class="cursor-pointer" for={slug === "pdf-merger" ? "pdf-show-thumbnails" : slug === "pdf-watermark" ? "pdf-show-watermark-preview" : "pdf-show-page-thumbnails"}>{slug === "pdf-merger" ? (lang === "ko" ? "첫 페이지 썸네일 표시" : "Show first-page thumbnails") : slug === "pdf-watermark" ? (lang === "ko" ? "대표 페이지 미리보기 표시" : "Show representative page preview") : (lang === "ko" ? "페이지 썸네일 표시" : "Show page thumbnails")}</label>
+                <input id={slug === "pdf-merger" ? "pdf-show-thumbnails" : slug === "pdf-watermark" ? "pdf-show-watermark-preview" : slug === "pdf-organizer" ? "pdf-show-organizer-thumbnails" : "pdf-show-page-thumbnails"} type="checkbox" />
+                <label class="cursor-pointer" for={slug === "pdf-merger" ? "pdf-show-thumbnails" : slug === "pdf-watermark" ? "pdf-show-watermark-preview" : slug === "pdf-organizer" ? "pdf-show-organizer-thumbnails" : "pdf-show-page-thumbnails"}>{slug === "pdf-merger" ? (lang === "ko" ? "첫 페이지 썸네일 표시" : "Show first-page thumbnails") : slug === "pdf-watermark" ? (lang === "ko" ? "대표 페이지 미리보기 표시" : "Show representative page preview") : slug === "pdf-organizer" ? (lang === "ko" ? "페이지 썸네일 표시" : "Show page thumbnails") : (lang === "ko" ? "페이지 썸네일 표시" : "Show page thumbnails")}</label>
               </div>
             </div>
           ) : (
@@ -5309,9 +5309,71 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
     pages.forEach((item, index) => {
       const row = document.createElement("div");
       row.className = "flex flex-col gap-2 rounded-md border border-line bg-white p-3 text-sm text-slate-700 sm:flex-row sm:items-center sm:justify-between";
-      row.innerHTML = `<span>${pdfText(lang, "page")} ${item.sourceIndex + 1} / ${item.rotation}°</span><span class="flex flex-wrap gap-2"><button class="btn-secondary" data-action="pdf-page-up" data-index="${index}">${pdfText(lang, "moveUp")}</button><button class="btn-secondary" data-action="pdf-page-down" data-index="${index}">${pdfText(lang, "moveDown")}</button><button class="btn-secondary" data-action="pdf-page-delete" data-index="${index}">${pdfText(lang, "remove")}</button><button class="btn-secondary" data-action="pdf-page-rotate" data-index="${index}">${pdfText(lang, "rotate")}</button></span>`;
+      const summary = document.createElement("div");
+      summary.className = "flex min-w-0 items-center gap-3";
+      if (item.thumbnailDataUrl) {
+        const thumbnail = document.createElement("img");
+        thumbnail.src = item.thumbnailDataUrl;
+        thumbnail.alt = `${pdfText(lang, "page")} ${item.sourceIndex + 1}`;
+        thumbnail.className = "h-20 w-16 shrink-0 rounded border border-line bg-slate-50 object-contain";
+        summary.appendChild(thumbnail);
+      }
+      const label = document.createElement("span");
+      label.textContent = `${pdfText(lang, "page")} ${item.sourceIndex + 1} / ${item.rotation}°`;
+      summary.appendChild(label);
+      const actions = document.createElement("span");
+      actions.className = "flex flex-wrap gap-2";
+      actions.innerHTML = `<button class="btn-secondary" data-action="pdf-page-up" data-index="${index}">${pdfText(lang, "moveUp")}</button><button class="btn-secondary" data-action="pdf-page-down" data-index="${index}">${pdfText(lang, "moveDown")}</button><button class="btn-secondary" data-action="pdf-page-delete" data-index="${index}">${pdfText(lang, "remove")}</button><button class="btn-secondary" data-action="pdf-page-rotate" data-index="${index}">${pdfText(lang, "rotate")}</button>`;
+      row.append(summary, actions);
       list.appendChild(row);
     });
+  };
+  const clearPdfOrganizerThumbnails = (root) => {
+    root.dataset.pdfOrganizerThumbnailRun = String((Number(root.dataset.pdfOrganizerThumbnailRun || "0") || 0) + 1);
+    (root._pdfOrganizerPages || []).forEach((item) => {
+      delete item.thumbnailDataUrl;
+      delete item.thumbnailRotation;
+    });
+    renderPdfOrganizer(root);
+  };
+  const renderPdfOrganizerThumbnails = async (root) => {
+    if (root.dataset.tool !== "pdf-organizer" || !root.querySelector("#pdf-show-organizer-thumbnails")?.checked) return;
+    const file = root._pdfFiles?.[0]?.file;
+    const pages = root._pdfOrganizerPages || [];
+    if (!file || !pages.length) return;
+    const pendingPages = pages.filter((item) => !item.thumbnailDataUrl || item.thumbnailRotation !== item.rotation);
+    if (!pendingPages.length) return;
+    const runId = String((Number(root.dataset.pdfOrganizerThumbnailRun || "0") || 0) + 1);
+    root.dataset.pdfOrganizerThumbnailRun = runId;
+    const lang = root.dataset.lang || "ko";
+    setPdfStatus(root, pdfText(lang, "loadingPageThumbnails"));
+    const pdfjs = await getPdfThumbnailJs();
+    const task = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) });
+    const pdf = await task.promise;
+    try {
+      for (const item of pendingPages) {
+        if (root.dataset.pdfOrganizerThumbnailRun !== runId || !root.querySelector("#pdf-show-organizer-thumbnails")?.checked) return;
+        const page = await pdf.getPage(item.sourceIndex + 1);
+        const rotation = item.rotation;
+        const baseViewport = page.getViewport({ scale: 1, rotation });
+        const viewport = page.getViewport({ scale: Math.min(1, 112 / baseViewport.width, 144 / baseViewport.height), rotation });
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.ceil(viewport.width));
+        canvas.height = Math.max(1, Math.ceil(viewport.height));
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error("Canvas failed.");
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        await page.render({ canvasContext: context, viewport }).promise;
+        if (root.dataset.pdfOrganizerThumbnailRun !== runId || item.rotation !== rotation) return;
+        item.thumbnailDataUrl = canvas.toDataURL("image/jpeg", 0.75);
+        item.thumbnailRotation = rotation;
+        renderPdfOrganizer(root);
+      }
+    } finally {
+      await pdf.destroy?.();
+    }
+    if (root.dataset.pdfOrganizerThumbnailRun === runId) setPdfStatus(root, `${pdfText(lang, "resultCount")}: 1`);
   };
   const loadImageSize = async (file) => {
     const image = await loadImageBitmap(file);
@@ -5324,6 +5386,7 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
     root.dataset.pdfThumbnailRun = String((Number(root.dataset.pdfThumbnailRun || "0") || 0) + 1);
     clearPdfSplitThumbnails(root);
     clearPdfWatermarkPreview(root);
+    clearPdfOrganizerThumbnails(root);
     const input = root.querySelector(slug === "image-to-pdf" ? "#pdf-image-files" : "#pdf-files");
     const files = Array.from(input?.files || []);
     const { PDFDocument } = await getPdfLib();
@@ -5356,6 +5419,7 @@ ${lang === "ko" ? "실행 명령" : "Command"}: ffmpeg ${args.join(" ")}`;
     if (slug === "image-to-pdf" && root.querySelector("#pdf-show-image-thumbnails")?.checked) await renderImagePdfThumbnails(root);
     if (["pdf-splitter", "pdf-page-extractor", "pdf-rotate", "pdf-page-delete", "pdf-to-jpg"].includes(slug) && root.querySelector("#pdf-show-page-thumbnails")?.checked) await renderPdfSplitThumbnails(root);
     if (slug === "pdf-watermark" && root.querySelector("#pdf-show-watermark-preview")?.checked) await renderPdfWatermarkPreview(root);
+    if (slug === "pdf-organizer" && root.querySelector("#pdf-show-organizer-thumbnails")?.checked) await renderPdfOrganizerThumbnails(root);
     setPdfStatus(root, items.length ? `${pdfText(lang, "resultCount")}: ${items.length}` : (slug === "image-to-pdf" ? pdfText(lang, "chooseImage") : pdfText(lang, "choosePdf")));
   };
   const parsePdfPageGroups = (input, pageCount, combine = false, lang = "ko") => {
@@ -9737,6 +9801,11 @@ self.onmessage = async (event) => {
           if (watermarkPreviewToggle) watermarkPreviewToggle.checked = false;
           clearPdfWatermarkPreview(root);
         }
+        if (slug === "pdf-organizer") {
+          const organizerThumbnailsToggle = root.querySelector("#pdf-show-organizer-thumbnails");
+          if (organizerThumbnailsToggle) organizerThumbnailsToggle.checked = false;
+          clearPdfOrganizerThumbnails(root);
+        }
         delete root.dataset.cutterDuration;
         clearImageCompressionPreview(root);
         const cropCanvas = root.querySelector("#crop-editor-canvas");
@@ -9843,9 +9912,21 @@ self.onmessage = async (event) => {
           if (pages.length <= 1) root.querySelector("#result").textContent = pdfText(lang, "needOnePage");
           else pages.splice(index, 1);
         }
-        if (action === "pdf-page-rotate") pages[index].rotation = (pages[index].rotation + 90) % 360;
+        if (action === "pdf-page-rotate") {
+          root.dataset.pdfOrganizerThumbnailRun = String((Number(root.dataset.pdfOrganizerThumbnailRun || "0") || 0) + 1);
+          pages[index].rotation = (pages[index].rotation + 90) % 360;
+          delete pages[index].thumbnailDataUrl;
+          delete pages[index].thumbnailRotation;
+        }
         root._pdfOrganizerPages = pages;
         renderPdfOrganizer(root);
+        if (root.querySelector("#pdf-show-organizer-thumbnails")?.checked) {
+          renderPdfOrganizerThumbnails(root).catch((error) => {
+            const message = error instanceof Error ? error.message : pdfText(lang, "invalidPdf");
+            root.querySelector("#result").textContent = message;
+            setPdfStatus(root, message);
+          });
+        }
       }
       if (slug === "image-rotate-flip" && ["rotate-left", "rotate-right", "rotate-180", "rotate-step", "reset-rotation", "flip-horizontal", "flip-vertical"].includes(action)) {
         const rotation = normalizeImageRotationAngle(root.dataset.rotation || "0");
@@ -10062,6 +10143,19 @@ self.onmessage = async (event) => {
             });
           } else {
             clearPdfWatermarkPreview(root);
+            setPdfStatus(root, items.length ? `${pdfText(root.dataset.lang || "ko", "resultCount")}: ${items.length}` : pdfText(root.dataset.lang || "ko", "choosePdf"));
+          }
+        }
+        if (slug === "pdf-organizer" && control.id === "pdf-show-organizer-thumbnails") {
+          const items = root._pdfFiles || [];
+          if (control.checked) {
+            renderPdfOrganizerThumbnails(root).catch((error) => {
+              const message = error instanceof Error ? error.message : pdfText(root.dataset.lang || "ko", "invalidPdf");
+              root.querySelector("#result").textContent = message;
+              setPdfStatus(root, message);
+            });
+          } else {
+            clearPdfOrganizerThumbnails(root);
             setPdfStatus(root, items.length ? `${pdfText(root.dataset.lang || "ko", "resultCount")}: ${items.length}` : pdfText(root.dataset.lang || "ko", "choosePdf"));
           }
         }
