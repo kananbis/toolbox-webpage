@@ -11,6 +11,13 @@ export type SiteUpdate = {
 const updates: Record<Lang, SiteUpdate[]> = {
   ko: [
     {
+      date: "2026-08-28",
+      toolSlug: "unit-converter",
+      title: "단위 변환기 12개 분야와 전체 결과 비교 추가",
+      summary: "기준 값 하나로 같은 분야의 모든 지원 단위를 함께 비교하고 필요한 결과를 바로 복사할 수 있습니다.",
+      details: ["길이·무게·온도 외 면적, 부피, 속도, 시간, 데이터 용량, 압력, 에너지, 전력, 각도 추가", "입력 단위와 결과 단위 교환", "각 결과 행에서 값과 단위를 개별 복사"],
+    },
+    {
       date: "2026-08-27",
       toolSlug: "pdf-organizer",
       title: "PDF 정리 페이지 썸네일 확인 기능 추가",
@@ -89,6 +96,13 @@ const updates: Record<Lang, SiteUpdate[]> = {
     },
   ],
   en: [
+    {
+      date: "2026-08-28",
+      toolSlug: "unit-converter",
+      title: "Expanded Unit Converter with 12 categories and full comparisons",
+      summary: "You can compare every supported unit in a category from one source value and copy any result directly.",
+      details: ["Added area, volume, speed, time, data storage, pressure, energy, power, and angle alongside length, mass, and temperature", "Swap source and target units", "Copy the value and unit from any result row"],
+    },
     {
       date: "2026-08-27",
       toolSlug: "pdf-organizer",

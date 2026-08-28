@@ -142,8 +142,8 @@ const toolEnhancements: Record<Lang, Partial<Record<ToolSlug, ToolEnhancement>>>
       limitations: { title: "반올림", body: "소수점 결과는 표시 과정에서 반올림될 수 있습니다. 정산이나 세금 계산에는 원 단위 처리 기준을 별도로 확인하세요." },
     },
     "unit-converter": {
-      situations: { title: "변환 기준", body: "길이, 무게, 온도처럼 고정 공식으로 계산할 수 있는 단위를 변환합니다. 환율이나 실시간 가격처럼 계속 바뀌는 값은 이 도구의 대상이 아닙니다." },
-      options: { title: "온도 변환", body: "섭씨에서 화씨는 C x 9 / 5 + 32, 화씨에서 섭씨는 (F - 32) x 5 / 9로 계산합니다. 길이와 무게는 고정 배율을 사용합니다." },
+      situations: { title: "변환 범위", body: "길이, 무게, 온도, 면적, 부피, 속도, 시간, 데이터 용량, 압력, 에너지, 전력, 각도처럼 고정 공식으로 계산할 수 있는 12개 분야를 변환합니다. 환율이나 실시간 가격처럼 계속 바뀌는 값은 이 도구의 대상이 아닙니다." },
+      options: { title: "값과 기준", body: "입력 단위를 같은 분야의 모든 지원 단위로 함께 비교할 수 있습니다. 온도는 섭씨·화씨·켈빈의 개별 공식으로, 나머지 단위는 공통 기준 단위의 고정 배율로 계산합니다." },
       limitations: { title: "정밀도", body: "결과는 화면 표시를 위해 반올림될 수 있습니다. 실험, 설계, 계약에 쓰는 값은 필요한 자릿수로 다시 확인하세요." },
     },
   },
@@ -265,8 +265,8 @@ const toolEnhancements: Record<Lang, Partial<Record<ToolSlug, ToolEnhancement>>>
       limitations: { title: "Rounding", body: "Decimal values may be rounded for display. Check required rounding rules for settlement or tax work." },
     },
     "unit-converter": {
-      situations: { title: "Conversion Basis", body: "This tool converts units with fixed formulas, such as length, weight, and temperature. It is not for values that change constantly, such as exchange rates or market prices." },
-      options: { title: "Temperature Formula", body: "Celsius to Fahrenheit is C x 9 / 5 + 32. Fahrenheit to Celsius is (F - 32) x 5 / 9. Length and weight use fixed ratios." },
+      situations: { title: "Conversion Coverage", body: "This tool converts 12 categories with fixed formulas: length, mass, temperature, area, volume, speed, time, data, pressure, energy, power, and angle. It is not for values that change constantly, such as exchange rates or market prices." },
+      options: { title: "Values and References", body: "You can compare an input against every supported unit in the same category. Temperature uses separate Celsius, Fahrenheit, and Kelvin formulas; other categories use fixed ratios based on a common reference unit." },
       limitations: { title: "Precision", body: "Results may be rounded for display. For experiments, engineering, or contracts, verify the required number of digits separately." },
     },
   },
@@ -388,8 +388,8 @@ const toolDeepDives: Record<Lang, Partial<Record<ToolSlug, ToolDeepDive>>> = {
     "unit-converter": {
       title: "대표 변환 기준",
       headers: ["기준", "값"],
-      rows: [["inch", "1 inch = 2.54 cm"], ["foot", "1 foot = 12 inches"], ["mile", "1 mile = 1.609344 km"]],
-      note: "고정 공식이 있는 단위를 변환합니다. 환율처럼 실시간 데이터가 필요한 값은 이 도구 범위에 포함되지 않습니다.",
+      rows: [["inch", "1 inch = 2.54 cm"], ["mile", "1 mile = 1.609344 km"], ["KB / KiB", "1,000 B / 1,024 B"]],
+      note: "결과 목록에서 같은 분야의 여러 단위를 한 번에 비교할 수 있습니다. 환율처럼 실시간 데이터가 필요한 값은 이 도구 범위에 포함되지 않습니다.",
     },
     "character-counter": {
       title: "글자 수 결과를 해석하는 기준",
@@ -408,7 +408,7 @@ const toolDeepDives: Record<Lang, Partial<Record<ToolSlug, ToolDeepDive>>> = {
     "percent-calculator": { title: "Percent vs Percentage Points", headers: ["Calculation", "From 20% to 30%"], rows: [["Percentage-point difference", "10 percentage points: the direct difference between the rates"], ["Relative increase", "50%: (30 - 20) / 20 x 100"]], note: "Use percentage points for the difference between rates and relative increase for change measured against the starting rate." },
     "date-calculator": { title: "What to Check in Date Differences", headers: ["Rule", "Why it matters"], rows: [["Inclusive start date", "Human-counted days and a simple date difference can differ."], ["Time zones", "A date-only calculation does not replace time-zone comparison."], ["Business days and holidays", "They are not included in the basic calculation."]], note: "For contracts, deliveries, and deadlines, also check the inclusive-date rule in the relevant service or document." },
     "loan-interest-calculator": { title: "Interpreting Loan Estimates", headers: ["Item", "Scope of the calculation"], rows: [["Repayment type", "Calculated from the repayment type selected in the UI."], ["Monthly rate", "Uses the entered annual rate for monthly calculations."], ["Not normally included", "Daily interest rules, preferential rates, fees, taxes, and early-repayment conditions may be excluded."]], note: "This is a reference based on your inputs. Confirm actual repayment amounts with the lender and loan agreement." },
-    "unit-converter": { title: "Common Conversion References", headers: ["Reference", "Value"], rows: [["inch", "1 inch = 2.54 cm"], ["foot", "1 foot = 12 inches"], ["mile", "1 mile = 1.609344 km"]], note: "This tool covers values with fixed formulas. It does not cover live-data values such as exchange rates." },
+    "unit-converter": { title: "Common Conversion References", headers: ["Reference", "Value"], rows: [["inch", "1 inch = 2.54 cm"], ["mile", "1 mile = 1.609344 km"], ["KB / KiB", "1,000 B / 1,024 B"]], note: "Compare multiple units in the same category at once in the result list. This tool does not cover live-data values such as exchange rates." },
     "character-counter": { title: "How to Read the Character Counts", headers: ["Item", "Counting basis"], rows: [["With spaces", "String length including spaces and line breaks"], ["Without spaces", "String length with whitespace removed"], ["Words and lines", "Reference counts based on spaces and line breaks"]], note: "Emoji and composed characters can differ from another service's count depending on browser string handling. Check the destination field before submitting." },
   },
 };
@@ -488,9 +488,11 @@ const faqOverrides: Record<Lang, Partial<Record<ToolSlug, FaqItem[]>>> = {
       { question: "결과는 반올림되나요?", answer: "화면 표시를 위해 소수점이 반올림될 수 있습니다. 정산에는 필요한 자릿수를 별도로 확인하세요." },
     ],
     "unit-converter": [
-      { question: "단위 변환 기준은 고정인가요?", answer: "길이, 무게, 온도처럼 고정 공식이 있는 단위는 정해진 배율이나 공식으로 계산합니다." },
+      { question: "전체 변환 결과는 무엇인가요?", answer: "입력한 기준 단위를 같은 분야의 모든 지원 단위로 변환한 목록입니다. 필요한 행의 복사 버튼으로 값과 단위를 복사할 수 있습니다." },
+      { question: "KB와 KiB는 같은가요?", answer: "아니요. KB는 1,000바이트를 기준으로 하고 KiB는 1,024바이트를 기준으로 합니다. GB와 GiB도 같은 차이가 있습니다." },
+      { question: "컵과 갤런은 어느 기준인가요?", answer: "부피의 cup, fl oz, pint, quart, gallon은 미국 관습 단위를 기준으로 변환합니다." },
+      { question: "온도는 단순 비율로 변환되나요?", answer: "아니요. 화씨와 켈빈은 섭씨를 기준으로 오프셋이 있어 각 온도 공식으로 변환합니다." },
       { question: "환율도 변환할 수 있나요?", answer: "아니요. 환율은 실시간 데이터가 필요하므로 외부 API 없이 제공하지 않습니다." },
-      { question: "소수점 결과가 정확한가요?", answer: "계산은 브라우저 숫자 연산을 사용하며 화면 표시 과정에서 반올림될 수 있습니다." },
     ],
   },
   en: {
@@ -565,9 +567,11 @@ const faqOverrides: Record<Lang, Partial<Record<ToolSlug, FaqItem[]>>> = {
       { question: "Are results rounded?", answer: "Values may be rounded for display. Check required decimal places for settlement work." },
     ],
     "unit-converter": [
-      { question: "Are conversion factors fixed?", answer: "Units such as length, weight, and temperature use fixed ratios or formulas." },
+      { question: "What is the all-results list?", answer: "It converts the input into every supported unit in the same category. Use a row's copy button to copy its value and unit." },
+      { question: "Are KB and KiB the same?", answer: "No. KB is based on 1,000 bytes, while KiB is based on 1,024 bytes. The same distinction applies to GB and GiB." },
+      { question: "Which cup and gallon are used?", answer: "The volume units cup, fl oz, pint, quart, and gallon use US customary measurements." },
+      { question: "Is temperature converted with a simple ratio?", answer: "No. Fahrenheit and Kelvin use their own formulas because they have offsets relative to Celsius." },
       { question: "Can it convert exchange rates?", answer: "No. Exchange rates require live data and are not provided without an external API." },
-      { question: "Are decimal results exact?", answer: "The browser performs numeric calculations and displayed values may be rounded." },
     ],
   },
 };

@@ -2053,13 +2053,15 @@ const timeZonePresets = [
   )}
 
   {slug === "unit-converter" && (
-    <div class="grid gap-4 md:grid-cols-3">
-      <label class="md:col-span-3">{ui.labels.unitKind}<select id="unit-kind"><option value="length">{ui.units.length}</option><option value="weight">{ui.units.weight}</option><option value="temperature">{ui.units.temperature}</option></select></label>
+    <div class="grid gap-4 md:grid-cols-4">
+      <label class="md:col-span-4">{ui.labels.unitKind}<select id="unit-kind"><option value="length">{lang === "ko" ? "길이" : "Length"}</option><option value="mass">{lang === "ko" ? "무게·질량" : "Mass"}</option><option value="temperature">{lang === "ko" ? "온도" : "Temperature"}</option><option value="area">{lang === "ko" ? "면적" : "Area"}</option><option value="volume">{lang === "ko" ? "부피·용량" : "Volume"}</option><option value="speed">{lang === "ko" ? "속도" : "Speed"}</option><option value="time">{lang === "ko" ? "시간" : "Time"}</option><option value="data">{lang === "ko" ? "데이터 용량" : "Data storage"}</option><option value="pressure">{lang === "ko" ? "압력" : "Pressure"}</option><option value="energy">{lang === "ko" ? "에너지" : "Energy"}</option><option value="power">{lang === "ko" ? "전력" : "Power"}</option><option value="angle">{lang === "ko" ? "각도" : "Angle"}</option></select></label>
       <label>{ui.labels.value}<input id="a" type="number" inputmode="decimal" /></label>
       <label>{ui.labels.fromUnit}<select id="from"></select></label>
       <label>{ui.labels.toUnit}<select id="to"></select></label>
-      <div class="flex gap-2 md:col-span-3"><button class="btn-primary" data-action="run">{ui.convert}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
-      <div class="result-box md:col-span-3" id="result">{ui.result}</div>
+      <div class="flex items-end gap-2"><button class="btn-secondary" data-action="unit-swap" title={lang === "ko" ? "입력 단위와 결과 단위 교환" : "Swap input and result units"} aria-label={lang === "ko" ? "입력 단위와 결과 단위 교환" : "Swap input and result units"}>⇄</button></div>
+      <div class="flex gap-2 md:col-span-4"><button class="btn-primary" data-action="run">{ui.convert}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <div class="result-box md:col-span-4" id="result">{ui.result}</div>
+      <div class="md:col-span-4"><p class="mb-2 text-sm font-semibold text-slate-700">{lang === "ko" ? "같은 분야의 전체 변환 결과" : "All conversions in this category"}</p><div id="unit-all-results" class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3"></div></div>
     </div>
   )}
 
@@ -8238,27 +8240,68 @@ self.onmessage = async (event) => {
   };
   const dateValue = (value) => value ? new Date(`${value}T00:00:00`) : null;
   const daysBetween = (a, b) => Math.round((b.getTime() - a.getTime()) / 86400000);
-  const units = {
-    length: { mil: 0.0000254, mm: 0.001, cm: 0.01, m: 1, km: 1000, inch: 0.0254, ft: 0.3048 },
-    weight: { g: 1, kg: 1000, lb: 453.59237 },
+  const unitGroups = {
+    length: { defaults: ["m", "cm"], units: [["nm", 1e-9, "나노미터 (nm)", "Nanometer (nm)"], ["um", 1e-6, "마이크로미터 (μm)", "Micrometer (μm)"], ["mm", 0.001, "밀리미터 (mm)", "Millimeter (mm)"], ["cm", 0.01, "센티미터 (cm)", "Centimeter (cm)"], ["m", 1, "미터 (m)", "Meter (m)"], ["km", 1000, "킬로미터 (km)", "Kilometer (km)"], ["inch", 0.0254, "인치 (in)", "Inch (in)"], ["ft", 0.3048, "피트 (ft)", "Foot (ft)"], ["yd", 0.9144, "야드 (yd)", "Yard (yd)"], ["mile", 1609.344, "마일 (mi)", "Mile (mi)"], ["nmi", 1852, "해리 (nmi)", "Nautical mile (nmi)"], ["mil", 0.0000254, "밀 (mil)", "Mil (mil)"]] },
+    mass: { defaults: ["kg", "g"], units: [["mg", 1e-6, "밀리그램 (mg)", "Milligram (mg)"], ["g", 0.001, "그램 (g)", "Gram (g)"], ["kg", 1, "킬로그램 (kg)", "Kilogram (kg)"], ["t", 1000, "톤 (t)", "Metric tonne (t)"], ["oz", 0.028349523125, "온스 (oz)", "Ounce (oz)"], ["lb", 0.45359237, "파운드 (lb)", "Pound (lb)"], ["stone", 6.35029318, "스톤 (st)", "Stone (st)"]] },
+    temperature: { defaults: ["C", "F"], units: [["C", 1, "섭씨 (°C)", "Celsius (°C)"], ["F", 1, "화씨 (°F)", "Fahrenheit (°F)"], ["K", 1, "켈빈 (K)", "Kelvin (K)"]] },
+    area: { defaults: ["m2", "pyeong"], units: [["mm2", 1e-6, "제곱밀리미터 (mm²)", "Square millimeter (mm²)"], ["cm2", 0.0001, "제곱센티미터 (cm²)", "Square centimeter (cm²)"], ["m2", 1, "제곱미터 (m²)", "Square meter (m²)"], ["km2", 1e6, "제곱킬로미터 (km²)", "Square kilometer (km²)"], ["ha", 10000, "헥타르 (ha)", "Hectare (ha)"], ["pyeong", 3.305785, "평", "Pyeong"], ["ft2", 0.09290304, "제곱피트 (ft²)", "Square foot (ft²)"], ["yd2", 0.83612736, "제곱야드 (yd²)", "Square yard (yd²)"], ["acre", 4046.8564224, "에이커 (acre)", "Acre (acre)"]] },
+    volume: { defaults: ["L", "mL"], units: [["mL", 1e-6, "밀리리터 (mL)", "Milliliter (mL)"], ["L", 0.001, "리터 (L)", "Liter (L)"], ["m3", 1, "세제곱미터 (m³)", "Cubic meter (m³)"], ["tsp", 0.00000492892159375, "티스푼 (tsp)", "Teaspoon (tsp)"], ["tbsp", 0.00001478676478125, "테이블스푼 (tbsp)", "Tablespoon (tbsp)"], ["cup", 0.0002365882365, "컵 (US cup)", "Cup (US cup)"], ["floz", 0.0000295735295625, "액량 온스 (fl oz)", "Fluid ounce (fl oz)"], ["pt", 0.000473176473, "파인트 (pt)", "Pint (pt)"], ["qt", 0.000946352946, "쿼트 (qt)", "Quart (qt)"], ["gal", 0.003785411784, "갤런 (US gal)", "Gallon (US gal)"]] },
+    speed: { defaults: ["kmh", "mph"], units: [["ms", 1, "미터/초 (m/s)", "Meters per second (m/s)"], ["kmh", 1 / 3.6, "킬로미터/시 (km/h)", "Kilometers per hour (km/h)"], ["mph", 0.44704, "마일/시 (mph)", "Miles per hour (mph)"], ["fps", 0.3048, "피트/초 (ft/s)", "Feet per second (ft/s)"], ["knot", 0.514444444444, "노트 (kn)", "Knot (kn)"]] },
+    time: { defaults: ["min", "s"], units: [["ms", 0.001, "밀리초 (ms)", "Millisecond (ms)"], ["s", 1, "초 (s)", "Second (s)"], ["min", 60, "분 (min)", "Minute (min)"], ["h", 3600, "시간 (h)", "Hour (h)"], ["day", 86400, "일 (day)", "Day (day)"], ["week", 604800, "주 (week)", "Week (week)"]] },
+    data: { defaults: ["GB", "GiB"], units: [["B", 1, "바이트 (B)", "Byte (B)"], ["KB", 1000, "킬로바이트 (KB)", "Kilobyte (KB)"], ["MB", 1e6, "메가바이트 (MB)", "Megabyte (MB)"], ["GB", 1e9, "기가바이트 (GB)", "Gigabyte (GB)"], ["TB", 1e12, "테라바이트 (TB)", "Terabyte (TB)"], ["KiB", 1024, "키비바이트 (KiB)", "Kibibyte (KiB)"], ["MiB", 1048576, "메비바이트 (MiB)", "Mebibyte (MiB)"], ["GiB", 1073741824, "기비바이트 (GiB)", "Gibibyte (GiB)"], ["TiB", 1099511627776, "테비바이트 (TiB)", "Tebibyte (TiB)"]] },
+    pressure: { defaults: ["bar", "psi"], units: [["Pa", 1, "파스칼 (Pa)", "Pascal (Pa)"], ["kPa", 1000, "킬로파스칼 (kPa)", "Kilopascal (kPa)"], ["MPa", 1e6, "메가파스칼 (MPa)", "Megapascal (MPa)"], ["bar", 100000, "바 (bar)", "Bar (bar)"], ["atm", 101325, "기압 (atm)", "Standard atmosphere (atm)"], ["psi", 6894.757293168, "psi", "Pounds per square inch (psi)"], ["mmHg", 133.322387415, "수은주 밀리미터 (mmHg)", "Millimeters of mercury (mmHg)"]] },
+    energy: { defaults: ["kWh", "J"], units: [["J", 1, "줄 (J)", "Joule (J)"], ["kJ", 1000, "킬로줄 (kJ)", "Kilojoule (kJ)"], ["cal", 4.184, "칼로리 (cal)", "Calorie (cal)"], ["kcal", 4184, "킬로칼로리 (kcal)", "Kilocalorie (kcal)"], ["Wh", 3600, "와트시 (Wh)", "Watt-hour (Wh)"], ["kWh", 3600000, "킬로와트시 (kWh)", "Kilowatt-hour (kWh)"], ["eV", 1.602176634e-19, "전자볼트 (eV)", "Electronvolt (eV)"]] },
+    power: { defaults: ["kW", "hp"], units: [["W", 1, "와트 (W)", "Watt (W)"], ["kW", 1000, "킬로와트 (kW)", "Kilowatt (kW)"], ["MW", 1e6, "메가와트 (MW)", "Megawatt (MW)"], ["hp", 745.699871582, "마력 (hp)", "Mechanical horsepower (hp)"]] },
+    angle: { defaults: ["deg", "rad"], units: [["deg", Math.PI / 180, "도 (°)", "Degree (°)"], ["rad", 1, "라디안 (rad)", "Radian (rad)"], ["grad", Math.PI / 200, "그라드 (gon)", "Gradian (gon)"], ["turn", Math.PI * 2, "회전 (turn)", "Turn (turn)"]] },
   };
-  const unitLabels = {
-    ko: { mil: "mil", mm: "mm", cm: "cm", m: "m", km: "km", inch: "inch", ft: "ft", g: "g", kg: "kg", lb: "lb", C: "섭씨(°C)", F: "화씨(°F)", K: "켈빈(K)" },
-    en: { mil: "mil", mm: "mm", cm: "cm", m: "m", km: "km", inch: "inch", ft: "ft", g: "g", kg: "kg", lb: "lb", C: "Celsius (°C)", F: "Fahrenheit (°F)", K: "Kelvin (K)" },
-  };
-  const unitOptionsByKind = {
-    length: ["mil", "mm", "cm", "m", "km", "inch", "ft"],
-    weight: ["g", "kg", "lb"],
-    temperature: ["C", "F", "K"],
+  const getUnitGroup = (kind) => unitGroups[kind] || unitGroups.length;
+  const getUnitLabel = (kind, unit, lang) => getUnitGroup(kind).units.find(([id]) => id === unit)?.[lang === "ko" ? 2 : 3] || unit;
+  const convertUnitValue = (kind, value, from, to) => {
+    if (kind === "temperature") {
+      const celsius = from === "C" ? value : from === "F" ? (value - 32) * 5 / 9 : value - 273.15;
+      return to === "C" ? celsius : to === "F" ? celsius * 9 / 5 + 32 : celsius + 273.15;
+    }
+    const group = getUnitGroup(kind);
+    const fromFactor = group.units.find(([id]) => id === from)?.[1];
+    const toFactor = group.units.find(([id]) => id === to)?.[1];
+    return value * fromFactor / toFactor;
   };
   const syncUnitConverterOptions = (root) => {
     if (root.dataset.tool !== "unit-converter") return;
     const lang = root.dataset.lang || "ko";
     const kind = root.querySelector("#unit-kind").value;
-    const options = unitOptionsByKind[kind];
+    const group = getUnitGroup(kind);
+    const options = group.units;
     root.querySelectorAll("select#from, select#to").forEach((select, index) => {
-      select.innerHTML = options.map((unit) => `<option value="${unit}">${unitLabels[lang][unit]}</option>`).join("");
-      select.value = options[Math.min(index, options.length - 1)];
+      select.innerHTML = options.map(([unit]) => `<option value="${unit}">${getUnitLabel(kind, unit, lang)}</option>`).join("");
+      select.value = group.defaults[index] || options[Math.min(index, options.length - 1)]?.[0];
+    });
+  };
+  const renderUnitAllResults = (root, kind, value, from) => {
+    const lang = root.dataset.lang || "ko";
+    const list = root.querySelector("#unit-all-results");
+    if (!list) return;
+    list.innerHTML = "";
+    getUnitGroup(kind).units.forEach(([unit]) => {
+      const converted = convertUnitValue(kind, value, from, unit);
+      const text = `${formatPrecise(converted, lang)} ${unit}`;
+      const row = document.createElement("div");
+      row.className = "flex items-center justify-between gap-2 rounded-md border border-line bg-white px-3 py-2 text-sm";
+      const label = document.createElement("span");
+      label.className = "min-w-0 text-slate-600";
+      label.textContent = getUnitLabel(kind, unit, lang);
+      const valueWrap = document.createElement("span");
+      valueWrap.className = "flex shrink-0 items-center gap-2 font-semibold text-ink";
+      const output = document.createElement("span");
+      output.textContent = text;
+      const copy = document.createElement("button");
+      copy.className = "btn-secondary px-2 py-1 text-xs";
+      copy.dataset.action = "unit-copy";
+      copy.dataset.value = text;
+      copy.textContent = lang === "ko" ? "복사" : "Copy";
+      valueWrap.append(output, copy);
+      row.append(label, valueWrap);
+      list.appendChild(row);
     });
   };
   const syncDateCalculatorMode = (root) => {
@@ -9610,15 +9653,20 @@ self.onmessage = async (event) => {
         result.textContent = `${m.age}: ${age}`;
       }
       if (slug === "unit-converter") {
-        const value = Number(root.querySelector("#a").value), from = root.querySelector("#from").value, to = root.querySelector("#to").value, kind = root.querySelector("#unit-kind").value;
-        if (kind === "temperature") {
-          const celsius = from === "C" ? value : from === "F" ? (value - 32) * 5 / 9 : value - 273.15;
-          const out = to === "C" ? celsius : to === "F" ? celsius * 9 / 5 + 32 : celsius + 273.15;
-          result.textContent = `${format(value, lang)} ${from} = ${format(out, lang)} ${to}`;
-        } else {
-          const table = kind === "weight" ? units.weight : units.length;
-          result.textContent = `${format(value, lang)} ${from} = ${format(value * table[from] / table[to], lang)} ${to}`;
+        const input = root.querySelector("#a");
+        const from = root.querySelector("#from").value;
+        const to = root.querySelector("#to").value;
+        const kind = root.querySelector("#unit-kind").value;
+        if (!input.value.trim()) {
+          result.textContent = m.result;
+          root.querySelector("#unit-all-results").innerHTML = "";
+          return;
         }
+        const value = Number(input.value);
+        if (!Number.isFinite(value)) throw new Error(m.checkInput);
+        const out = convertUnitValue(kind, value, from, to);
+        result.textContent = `${formatPrecise(value, lang)} ${from} = ${formatPrecise(out, lang)} ${to}`;
+        renderUnitAllResults(root, kind, value, from);
       }
       if (slug === "password-generator") {
         const sets = [["upper", "ABCDEFGHJKLMNPQRSTUVWXYZ"], ["lower", "abcdefghijkmnopqrstuvwxyz"], ["number", "23456789"], ["symbol", "!@#$%^&*()-_=+[]{}"]];
@@ -9708,6 +9756,23 @@ self.onmessage = async (event) => {
           }
         });
       }
+      if (slug === "unit-converter" && action === "unit-swap") {
+        const from = root.querySelector("#from");
+        const to = root.querySelector("#to");
+        if (from && to) [from.value, to.value] = [to.value, from.value];
+        autoRun();
+        return;
+      }
+      if (slug === "unit-converter" && action === "unit-copy") {
+        const value = button.dataset.value || "";
+        if (!navigator.clipboard) return;
+        navigator.clipboard.writeText(value).then(() => {
+          const label = root.dataset.lang === "ko" ? "복사됨" : "Copied";
+          button.textContent = label;
+          window.setTimeout(() => { button.textContent = root.dataset.lang === "ko" ? "복사" : "Copy"; }, 1200);
+        }).catch(() => {});
+        return;
+      }
       if (slug === "image-compressor" && action?.startsWith("image-zoom-")) {
         const zoom = getComparisonEffectiveZoom(root);
         if (action === "image-zoom-fit") fitImageComparison(root);
@@ -9732,6 +9797,15 @@ self.onmessage = async (event) => {
         return;
       }
       if (action === "reset") {
+        if (slug === "unit-converter") {
+          const valueInput = root.querySelector("#a");
+          if (valueInput) valueInput.value = "";
+          syncUnitConverterOptions(root);
+          const allResults = root.querySelector("#unit-all-results");
+          if (allResults) allResults.innerHTML = "";
+          root.querySelector("#result").textContent = messages[root.dataset.lang || "ko"].result;
+          return;
+        }
         if (slug === "audio-merger") {
           resetAudioMerger(root);
           return;
@@ -10218,7 +10292,10 @@ self.onmessage = async (event) => {
           syncImageRotationOptions(root);
         }
         if (slug === "image-resizer" && control.id === "keep-ratio") syncResizeDimensions(root, root.dataset.resizeBasis || "width");
-        if (control.id === "unit-kind") syncUnitConverterOptions(root);
+        if (control.id === "unit-kind") {
+          syncUnitConverterOptions(root);
+          autoRun();
+        }
         if (pdfToolSlugs.includes(slug) && ["pdf-files", "pdf-image-files"].includes(control.id)) {
           loadPdfFileItems(root).catch((error) => {
             root.querySelector("#result").textContent = error instanceof Error ? error.message : pdfText(root.dataset.lang || "ko", "invalidPdf");
