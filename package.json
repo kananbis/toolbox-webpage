@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "test:salary-net": "node --experimental-strip-types scripts/test-salary-net.ts",
     "preview": "astro preview"
   },
   "dependencies": {

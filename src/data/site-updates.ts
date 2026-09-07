@@ -11,6 +11,13 @@ export type SiteUpdate = {
 const updates: Record<Lang, SiteUpdate[]> = {
   ko: [
     {
+      date: "2026-09-07",
+      toolSlug: "salary-net-calculator",
+      title: "2026 연봉 실수령액 계산기 공제 항목별 계산으로 개선",
+      summary: "직접 공제율을 입력하는 단순 추정 대신 2026년 직장가입자 기준의 보험료와 근로소득세를 항목별로 계산합니다.",
+      details: ["국민연금 상한·하한과 근로자 부담률 반영", "건강보험, 장기요양보험, 고용보험, 근로소득세, 지방소득세 분리 표시", "연봉과 월 비과세 금액을 만원 단위로 통일", "비과세 금액, 본인 포함 부양가족 수, 20세 이하 자녀 수 반영"],
+    },
+    {
       date: "2026-08-28",
       toolSlug: "unit-converter",
       title: "단위 변환기 12개 분야와 전체 결과 비교 추가",
@@ -96,6 +103,13 @@ const updates: Record<Lang, SiteUpdate[]> = {
     },
   ],
   en: [
+    {
+      date: "2026-09-07",
+      toolSlug: "salary-net-calculator",
+      title: "Updated the 2026 Korea Salary Take-Home Pay Calculator",
+      summary: "The calculator now estimates each 2026 employee deduction instead of using one manually entered deduction rate.",
+      details: ["Applies the National Pension employee rate with its contribution floor and ceiling", "Shows Health Insurance, Long-term Care, Employment Insurance, earned income tax, and local income tax separately", "Uses KRW 10,000 units for annual salary and monthly non-taxable income", "Accounts for non-taxable income, dependents including yourself, and children age 20 or under"],
+    },
     {
       date: "2026-08-28",
       toolSlug: "unit-converter",

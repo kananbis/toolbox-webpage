@@ -1894,12 +1894,19 @@ const timeZonePresets = [
   )}
 
   {slug === "salary-net-calculator" && (
-    <div class="grid gap-4 md:grid-cols-3">
-      <label>{ui.labels.annualSalary}<input id="annual-salary" type="number" inputmode="decimal" /></label>
-      <label>{ui.labels.monthlyTaxFree}<input id="monthly-tax-free" type="number" inputmode="decimal" value="0" /></label>
-      <label>{ui.labels.deductionRate}<input id="deduction-rate" type="number" inputmode="decimal" value="9.4" /></label>
-      <div class="flex gap-2 md:col-span-3"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
-      <pre class="result-box whitespace-pre-wrap md:col-span-3" id="result">{ui.result}</pre>
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="rounded border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-950 md:col-span-2">
+        <strong>{lang === "ko" ? "적용 기준" : "Applied basis"}</strong>
+        <span class="ml-2">{lang === "ko" ? "2026년 7월 이후 대한민국 직장가입자 기준" : "Korea employee withholding rules in effect from July 2026"}</span>
+      </div>
+      <p class="text-sm font-medium text-slate-700 md:col-span-2">{lang === "ko" ? "금액 입력 단위: 만원" : "Money input unit: KRW 10,000"}</p>
+      <label>{lang === "ko" ? "연봉 (만원)" : "Annual salary (KRW 10,000)"}<input id="annual-salary" data-salary-currency type="text" inputmode="numeric" autocomplete="off" placeholder={lang === "ko" ? "예: 5000" : "e.g. 5000"} /><span class="mt-1 block text-sm font-normal text-slate-600">{lang === "ko" ? "예: 연봉 5,000만원이면 5000 입력" : "Enter 5000 for an annual salary of KRW 50,000,000."}</span></label>
+      <label>{lang === "ko" ? "월 비과세 금액 (만원)" : "Monthly non-taxable income (KRW 10,000)"}<input id="monthly-tax-free" data-salary-currency type="text" inputmode="numeric" autocomplete="off" placeholder={lang === "ko" ? "예: 20" : "e.g. 20"} /><span class="mt-1 block text-sm font-normal text-slate-600">{lang === "ko" ? "예: 비과세 식대 20만원이면 20 입력" : "Enter 20 for KRW 200,000 of monthly non-taxable income."}</span></label>
+      <label>{lang === "ko" ? "부양가족 수 (본인 포함)" : "Dependents (including yourself)"}<input id="salary-dependents" type="number" inputmode="numeric" min="1" max="10" step="1" value="1" /></label>
+      <label>{lang === "ko" ? "20세 이하 자녀 수 (부양가족 중)" : "Children age 20 or under (among dependents)"}<input id="salary-children" type="number" inputmode="numeric" min="0" max="10" step="1" value="0" /></label>
+      <p class="text-sm text-slate-600 md:col-span-2">{lang === "ko" ? "월 비과세 금액은 급여명세서에서 실제 비과세로 처리되는 급여 항목의 합계입니다. 식대, 자가운전보조금 등은 요건을 충족할 때만 비과세가 적용될 수 있으며, 해당 항목이 없으면 0을 입력하세요. 연봉은 퇴직금을 제외하고 12개월 균등 지급한다고 가정합니다." : "Monthly non-taxable income is the total of pay items treated as non-taxable on your payslip. Items such as meal allowances or a personal vehicle allowance can qualify only when their requirements are met; enter 0 when you have none. Annual salary is assumed to exclude severance pay and be paid evenly over 12 months."}</p>
+      <div class="flex gap-2 md:col-span-2"><button class="btn-primary" data-action="run">{ui.calculate}</button><button class="btn-secondary" data-action="reset">{ui.reset}</button></div>
+      <div class="result-box overflow-x-auto md:col-span-2" id="result" aria-live="polite">{ui.result}</div>
     </div>
   )}
 
@@ -9418,13 +9425,26 @@ self.onmessage = async (event) => {
         }
       }
       if (slug === "salary-net-calculator") {
-        const annualSalary = requireFinite(Number(root.querySelector("#annual-salary").value), m.checkInput);
-        const monthlyTaxFree = Number(root.querySelector("#monthly-tax-free").value) || 0;
-        const deductionRate = requireFinite(Number(root.querySelector("#deduction-rate").value), m.checkInput) / 100;
-        const monthlyGross = annualSalary / 12;
-        const taxable = Math.max(0, monthlyGross - monthlyTaxFree);
-        const deduction = taxable * deductionRate;
-        result.textContent = `${m.monthlyGross}: ${money(monthlyGross, lang)}\n${m.taxableMonthly}: ${money(taxable, lang)}\n${m.deduction}: ${money(deduction, lang)}\n${m.monthlyNet}: ${money(monthlyGross - deduction, lang)}`;
+        const toManwonNumber = (value) => Number(String(value || "").replaceAll(",", "").trim());
+        const annualSalaryManwon = requireFinite(toManwonNumber(root.querySelector("#annual-salary")?.value), m.checkInput);
+        const monthlyNonTaxableManwon = toManwonNumber(root.querySelector("#monthly-tax-free")?.value) || 0;
+        const dependents = Number(root.querySelector("#salary-dependents")?.value || 1);
+        const childrenUnder20 = Number(root.querySelector("#salary-children")?.value || 0);
+        if (annualSalaryManwon <= 0 || monthlyNonTaxableManwon < 0 || !Number.isFinite(dependents) || !Number.isFinite(childrenUnder20)) throw new Error(m.checkInput);
+        if (annualSalaryManwon >= 1_000_000 || monthlyNonTaxableManwon >= 10_000) {
+          throw new Error(lang === "ko" ? "금액은 만원 단위로 입력해 주세요. 예: 연봉 5,000만원은 5000, 월 비과세 20만원은 20입니다." : "Enter amounts in KRW 10,000 units. For example, enter 5000 for KRW 50,000,000 annual salary and 20 for KRW 200,000 monthly non-taxable income.");
+        }
+        const { calculateSalaryNet, convertManwonToWon } = await import("@/utils/salary-net");
+        const annualSalary = convertManwonToWon(annualSalaryManwon);
+        const monthlyNonTaxable = convertManwonToWon(monthlyNonTaxableManwon);
+        const salary = calculateSalaryNet({ annualSalary, monthlyNonTaxable, dependents, childrenUnder20 });
+        const labels = lang === "ko" ? {
+          annual: "연봉", annualUnit: "만원", gross: "월 세전 급여", nonTaxable: "월 비과세", pension: "국민연금", health: "건강보험", longTermCare: "장기요양보험", employment: "고용보험", incomeTax: "근로소득세", localTax: "지방소득세", total: "총 공제액", monthlyNet: "예상 월 실수령액", annualNet: "예상 연 실수령액", takeHome: "실수령률", deductions: "공제 내역",
+        } : {
+          annual: "Annual salary", annualUnit: " KRW 10,000", gross: "Monthly gross pay", nonTaxable: "Monthly non-taxable income", pension: "National Pension", health: "Health Insurance", longTermCare: "Long-term Care Insurance", employment: "Employment Insurance", incomeTax: "Earned Income Tax", localTax: "Local income tax", total: "Total deductions", monthlyNet: "Estimated monthly take-home pay", annualNet: "Estimated annual take-home pay", takeHome: "Take-home rate", deductions: "Deductions",
+        };
+        const amount = (value) => `${money(value, lang)}${lang === "ko" ? "원" : " KRW"}`;
+        result.innerHTML = `<div class="grid gap-3 md:grid-cols-3"><div><p class="text-sm text-slate-600">${labels.annual}</p><strong>${format(annualSalaryManwon, lang)}${labels.annualUnit}</strong><p class="text-sm text-slate-600">${amount(salary.annualSalary)}</p></div><div><p class="text-sm text-slate-600">${labels.gross}</p><strong>${amount(salary.monthlyGross)}</strong></div><div><p class="text-sm text-slate-600">${labels.nonTaxable}</p><strong>${amount(salary.monthlyNonTaxable)}</strong></div></div><div class="mt-4 overflow-x-auto"><table class="w-full min-w-[360px] text-sm"><caption class="mb-2 text-left font-semibold">${labels.deductions}</caption><tbody><tr><th class="py-1 text-left font-normal">${labels.pension}</th><td class="py-1 text-right">${amount(salary.nationalPension)}</td></tr><tr><th class="py-1 text-left font-normal">${labels.health}</th><td class="py-1 text-right">${amount(salary.healthInsurance)}</td></tr><tr><th class="py-1 text-left font-normal">${labels.longTermCare}</th><td class="py-1 text-right">${amount(salary.longTermCareInsurance)}</td></tr><tr><th class="py-1 text-left font-normal">${labels.employment}</th><td class="py-1 text-right">${amount(salary.employmentInsurance)}</td></tr><tr><th class="py-1 text-left font-normal">${labels.incomeTax}</th><td class="py-1 text-right">${amount(salary.earnedIncomeTax)}</td></tr><tr><th class="py-1 text-left font-normal">${labels.localTax}</th><td class="py-1 text-right">${amount(salary.localIncomeTax)}</td></tr><tr class="border-t border-slate-300"><th class="py-2 text-left">${labels.total}</th><td class="py-2 text-right font-semibold">${amount(salary.totalDeductions)}</td></tr></tbody></table></div><div class="mt-4 grid gap-3 border-t border-slate-300 pt-4 md:grid-cols-3"><div><p class="text-sm text-slate-600">${labels.monthlyNet}</p><strong class="text-lg text-blue-800">${amount(salary.monthlyNet)}</strong></div><div><p class="text-sm text-slate-600">${labels.annualNet}</p><strong>${amount(salary.annualNet)}</strong></div><div><p class="text-sm text-slate-600">${labels.takeHome}</p><strong>${format(salary.takeHomeRate, lang)}%</strong></div></div>`;
       }
       if (slug === "ohms-law-calculator") {
         const values = {
@@ -9822,6 +9842,18 @@ self.onmessage = async (event) => {
           run(root);
           return;
         }
+        if (slug === "salary-net-calculator") {
+          const annualSalary = root.querySelector("#annual-salary");
+          const monthlyTaxFree = root.querySelector("#monthly-tax-free");
+          const dependents = root.querySelector("#salary-dependents");
+          const children = root.querySelector("#salary-children");
+          if (annualSalary) annualSalary.value = "";
+          if (monthlyTaxFree) monthlyTaxFree.value = "";
+          if (dependents) dependents.value = "1";
+          if (children) children.value = "0";
+          root.querySelector("#result").textContent = messages[root.dataset.lang || "ko"].result;
+          return;
+        }
         root.querySelectorAll("input, textarea").forEach((input) => input.value = "");
         const vatRate = root.querySelector("#vat-rate");
         if (vatRate) vatRate.value = "10";
@@ -10149,6 +10181,15 @@ self.onmessage = async (event) => {
       if (rotateMode) rotateMode.value = "custom";
       if (jpgMode) jpgMode.value = "custom";
     });
+    if (slug === "salary-net-calculator") {
+      root.querySelectorAll("[data-salary-currency]").forEach((control) => {
+        control.addEventListener("blur", () => {
+          if (!(control instanceof HTMLInputElement)) return;
+          const digits = String(control.value || "").replace(/[^0-9]/g, "");
+          control.value = digits ? new Intl.NumberFormat(root.dataset.lang === "ko" ? "ko-KR" : "en-US").format(Number(digits)) : "";
+        });
+      });
+    }
     root.querySelectorAll("input, textarea, select").forEach((control) => {
       control.addEventListener("input", () => {
         if (slug === "image-resizer" && (control.id === "width" || control.id === "height")) {
